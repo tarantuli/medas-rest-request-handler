@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Medas\RestRequestHandler\Controllers;
+
+use Medas\HttpRequestHandler\Request\RequestDataManager;
+use Medas\HttpRequestHandler\ResponseTypes\Response;
+use Medas\RestRequestHandler\Responses\OptionsResponse;
+use Medas\Routing\{Methods\Options, Parameters\Anything, Route};
+use Medas\ServiceManager\Attributes\Service;
+
+#[Service, Route(new Anything())]
+class OptionsController
+{
+    public function __construct(
+        private readonly RequestDataManager $requestDataManager,
+    )
+    {
+    }
+
+    #[Options]
+    public function getOptions(): Response
+    {
+        $serverData = $this->requestDataManager->get()->serverData;
+
+        return new OptionsResponse(
+            $serverData['HTTP_ORIGIN'],
+            $serverData['HTTP_ACCESS_CONTROL_REQUEST_METHOD'],
+            $serverData['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'],
+        );
+    }
+}
