@@ -17,7 +17,8 @@ abstract class BaseRoutes extends BaseController
     public function get(): CollectionResponse
     {
         return new CollectionResponse(
-            $this->repository->fetchAll($this->entityClass())
+            $this->repository->fetchAll($this->entityClass()),
+            $this
         );
     }
 
@@ -43,6 +44,7 @@ abstract class BaseRoutes extends BaseController
     {
         return new EntityResponse(
             $this->entityManager->get($this->entityClass(), $id),
+            $this
         );
     }
 
