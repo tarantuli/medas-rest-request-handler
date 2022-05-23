@@ -15,11 +15,11 @@ class RestRequestHandlerPackage extends BasePackage
 
     public function dependencies(): array
     {
-        return $this->dependenciesByClass([
+        return [
             EntityManagerPackage::instance(),
             RoutingPackage::instance(),
             HttpRequestHandlerPackage::instance(),
-        ]);
+        ];
     }
 
     public function sourceDirectory(): string
