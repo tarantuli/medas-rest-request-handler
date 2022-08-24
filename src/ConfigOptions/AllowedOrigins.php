@@ -7,9 +7,10 @@ namespace Medas\RestRequestHandler\ConfigOptions;
 use Medas\ServiceManager\AsSingleton;
 use Medas\ServiceManager\Attributes\Service;
 use Medas\ServiceManager\ConfigOptions\{ConfigGroup, ConfigOption};
+use Medas\ServiceManager\Values\Interfaces\Validator;
 
 #[Service]
-class AllowedOrigins implements ConfigOption
+class AllowedOrigins implements ConfigOption, Validator
 {
     use AsSingleton;
 
@@ -31,6 +32,11 @@ class AllowedOrigins implements ConfigOption
     public function isValid(mixed $value): bool
     {
         return $value === null || is_string($value);
+    }
+
+    public function hasDefault(): bool
+    {
+        return true;
     }
 
     public function default(): string

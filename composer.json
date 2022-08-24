@@ -11,8 +11,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "morphp/medas-service-manager": "@dev",
-        "morphp/medas-http-request-handler": "@dev",
+        "morphp/medas-service-manager": "dev-dev",
+        "morphp/medas-http-request-handler": "dev-dev",
         "morphp/medas-entity-manager": "dev-dev",
         "morphp/medas-routing": "dev-dev"
     },

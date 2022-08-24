@@ -10,8 +10,8 @@ use Medas\RestRequestHandler\ConfigOptions\AllowedOrigins;
 use Medas\RestRequestHandler\Responses\BadRequestResponse;
 use Medas\RestRequestHandler\Responses\OptionsResponse;
 use Medas\Routing\{Methods\Options, Parameters\Anything, Route};
-use Medas\ServiceManager\Attributes\ConfigValue;
 use Medas\ServiceManager\Attributes\Service;
+use Medas\ServiceManager\ConfigOptions\ConfigValue;
 
 #[Service, Route(new Anything())]
 class OptionsController
