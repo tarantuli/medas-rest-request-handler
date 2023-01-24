@@ -9,10 +9,13 @@ use Medas\EntityManager\Hydration\ValueSetter;
 use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Repository;
 use Medas\HttpRequestHandler\Request\RequestDataManager;
+use Medas\RestRequestHandler\Exceptions\RouteDoesNotSpecifyEntity;
+use Medas\Routing\Route;
 
 abstract class BaseController
 {
     private array $requestData;
+    protected string $entityClass;
 
     public function __construct(
         protected EntityManager      $entityManager,
@@ -22,9 +25,14 @@ abstract class BaseController
         protected ValueSetter        $valueSetter,
     )
     {
-    }
+        $entity = attribute(Route::class, new \ReflectionClass($this))->endpointForEntity();
 
-    abstract public function entityClass(): string;
+        if ($entity === null) {
+            throw new RouteDoesNotSpecifyEntity($this);
+        }
+
+        $this->entityClass = $entity;
+    }
 
     protected function requestData(): array
     {

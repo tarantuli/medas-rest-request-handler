@@ -17,7 +17,7 @@ abstract class BaseRoutes extends BaseController
     public function get(): CollectionResponse
     {
         return new CollectionResponse(
-            $this->repository->fetchAll($this->entityClass()),
+            $this->repository->fetchAll($this->entityClass),
             $this
         );
     }
@@ -28,7 +28,7 @@ abstract class BaseRoutes extends BaseController
     #[Post]
     public function createEntity(): EntityResponse
     {
-        $entity = $this->entityManager->create($this->entityClass(), $this->requestData());
+        $entity = $this->entityManager->create($this->entityClass, $this->requestData());
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
@@ -43,7 +43,7 @@ abstract class BaseRoutes extends BaseController
     public function getEntity(int $id): EntityResponse
     {
         return new EntityResponse(
-            $this->entityManager->get($this->entityClass(), $id),
+            $this->entityManager->get($this->entityClass, $id),
             $this
         );
     }
@@ -54,8 +54,8 @@ abstract class BaseRoutes extends BaseController
     #[Put(new Integer('id'))]
     public function putEntity(int $id): EntityResponse
     {
-        $entity = em()->get($this->entityClass(), $id);
-        $metaData = $this->metaDataManager->get($this->entityClass());
+        $entity = em()->get($this->entityClass, $id);
+        $metaData = $this->metaDataManager->get($this->entityClass);
         $this->valueSetter->setValues($metaData, $entity, $this->requestData());
 
         em()->persist($entity);
@@ -70,7 +70,7 @@ abstract class BaseRoutes extends BaseController
     #[Delete(new Integer('id'))]
     public function removeEntity(int $id): bool
     {
-        $entity = em()->get($this->entityClass(), $id);
+        $entity = em()->get($this->entityClass, $id);
         $this->entityManager->delete($entity);
 
         return true;
