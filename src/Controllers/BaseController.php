@@ -47,4 +47,9 @@ abstract class BaseController
 
         return $this->requestData;
     }
+
+    protected function queryData(): array
+    {
+        return $this->requestDataManager->get()->uri->query;
+    }
 }
