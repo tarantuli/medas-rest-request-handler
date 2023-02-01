@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Controllers;
 
+use Medas\RestRequestHandler\Filtering\SelectorBuilder;
 use Medas\RestRequestHandler\Responses\{CollectionResponse, EntityResponse};
 use Medas\Routing\Methods\{Delete, Get, Post, Put};
 use Medas\Routing\Parameters\Guid;
+use Medas\ServiceManager\Values\Interfaces\Guid as GuidType;
 
 abstract class BaseGuidRoutes extends BaseController
 {
@@ -16,8 +18,16 @@ abstract class BaseGuidRoutes extends BaseController
     #[Get(isCollectionEndpoint: true)]
     public function get(): CollectionResponse
     {
+        if ($queryData = $this->queryData()) {
+            $selectorBuilder = service(SelectorBuilder::class);
+            $selector = $selectorBuilder->build($this->entityClass, $queryData);
+            $entities = $this->repository->fetch($selector);
+        }
+        else {
+            $entities = $this->repository->fetchAll($this->entityClass);
+        }
         return new CollectionResponse(
-            $this->repository->fetchAll($this->entityClass),
+            $entities,
             $this
         );
     }
@@ -40,7 +50,7 @@ abstract class BaseGuidRoutes extends BaseController
      * GET /entities/:id
      */
     #[Get(new Guid('id'), isEntityEndpoint: true)]
-    public function getEntity(string $id): EntityResponse
+    public function getEntity(GuidType $id): EntityResponse
     {
         return new EntityResponse(
             $this->entityManager->get($this->entityClass, $id),
@@ -52,12 +62,11 @@ abstract class BaseGuidRoutes extends BaseController
      * PUT /entities/:id
      */
     #[Put(new Guid('id'))]
-    public function putEntity(string $id): EntityResponse
+    public function putEntity(GuidType $id): EntityResponse
     {
         $entity = em()->get($this->entityClass, $id);
         $metaData = $this->metaDataManager->get($this->entityClass);
         $this->valueSetter->setValues($metaData, $entity, $this->requestData());
-
         em()->persist($entity);
         em()->flush();
 
