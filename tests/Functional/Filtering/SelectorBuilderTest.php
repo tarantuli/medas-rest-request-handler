@@ -17,26 +17,24 @@ class SelectorBuilderTest extends TestCase
             []
         );
 
-        self::assertEquals([], $selector->get()->conditions);
-        self::assertEquals([], $selector->get()->parameters);
-        self::assertEquals([], $selector->get()->relations);
-        self::assertEquals([], $selector->get()->sorts);
+        self::assertEquals([], $selector->definition()->conditions);
+        self::assertEquals([], $selector->definition()->parameters);
+        self::assertEquals([], $selector->definition()->relations);
+        self::assertEquals([], $selector->definition()->sorts);
     }
 
     public function testMultisortFilters(): void
     {
         $selector = service(SelectorBuilder::class)->build(
             'Entity',
-            [
-                'multisort' => '<name,>id',
-            ]
+            ['multisort' => '<name,>id']
         );
 
-        self::assertEquals([], $selector->get()->conditions);
-        self::assertEquals([], $selector->get()->parameters);
-        self::assertEquals([], $selector->get()->relations);
+        self::assertEquals([], $selector->definition()->conditions);
+        self::assertEquals([], $selector->definition()->parameters);
+        self::assertEquals([], $selector->definition()->relations);
 
-        $sorts = $selector->get()->sorts;
+        $sorts = $selector->definition()->sorts;
 
         /** @noinspection PhpPossiblePolymorphicInvocationInspection */
         self::assertEquals('name', $sorts[0]->operant->name);

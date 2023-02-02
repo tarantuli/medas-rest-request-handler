@@ -26,7 +26,7 @@ class MultisortParser
 
             $property = substr($part, 1);
 
-            $querySelector->get()->add(
+            $querySelector->definition()->add(
                 SortBy::c(
                     Property::c($property),
                     $direction === '>' ? SortDirection::DESC : SortDirection::ASC

@@ -11,24 +11,12 @@ class QuerySelector implements Selector
 {
     private Definition $definition;
 
-    public function __construct(private string $entity)
+    public function __construct(string $entity)
     {
         $this->definition = new Definition($entity);
     }
 
-    public function entity(): string
-    {
-        return $this->entity;
-    }
-
-    public function setEntity(string $entity): self
-    {
-        $this->entity = $entity;
-
-        return $this;
-    }
-
-    public function get(): Definition
+    public function definition(): Definition
     {
         return $this->definition;
     }
