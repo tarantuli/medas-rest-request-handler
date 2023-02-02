@@ -105,12 +105,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:tarantuli/medas-entity-manager.git",
-                "reference": "3babcf19378ea926d336fdb8cc8d034bc35a3e81"
+                "reference": "c5d0d49c5e397bd276519e37a81e3658d864e832"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tarantuli/medas-entity-manager/zipball/3babcf19378ea926d336fdb8cc8d034bc35a3e81",
-                "reference": "3babcf19378ea926d336fdb8cc8d034bc35a3e81",
+                "url": "https://api.github.com/repos/tarantuli/medas-entity-manager/zipball/c5d0d49c5e397bd276519e37a81e3658d864e832",
+                "reference": "c5d0d49c5e397bd276519e37a81e3658d864e832",
                 "shasum": ""
             },
             "require": {
@@ -142,7 +142,7 @@
                 "source": "https://github.com/tarantuli/medas-entity-manager/tree/dev",
                 "issues": "https://github.com/tarantuli/medas-entity-manager/issues"
             },
-            "time": "2023-02-02T09:06:36+00:00"
+            "time": "2023-02-02T10:28:08+00:00"
         },
         {
             "name": "morphp/medas-http-request-handler",
