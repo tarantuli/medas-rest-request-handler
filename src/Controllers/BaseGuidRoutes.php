@@ -38,12 +38,7 @@ abstract class BaseGuidRoutes extends BaseController
     #[Post]
     public function createEntity(): EntityResponse
     {
-        $entity = $this->entityManager->create($this->entityClass, $this->requestData());
-
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
-
-        return $this->getEntity($entity->id());
+        return $this->createEntityFromData($this->requestData());
     }
 
     /**
@@ -83,5 +78,15 @@ abstract class BaseGuidRoutes extends BaseController
         $this->entityManager->delete($entity);
 
         return true;
+    }
+
+    protected function createEntityFromData(array $data): EntityResponse
+    {
+        $entity = $this->entityManager->create($this->entityClass, $data);
+
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        return $this->getEntity($entity->id());
     }
 }
