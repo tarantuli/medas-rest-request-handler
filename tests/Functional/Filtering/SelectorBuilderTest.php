@@ -44,4 +44,15 @@ class SelectorBuilderTest extends TestCase
         self::assertEquals('id', $sorts[1]->operant->name);
         self::assertEquals(SortDirection::DESC, $sorts[1]->direction);
     }
+
+    public function testOffsetLimitFilters(): void
+    {
+        $selector = service(SelectorBuilder::class)->build(
+            'Entity',
+            ['page' => 1],
+        );
+
+        self::assertEquals(1, $selector->definition()->pagination->page);
+        self::assertEquals(30, $selector->definition()->pagination->perPage);
+    }
 }

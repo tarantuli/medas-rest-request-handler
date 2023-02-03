@@ -9,7 +9,7 @@ use Medas\ServiceManager\ConfigOptions\ConfigGroup;
 use Medas\ServiceManager\ConfigOptions\ConfigOption;
 use Medas\ServiceManager\Values\Interfaces\Validator;
 
-class MultisortQueryName implements ConfigOption, Validator
+class DefaultPageSize implements ConfigOption, Validator
 {
     use AsSingleton;
 
@@ -20,12 +20,12 @@ class MultisortQueryName implements ConfigOption, Validator
 
     public function name(): string
     {
-        return 'multisort-query-name';
+        return 'default-page-size';
     }
 
     public function description(): string
     {
-        return 'The name of the multisort query parameter name, set to null to disable the filter completely';
+        return 'The default size of pages when paginating.';
     }
 
     public function hasDefault(): bool
@@ -33,13 +33,13 @@ class MultisortQueryName implements ConfigOption, Validator
         return true;
     }
 
-    public function default(): string
+    public function default(): int
     {
-        return 'multisort';
+        return 30;
     }
 
     public function isValid(mixed $value): bool
     {
-        return $value === null || is_string($value);
+        return is_int($value);
     }
 }

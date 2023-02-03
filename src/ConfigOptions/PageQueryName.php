@@ -9,7 +9,7 @@ use Medas\ServiceManager\ConfigOptions\ConfigGroup;
 use Medas\ServiceManager\ConfigOptions\ConfigOption;
 use Medas\ServiceManager\Values\Interfaces\Validator;
 
-class MultisortQueryName implements ConfigOption, Validator
+class PageQueryName implements ConfigOption, Validator
 {
     use AsSingleton;
 
@@ -20,12 +20,12 @@ class MultisortQueryName implements ConfigOption, Validator
 
     public function name(): string
     {
-        return 'multisort-query-name';
+        return 'page-query-name';
     }
 
     public function description(): string
     {
-        return 'The name of the multisort query parameter name, set to null to disable the filter completely';
+        return 'The name of the page query parameter name, set to null to disable the filter completely';
     }
 
     public function hasDefault(): bool
@@ -35,7 +35,7 @@ class MultisortQueryName implements ConfigOption, Validator
 
     public function default(): string
     {
-        return 'multisort';
+        return 'page';
     }
 
     public function isValid(mixed $value): bool
