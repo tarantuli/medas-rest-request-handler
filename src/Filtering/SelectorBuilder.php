@@ -20,14 +20,15 @@ class SelectorBuilder
 
     public function __construct(
         #[ConfigValue(MultisortQueryName::class)]
-        private readonly string|null     $multisortQueryName,
+        private readonly string|null      $multisortQueryName,
         #[ConfigValue(DefaultPageSize::class)]
-        private readonly int             $defaultPageSize,
+        private readonly int              $defaultPageSize,
         #[ConfigValue(PageQueryName::class)]
-        private readonly string|null     $pageQueryName,
+        private readonly string|null      $pageQueryName,
         #[ConfigValue(PerPageQueryName::class)]
-        private readonly string|null     $perPageQueryName,
-        private readonly MultisortParser $multisortParser,
+        private readonly string|null      $perPageQueryName,
+        private readonly MultisortParser  $multisortParser,
+        private readonly ComparisonParser $comparisonParser,
     )
     {
     }
@@ -57,7 +58,7 @@ class SelectorBuilder
             $this->pageSize = (int) $value;
         }
         else {
-            // Add filtering
+            $this->comparisonParser->parse($selector, $name, $value);
         }
     }
 
