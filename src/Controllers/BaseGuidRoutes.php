@@ -50,7 +50,7 @@ abstract class BaseGuidRoutes extends BaseController
     public function getEntity(GuidType $id): EntityResponse
     {
         return new EntityResponse(
-            $this->entityManager->get($this->entityClass, $id),
+            em()->get($this->entityClass, $id),
             $this
         );
     }
@@ -77,7 +77,7 @@ abstract class BaseGuidRoutes extends BaseController
     public function removeEntity(GuidType $id): SuccessResponse
     {
         $entity = em()->get($this->entityClass, $id);
-        $this->entityManager->delete($entity);
+        em()->delete($entity);
 
         return new SuccessResponse(true);
     }
@@ -85,14 +85,14 @@ abstract class BaseGuidRoutes extends BaseController
     protected function createEntityFromData(array $data): EntityResponse
     {
         try {
-            $entity = $this->entityManager->create($this->entityClass, $data);
+            $entity = em()->create($this->entityClass, $data);
         }
         catch (PropertyDoesNotExistException $exception) {
             throw new EntityDoesNotHaveProperty($this->entityClass, $exception->propertyName);
         }
 
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
+        em()->persist($entity);
+        em()->flush();
 
         return $this->getEntity($entity->id());
     }

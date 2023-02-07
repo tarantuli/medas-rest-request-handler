@@ -28,10 +28,10 @@ abstract class BaseRoutes extends BaseController
     #[Post]
     public function createEntity(): EntityResponse
     {
-        $entity = $this->entityManager->create($this->entityClass, $this->requestData());
+        $entity = em()->create($this->entityClass, $this->requestData());
 
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
+        em()->persist($entity);
+        em()->flush();
 
         return $this->getEntity($entity->id());
     }
@@ -43,7 +43,7 @@ abstract class BaseRoutes extends BaseController
     public function getEntity(int $id): EntityResponse
     {
         return new EntityResponse(
-            $this->entityManager->get($this->entityClass, $id),
+            em()->get($this->entityClass, $id),
             $this
         );
     }
@@ -71,7 +71,8 @@ abstract class BaseRoutes extends BaseController
     public function removeEntity(int $id): bool
     {
         $entity = em()->get($this->entityClass, $id);
-        $this->entityManager->delete($entity);
+        em()->delete($entity);
+        em()->flush();
 
         return true;
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Controllers;
 
-use Medas\EntityManager\EntityManager;
 use Medas\EntityManager\Hydration\ValueSetter;
 use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Repository;
@@ -18,7 +17,6 @@ abstract class BaseController
     protected string $entityClass;
 
     public function __construct(
-        protected EntityManager      $entityManager,
         protected MetaDataManager    $metaDataManager,
         protected Repository         $repository,
         protected RequestDataManager $requestDataManager,
