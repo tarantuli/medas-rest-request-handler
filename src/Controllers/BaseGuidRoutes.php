@@ -74,7 +74,7 @@ abstract class BaseGuidRoutes extends BaseController
      * DELETE /entities/:id
      */
     #[Delete(new Guid('id'))]
-    public function removeEntity(string $id): bool
+    public function removeEntity(GuidType $id): bool
     {
         $entity = em()->get($this->entityClass, $id);
         $this->entityManager->delete($entity);
