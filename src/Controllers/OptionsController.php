@@ -36,7 +36,7 @@ class OptionsController
         return new OptionsResponse(
             $serverData['HTTP_ORIGIN'],
             $serverData['HTTP_ACCESS_CONTROL_REQUEST_METHOD'],
-            $serverData['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'],
+            $serverData['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] ?? null,
         );
     }
 }
