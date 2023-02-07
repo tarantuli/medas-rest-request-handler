@@ -19,7 +19,8 @@
     "require-dev": {
         "phpunit/phpunit": "^9.5",
         "morphp/medas-config-manager": "dev-dev",
-        "morphp/medas-config-options": "dev-dev"
+        "morphp/medas-config-options": "dev-dev",
+        "morphp/medas-ramsey-uuid-bridge": "dev-dev"
     },
     "autoload": {
         "psr-4": {

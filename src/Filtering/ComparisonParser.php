@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
+use Medas\EntityManager\Exceptions\ClassIsNotAnEntityException;
 use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Selector\{Conditions\WhereIs, Operants\Property, Operants\Value};
 use Medas\EntityManager\Types\{Guid as GuidType, Relation};
@@ -22,15 +23,20 @@ class ComparisonParser
 
     public function parse(QuerySelector $querySelector, string $name, string $value): void
     {
-        $metaData = $this->metaDataManager->get($querySelector->definition()->entity);
-        $type = $metaData->property($name)->type;
+        try {
+            $metaData = $this->metaDataManager->get($querySelector->definition()->entity);
+            $type = $metaData->property($name)->type;
 
-        if ($type instanceof Relation) {
-            $type = $this->metaDataManager->get($type->entity)->idProperty->type;
+            if ($type instanceof Relation) {
+                $type = $this->metaDataManager->get($type->entity)->idProperty->type;
+            }
+
+            if ($type instanceof GuidType) {
+                $value = $this->guidProvider->fromString($value);
+            }
         }
-
-        if ($type instanceof GuidType) {
-            $value = $this->guidProvider->fromString($value);
+        catch (ClassIsNotAnEntityException) {
+            // Do nothing
         }
 
         $querySelector->definition()->add(new WhereIs(
