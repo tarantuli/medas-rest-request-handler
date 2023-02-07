@@ -7,7 +7,7 @@ namespace Medas\RestRequestHandler\Controllers;
 use Medas\EntityManager\Exceptions\PropertyDoesNotExistException;
 use Medas\RestRequestHandler\Exceptions\EntityDoesNotHaveProperty;
 use Medas\RestRequestHandler\Filtering\SelectorBuilder;
-use Medas\RestRequestHandler\Responses\{CollectionResponse, EntityResponse};
+use Medas\RestRequestHandler\Responses\{CollectionResponse, EntityResponse, SuccessResponse};
 use Medas\Routing\Methods\{Delete, Get, Post, Put};
 use Medas\Routing\Parameters\Guid;
 use Medas\ServiceManager\Values\Interfaces\Guid as GuidType;
@@ -74,12 +74,12 @@ abstract class BaseGuidRoutes extends BaseController
      * DELETE /entities/:id
      */
     #[Delete(new Guid('id'))]
-    public function removeEntity(GuidType $id): bool
+    public function removeEntity(GuidType $id): SuccessResponse
     {
         $entity = em()->get($this->entityClass, $id);
         $this->entityManager->delete($entity);
 
-        return true;
+        return new SuccessResponse(true);
     }
 
     protected function createEntityFromData(array $data): EntityResponse
