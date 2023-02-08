@@ -78,6 +78,7 @@ abstract class BaseGuidRoutes extends BaseController
     {
         $entity = em()->get($this->entityClass, $id);
         em()->delete($entity);
+        em()->flush();
 
         return new SuccessResponse(true);
     }
