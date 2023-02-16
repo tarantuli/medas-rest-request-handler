@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\EntityManager\Selector\Definition;
-use Medas\EntityManager\Selector\Selector;
+use Medas\EntityManager\Selector\{Definition, Selector};
+use Medas\ServiceManager\Cache\Interfaces\NotCacheable;
 
-class QuerySelector implements Selector
+class QuerySelector implements Selector, NotCacheable
 {
     private Definition $definition;
 
