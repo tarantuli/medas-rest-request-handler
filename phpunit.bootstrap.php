@@ -5,10 +5,21 @@ declare(strict_types=1);
 use Medas\ConfigManager\ConfigManagerPackage;
 use Medas\ConfigOptions\ConfigOptionsPackage;
 use Medas\RamseyUuidBridge\RamseyUuidBridgePackage;
+use Medas\RestRequestHandler\RestRequestHandlerPackage;
+use Medas\ServiceManager\ServiceConfig;
+use Medas\ServiceManager\ServiceManager;
 
-require_once __DIR__ . '/bootstrap.php';
+chdir(__DIR__);
 
-sm()
-    ->addPackage(ConfigManagerPackage::instance())
-    ->addPackage(ConfigOptionsPackage::instance())
-    ->addPackage(RamseyUuidBridgePackage::instance());
+new ServiceManager(function (): ServiceConfig {
+    $config = new ServiceConfig();
+
+    $config->addPackages([
+        RestRequestHandlerPackage::instance(),
+        ConfigManagerPackage::instance(),
+        ConfigOptionsPackage::instance(),
+        RamseyUuidBridgePackage::instance(),
+    ]);
+
+    return $config;
+});

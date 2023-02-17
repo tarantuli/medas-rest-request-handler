@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Controllers;
 
-use Medas\EntityManager\Exceptions\PropertyDoesNotExistException;
+use Medas\EntityManager\Exceptions\PropertyDoesNotExist;
 use Medas\RestRequestHandler\Exceptions\EntityDoesNotHaveProperty;
 use Medas\RestRequestHandler\Filtering\SelectorBuilder;
 use Medas\RestRequestHandler\Responses\{CollectionResponse, EntityResponse, SuccessResponse};
@@ -88,7 +88,7 @@ abstract class BaseGuidRoutes extends BaseController
         try {
             $entity = em()->create($this->entityClass, $data);
         }
-        catch (PropertyDoesNotExistException $exception) {
+        catch (PropertyDoesNotExist $exception) {
             throw new EntityDoesNotHaveProperty($this->entityClass, $exception->propertyName);
         }
 

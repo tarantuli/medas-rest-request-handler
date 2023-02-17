@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\EntityManager\Exceptions\ClassIsNotAnEntityException;
+use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
 use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Selector\{Conditions\WhereIs, Operants\Property, Operants\Value};
 use Medas\EntityManager\Types\{Guid as GuidType, Relation};
@@ -35,7 +35,7 @@ class ComparisonParser
                 $value = $this->guidProvider->fromString($value);
             }
         }
-        catch (ClassIsNotAnEntityException) {
+        catch (ClassIsNotAnEntity) {
             // Do nothing
         }
 
