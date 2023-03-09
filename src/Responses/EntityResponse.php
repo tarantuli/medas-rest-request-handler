@@ -6,18 +6,16 @@ namespace Medas\RestRequestHandler\Responses;
 
 use Medas\HttpRequestHandler\ResponseTypes\JsonResponse;
 
-class EntityResponse extends BaseEntityResponse implements JsonResponse
+class EntityResponse implements JsonResponse
 {
     public function __construct(
-        private readonly object $entity,
-        private readonly object $controller,
+        private readonly array $entityData,
     )
     {
-        parent::__construct($this->controller);
     }
 
     public function getJsonResponse(): array
     {
-        return $this->normalizeEntity($this->entity);
+        return $this->entityData;
     }
 }

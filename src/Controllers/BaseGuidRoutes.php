@@ -29,7 +29,7 @@ abstract class BaseGuidRoutes extends BaseController
             $entities = $this->repository->fetchAll($this->entityClass);
         }
 
-        return new CollectionResponse($entities, $this);
+        return $this->collectionResponseBuilder->build($entities, $this);
     }
 
     /**
@@ -47,7 +47,7 @@ abstract class BaseGuidRoutes extends BaseController
     #[Get(new Guid('id'), isEntityEndpoint: true)]
     public function getEntity(GuidType $id): EntityResponse
     {
-        return new EntityResponse(em()->get($this->entityClass, $id), $this);
+        return $this->entityResponseBuilder->build(em()->get($this->entityClass, $id), $this);
     }
 
     /**

@@ -16,7 +16,7 @@ abstract class BaseRoutes extends BaseController
     #[Get(isCollectionEndpoint: true)]
     public function get(): CollectionResponse
     {
-        return new CollectionResponse(
+        return $this->collectionResponseBuilder->build(
             $this->repository->fetchAll($this->entityClass),
             $this
         );
@@ -42,7 +42,7 @@ abstract class BaseRoutes extends BaseController
     #[Get(new Integer('id'), isEntityEndpoint: true)]
     public function getEntity(int $id): EntityResponse
     {
-        return new EntityResponse(
+        return $this->entityResponseBuilder->build(
             em()->get($this->entityClass, $id),
             $this
         );

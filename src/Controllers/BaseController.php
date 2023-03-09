@@ -9,6 +9,7 @@ use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Repository;
 use Medas\HttpRequestHandler\Request\RequestDataManager;
 use Medas\RestRequestHandler\Exceptions\RouteDoesNotSpecifyEntity;
+use Medas\RestRequestHandler\Responses\{CollectionResponseBuilder, EntityResponseBuilder};
 use Medas\Routing\Route;
 
 abstract class BaseController
@@ -17,10 +18,12 @@ abstract class BaseController
     protected string $entityClass;
 
     public function __construct(
-        protected MetaDataManager    $metaDataManager,
-        protected Repository         $repository,
-        protected RequestDataManager $requestDataManager,
-        protected ValueSetter        $valueSetter,
+        protected CollectionResponseBuilder $collectionResponseBuilder,
+        protected EntityResponseBuilder     $entityResponseBuilder,
+        protected MetaDataManager           $metaDataManager,
+        protected Repository                $repository,
+        protected RequestDataManager        $requestDataManager,
+        protected ValueSetter               $valueSetter,
     )
     {
         $entity = attribute(Route::class, new \ReflectionClass($this))->endpointForEntity();
