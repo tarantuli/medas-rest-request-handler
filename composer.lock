@@ -277,12 +277,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:tarantuli/medas-service-manager.git",
-                "reference": "ea0c8d40561907c18febec5036f402d12eac4f39"
+                "reference": "db22d5acb317287bea324f595f0760abbcbaac5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tarantuli/medas-service-manager/zipball/ea0c8d40561907c18febec5036f402d12eac4f39",
-                "reference": "ea0c8d40561907c18febec5036f402d12eac4f39",
+                "url": "https://api.github.com/repos/tarantuli/medas-service-manager/zipball/db22d5acb317287bea324f595f0760abbcbaac5d",
+                "reference": "db22d5acb317287bea324f595f0760abbcbaac5d",
                 "shasum": ""
             },
             "require": {
@@ -316,7 +316,7 @@
                 "source": "https://github.com/tarantuli/medas-service-manager/tree/dev",
                 "issues": "https://github.com/tarantuli/medas-service-manager/issues"
             },
-            "time": "2023-03-09T09:31:54+00:00"
+            "time": "2023-03-09T10:08:32+00:00"
         }
     ],
     "packages-dev": [

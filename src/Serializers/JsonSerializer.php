@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Serializers;
 
-use Medas\EntityManager\Types\Boolean;
-use Medas\EntityManager\Types\Guid as GuidType;
-use Medas\EntityManager\Types\Relation;
+use Medas\EntityManager\Types\{Boolean, Guid as GuidType, Relation};
 use Medas\RamseyUuidBridge\GuidProvider;
-use Medas\RestRequestHandler\Exceptions\GuidProviderIsNotAvailable;
 use Medas\ServiceManager\Attributes\Service;
-use Medas\ServiceManager\Interfaces\Guid;
-use Medas\ServiceManager\Interfaces\HasId;
-use Medas\ServiceManager\Interfaces\Serializer;
-use Medas\ServiceManager\Interfaces\Type;
+use Medas\ServiceManager\Exceptions\GuidProviderIsNotAvailable;
+use Medas\ServiceManager\Interfaces\{Guid, HasId, Serializer, Type};
 
 #[Service]
 class JsonSerializer implements Serializer
