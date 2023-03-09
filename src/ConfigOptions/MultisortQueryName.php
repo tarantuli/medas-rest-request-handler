@@ -7,7 +7,7 @@ namespace Medas\RestRequestHandler\ConfigOptions;
 use Medas\ServiceManager\AsSingleton;
 use Medas\ServiceManager\ConfigOptions\ConfigGroup;
 use Medas\ServiceManager\ConfigOptions\ConfigOption;
-use Medas\ServiceManager\Values\Interfaces\Validator;
+use Medas\ServiceManager\Interfaces\Validator;
 
 class MultisortQueryName implements ConfigOption, Validator
 {

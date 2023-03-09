@@ -10,7 +10,7 @@ use Medas\RestRequestHandler\Filtering\SelectorBuilder;
 use Medas\RestRequestHandler\Responses\{CollectionResponse, EntityResponse, SuccessResponse};
 use Medas\Routing\Methods\{Delete, Get, Post, Put};
 use Medas\Routing\Parameters\Guid;
-use Medas\ServiceManager\Values\Interfaces\Guid as GuidType;
+use Medas\ServiceManager\Interfaces\Guid as GuidType;
 
 abstract class BaseGuidRoutes extends BaseController
 {
@@ -28,10 +28,8 @@ abstract class BaseGuidRoutes extends BaseController
         else {
             $entities = $this->repository->fetchAll($this->entityClass);
         }
-        return new CollectionResponse(
-            $entities,
-            $this
-        );
+
+        return new CollectionResponse($entities, $this);
     }
 
     /**
@@ -49,10 +47,7 @@ abstract class BaseGuidRoutes extends BaseController
     #[Get(new Guid('id'), isEntityEndpoint: true)]
     public function getEntity(GuidType $id): EntityResponse
     {
-        return new EntityResponse(
-            em()->get($this->entityClass, $id),
-            $this
-        );
+        return new EntityResponse(em()->get($this->entityClass, $id), $this);
     }
 
     /**

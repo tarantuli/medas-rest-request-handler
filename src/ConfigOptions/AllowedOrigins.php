@@ -7,7 +7,7 @@ namespace Medas\RestRequestHandler\ConfigOptions;
 use Medas\ServiceManager\AsSingleton;
 use Medas\ServiceManager\Attributes\Service;
 use Medas\ServiceManager\ConfigOptions\{ConfigGroup, ConfigOption};
-use Medas\ServiceManager\Values\Interfaces\Validator;
+use Medas\ServiceManager\Interfaces\Validator;
 
 #[Service]
 class AllowedOrigins implements ConfigOption, Validator

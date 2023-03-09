@@ -9,7 +9,7 @@ use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Selector\{Conditions\WhereIs, Operants\Property, Operants\Value};
 use Medas\EntityManager\Types\{Guid as GuidType, Relation};
 use Medas\ServiceManager\Attributes\Service;
-use Medas\ServiceManager\Values\Interfaces\GuidProvider;
+use Medas\ServiceManager\Interfaces\GuidProvider;
 
 #[Service]
 class ComparisonParser
