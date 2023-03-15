@@ -36,7 +36,7 @@ class JsonSerializer implements Serializer
         return $value;
     }
 
-    public function unserialize(Type $type, mixed $value): mixed
+    public function unserialize(mixed $value, Type $type = null): mixed
     {
         if ($type instanceof GuidType) {
             if ($this->guidProvider === null) {
