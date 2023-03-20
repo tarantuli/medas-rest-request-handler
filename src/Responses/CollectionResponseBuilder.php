@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Responses;
 
+use Medas\ServiceManager\Attributes\Service;
+
+#[Service]
 class CollectionResponseBuilder extends BaseResponseBuilder
 {
     /** @param object[] $entities */

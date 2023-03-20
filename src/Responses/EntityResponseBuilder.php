@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Responses;
 
+use Medas\ServiceManager\Attributes\Service;
+
+#[Service]
 class EntityResponseBuilder extends BaseResponseBuilder
 {
     public function build(object $entity, object $controller): EntityResponse
