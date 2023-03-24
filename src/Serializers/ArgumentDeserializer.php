@@ -31,6 +31,7 @@ class ArgumentDeserializer implements ArgumentProcessor
             return $argument;
         }
 
+        // Should be TypeFinder, but for parameters instead of just properties
         $type = null;
 
         if (parameterTypes($parameter)[0]->getName() === \DateTime::class) {
