@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Serializers;
 
-use Medas\EntityManager\Types\TypeFinder;
+use Medas\EntityManager\Types\DateTime;
 use Medas\ServiceManager\Attributes\PreferredDefault;
 use Medas\ServiceManager\Attributes\Service;
 use Medas\ServiceManager\Interfaces\Serializer;
@@ -16,8 +16,6 @@ class ArgumentDeserializer implements ArgumentProcessor
     public function __construct(
         #[PreferredDefault(JsonSerializer::class)]
         private readonly Serializer $serializer,
-
-        private readonly TypeFinder $typeFinder,
     )
     {
     }
@@ -29,6 +27,16 @@ class ArgumentDeserializer implements ArgumentProcessor
 
     public function process(\ReflectionParameter|\ReflectionProperty $parameter, mixed $argument): mixed
     {
-        return $this->serializer->unserialize($argument, $this->typeFinder->find($parameter));
+        if (is_object($argument)) {
+            return $argument;
+        }
+
+        $type = null;
+
+        if (parameterTypes($parameter)[0]->getName() === \DateTime::class) {
+            $type = new DateTime();
+        }
+
+        return $this->serializer->unserialize($argument, $type);
     }
 }
