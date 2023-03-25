@@ -17,16 +17,18 @@ use Medas\EntityManager\Selector\{Conditions\WhereContains,
     Operants\Property,
     Operants\Value
 };
-use Medas\EntityManager\Types\{Guid as GuidType, Relation};
-use Medas\ServiceManager\Attributes\Service;
-use Medas\ServiceManager\Interfaces\GuidProvider;
+use Medas\EntityManager\Types\Relation;
+use Medas\RestRequestHandler\Serializers\JsonSerializer;
+use Medas\ServiceManager\Attributes\{PreferredDefault, Service};
+use Medas\ServiceManager\Interfaces\Serializer;
 
 #[Service]
 class ComparisonParser
 {
     public function __construct(
         private readonly MetaDataManager $metaDataManager,
-        private readonly GuidProvider    $guidProvider,
+        #[PreferredDefault(JsonSerializer::class)]
+        private readonly Serializer      $serializer,
     )
     {
     }
@@ -34,6 +36,7 @@ class ComparisonParser
     public function parse(QuerySelector $querySelector, string $name, string $value): void
     {
         $comparisonType = $this->getComparisonType($name);
+        $type = null;
 
         try {
             $metaData = $this->metaDataManager->get($querySelector->definition()->entity);
@@ -42,14 +45,12 @@ class ComparisonParser
             if ($type instanceof Relation) {
                 $type = $this->metaDataManager->get($type->entity)->idProperty->type;
             }
-
-            if ($type instanceof GuidType) {
-                $value = $this->guidProvider->fromString($value);
-            }
         }
         catch (ClassIsNotAnEntity) {
             // Do nothing
         }
+
+        $value = $this->serializer->unserialize($value, $type);
 
         $element = new $comparisonType(
             Property::c($name),
