@@ -52,7 +52,22 @@ class JsonSerializer implements Serializer
         }
 
         if ($type instanceof Relation) {
-            $value = em()->get($type->entity, $value);
+            if (enum_exists($type->entity)) {
+                $reflection = new \ReflectionEnum($type->entity);
+                $backingType = (string) $reflection->getBackingType();
+
+                if ($backingType === 'string' && !is_string($value)) {
+                    $value = (string) $value;
+                }
+                elseif ($backingType === 'int' && !is_int($value)) {
+                    $value = (int) $value;
+                }
+
+                $value = ($type->entity)::from($value);
+            }
+            else {
+                $value = em()->get($type->entity, $value);
+            }
         }
 
         if ($type instanceof Boolean) {
