@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\ConfigOptions;
 
+use Medas\Core\Interfaces\ConfigGroup;
 use Medas\ServiceManager\AsSingleton;
-use Medas\ServiceManager\Attributes\Service;
-use Medas\ServiceManager\ConfigOptions\ConfigGroup;
 
-#[Service]
 class RestRequestHandlerGroup implements ConfigGroup
 {
     use AsSingleton;

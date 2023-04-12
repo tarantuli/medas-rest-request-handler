@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\ConfigOptions;
 
+use Medas\Core\Interfaces\{ConfigGroup, ConfigOption, Validator};
 use Medas\ServiceManager\AsSingleton;
-use Medas\ServiceManager\ConfigOptions\ConfigGroup;
-use Medas\ServiceManager\ConfigOptions\ConfigOption;
-use Medas\ServiceManager\Interfaces\Validator;
 
 class PageQueryName implements ConfigOption, Validator
 {

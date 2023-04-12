@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\EntityManager\Selector\Operants\Property;
-use Medas\EntityManager\Selector\Sorting\SortBy;
-use Medas\EntityManager\Selector\Sorting\SortDirection;
+use Medas\EntityManager\Selector\{Operants\Property, Sorting\SortBy, Sorting\SortDirection};
 use Medas\RestRequestHandler\Exceptions\InvalidSortDirection;
-use Medas\ServiceManager\Attributes\Service;
+use Medas\ServiceManager\Service;
 
 #[Service]
 class MultisortParser

@@ -4,16 +4,49 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Controllers;
 
+use Medas\Core\Interfaces\Guid as GuidType;
 use Medas\EntityManager\Exceptions\PropertyDoesNotExist;
 use Medas\RestRequestHandler\Exceptions\EntityDoesNotHaveProperty;
 use Medas\RestRequestHandler\Filtering\SelectorBuilder;
 use Medas\RestRequestHandler\Responses\{CollectionResponse, EntityResponse, SuccessResponse};
 use Medas\Routing\Methods\{Delete, Get, Post, Put};
 use Medas\Routing\Parameters\Guid;
-use Medas\ServiceManager\Interfaces\Guid as GuidType;
 
 abstract class BaseGuidRoutes extends BaseController
 {
+    /**
+     * POST /entities
+     */
+    #[Post]
+    public function createEntity(): EntityResponse
+    {
+        return $this->createEntityFromData($this->requestData());
+    }
+
+    protected function createEntityFromData(array $data): EntityResponse
+    {
+        try {
+            $entity = em()->create($this->entityClass, $data);
+        }
+        catch (PropertyDoesNotExist $exception) {
+            throw new EntityDoesNotHaveProperty($this->entityClass, $exception->propertyName);
+        }
+
+        em()->persist($entity);
+        em()->flush();
+
+        return $this->getEntity($entity->id());
+    }
+
+    /**
+     * GET /entities/:id
+     */
+    #[Get(new Guid('id'), isEntityEndpoint: true)]
+    public function getEntity(GuidType $id): EntityResponse
+    {
+        return $this->entityResponseBuilder->build(em()->get($this->entityClass, $id), $this);
+    }
+
     /**
      * GET /entities
      */
@@ -30,24 +63,6 @@ abstract class BaseGuidRoutes extends BaseController
         }
 
         return $this->collectionResponseBuilder->build($entities, $this);
-    }
-
-    /**
-     * POST /entities
-     */
-    #[Post]
-    public function createEntity(): EntityResponse
-    {
-        return $this->createEntityFromData($this->requestData());
-    }
-
-    /**
-     * GET /entities/:id
-     */
-    #[Get(new Guid('id'), isEntityEndpoint: true)]
-    public function getEntity(GuidType $id): EntityResponse
-    {
-        return $this->entityResponseBuilder->build(em()->get($this->entityClass, $id), $this);
     }
 
     /**
@@ -76,20 +91,5 @@ abstract class BaseGuidRoutes extends BaseController
         em()->flush();
 
         return new SuccessResponse(true);
-    }
-
-    protected function createEntityFromData(array $data): EntityResponse
-    {
-        try {
-            $entity = em()->create($this->entityClass, $data);
-        }
-        catch (PropertyDoesNotExist $exception) {
-            throw new EntityDoesNotHaveProperty($this->entityClass, $exception->propertyName);
-        }
-
-        em()->persist($entity);
-        em()->flush();
-
-        return $this->getEntity($entity->id());
     }
 }

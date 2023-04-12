@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
+use Medas\Core\Interfaces\NotCacheable;
 use Medas\EntityManager\Selector\{Definition, Selector};
-use Medas\ServiceManager\Cache\Interfaces\NotCacheable;
 
 class QuerySelector implements Selector, NotCacheable
 {

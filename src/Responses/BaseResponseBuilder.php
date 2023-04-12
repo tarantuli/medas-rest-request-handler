@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Responses;
 
+use Medas\core\Interfaces\Serializer;
 use Medas\RestRequestHandler\Interfaces\Normalizer;
 use Medas\RestRequestHandler\Serializers\JsonSerializer;
 use Medas\ServiceManager\Attributes\PreferredDefault;
-use Medas\ServiceManager\Interfaces\Serializer;
 
 abstract class BaseResponseBuilder
 {

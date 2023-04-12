@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
+use Medas\Core\Attributes\ConfigValue;
 use Medas\EntityManager\Selector\Pagination;
-use Medas\RestRequestHandler\ConfigOptions\DefaultPageSize;
-use Medas\RestRequestHandler\ConfigOptions\MultisortQueryName;
-use Medas\RestRequestHandler\ConfigOptions\PageQueryName;
-use Medas\RestRequestHandler\ConfigOptions\PerPageQueryName;
-use Medas\ServiceManager\Attributes\Service;
-use Medas\ServiceManager\ConfigOptions\ConfigValue;
+use Medas\RestRequestHandler\ConfigOptions\{DefaultPageSize, MultisortQueryName, PageQueryName, PerPageQueryName};
+use Medas\ServiceManager\Service;
 
 #[Service]
 class SelectorBuilder

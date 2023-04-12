@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
+use Medas\core\Interfaces\Serializer;
 use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
 use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Selector\{Conditions\WhereContains,
@@ -15,12 +16,11 @@ use Medas\EntityManager\Selector\{Conditions\WhereContains,
     Conditions\WhereIsMoreThan,
     Conditions\WhereStartsWith,
     Operants\Property,
-    Operants\Value
-};
+    Operants\Value};
 use Medas\EntityManager\Types\Relation;
 use Medas\RestRequestHandler\Serializers\JsonSerializer;
-use Medas\ServiceManager\Attributes\{PreferredDefault, Service};
-use Medas\ServiceManager\Interfaces\Serializer;
+use Medas\ServiceManager\Attributes\PreferredDefault;
+use Medas\ServiceManager\Service;
 
 #[Service]
 class ComparisonParser

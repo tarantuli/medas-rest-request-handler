@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\ConfigOptions;
 
+use Medas\Core\Interfaces\{ConfigGroup, ConfigOption, Validator};
 use Medas\ServiceManager\AsSingleton;
-use Medas\ServiceManager\Attributes\Service;
-use Medas\ServiceManager\ConfigOptions\{ConfigGroup, ConfigOption};
-use Medas\ServiceManager\Interfaces\Validator;
 
-#[Service]
 class AllowedOrigins implements ConfigOption, Validator
 {
     use AsSingleton;
