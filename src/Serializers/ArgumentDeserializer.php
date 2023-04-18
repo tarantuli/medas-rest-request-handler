@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Serializers;
 
+use Medas\Core\Attributes\Service;
 use Medas\Core\Interfaces\Serializer;
 use Medas\EntityManager\Types\DateTime;
 use Medas\ServiceManager\Attributes\PreferredDefault;
 use Medas\ServiceManager\ParameterResolving\ArgumentProcessor;
-use Medas\ServiceManager\Service;
 
 #[Service]
 class ArgumentDeserializer implements ArgumentProcessor

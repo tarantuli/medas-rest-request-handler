@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Responses;
 
-use Medas\ServiceManager\Service;
+use Medas\Core\Attributes\Service;
 
 #[Service]
 class EntityResponseBuilder extends BaseResponseBuilder

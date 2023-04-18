@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Controllers;
 
 use Medas\Core\Attributes\ConfigValue;
+use Medas\Core\Attributes\Service;
 use Medas\HttpRequestHandler\Request\RequestDataManager;
 use Medas\HttpRequestHandler\ResponseTypes\Response;
 use Medas\RestRequestHandler\ConfigOptions\AllowedOrigins;
 use Medas\RestRequestHandler\Responses\BadRequestResponse;
 use Medas\RestRequestHandler\Responses\OptionsResponse;
 use Medas\Routing\{Methods\Options, Parameters\Anything, Route};
-use Medas\ServiceManager\Service;
 
 #[Service, Route(new Anything())]
 class OptionsController
