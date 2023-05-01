@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\ConfigOptions;
 
 use Medas\Core\Interfaces\{ConfigGroup, ConfigOption, Validator};
-use Medas\ServiceManager\AsSingleton;
+use Medas\Core\AsSingleton;
 
 class DefaultPageSize implements ConfigOption, Validator
 {
