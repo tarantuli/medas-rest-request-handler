@@ -7,8 +7,8 @@ namespace Medas\RestRequestHandler\Serializers;
 use Medas\Core\Attributes\Service;
 use Medas\Core\Interfaces\Serializer;
 use Medas\EntityManager\Types\DateTime;
-use Medas\ServiceManager\Attributes\PreferredDefault;
-use Medas\ServiceManager\ParameterResolving\ArgumentProcessor;
+use Medas\ObjectInstantiator\Attributes\PreferredDefault;
+use Medas\ObjectInstantiator\ParameterResolving\ArgumentProcessor;
 
 #[Service]
 class ArgumentDeserializer implements ArgumentProcessor

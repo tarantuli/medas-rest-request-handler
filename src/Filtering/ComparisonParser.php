@@ -19,8 +19,8 @@ use Medas\EntityManager\Selector\{Conditions\WhereContains,
     Operants\Property,
     Operants\Value};
 use Medas\EntityManager\Types\Relation;
+use Medas\ObjectInstantiator\Attributes\PreferredDefault;
 use Medas\RestRequestHandler\Serializers\JsonSerializer;
-use Medas\ServiceManager\Attributes\PreferredDefault;
 
 #[Service]
 class ComparisonParser
