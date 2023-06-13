@@ -4,16 +4,21 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\ConfigOptions;
 
+use Medas\Core\Attributes\Service;
 use Medas\Core\Interfaces\{ConfigGroup, ConfigOption, Validator};
-use Medas\Core\AsSingleton;
 
+#[Service]
 class MultisortQueryName implements ConfigOption, Validator
 {
-    use AsSingleton;
+    public function __construct(
+        private readonly RestRequestHandlerGroup $group,
+    )
+    {
+    }
 
     public function group(): ConfigGroup
     {
-        return RestRequestHandlerGroup::instance();
+        return $this->group;
     }
 
     public function name(): string
