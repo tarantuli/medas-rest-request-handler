@@ -9,12 +9,13 @@ use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Repository;
 use Medas\HttpRequestHandler\Request\RequestDataManager;
 use Medas\RestRequestHandler\Exceptions\RouteDoesNotSpecifyEntity;
+use Medas\RestRequestHandler\Requests\RequestDataHandler;
 use Medas\RestRequestHandler\Responses\{CollectionResponseBuilder, EntityResponseBuilder};
 use Medas\Routing\Route;
 
 abstract class BaseController
 {
-    private array $requestData;
+    private array $bodyData;
     protected string $entityClass;
 
     public function __construct(
@@ -24,6 +25,7 @@ abstract class BaseController
         protected Repository                $repository,
         protected RequestDataManager        $requestDataManager,
         protected ValueSetter               $valueSetter,
+        protected RequestDataHandler        $requestDataHandler,
     )
     {
         $entity = attribute(Route::class, new \ReflectionClass($this))->endpointForEntity();
@@ -35,18 +37,17 @@ abstract class BaseController
         $this->entityClass = $entity;
     }
 
-    protected function requestData(): array
+    protected function bodyData(): array
     {
-        if (!isset($this->requestData)) {
+        if (!isset($this->bodyData)) {
             $data = $this->requestDataManager->get();
-            $this->requestData = array_merge(
-                $data->postData->data(),
+            $this->bodyData = $this->requestDataHandler->deserialize(
                 $data->bodyData->data(),
-                $data->fileData->data(),
+                $this
             );
         }
 
-        return $this->requestData;
+        return $this->bodyData;
     }
 
     protected function queryData(): array

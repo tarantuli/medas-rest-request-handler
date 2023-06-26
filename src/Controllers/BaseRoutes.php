@@ -28,7 +28,7 @@ abstract class BaseRoutes extends BaseController
     #[Post]
     public function createEntity(): EntityResponse
     {
-        $entity = em()->create($this->entityClass, $this->requestData());
+        $entity = em()->create($this->entityClass, $this->bodyData());
 
         em()->persist($entity);
         em()->flush();
@@ -56,7 +56,7 @@ abstract class BaseRoutes extends BaseController
     {
         $entity = em()->get($this->entityClass, $id);
         $metaData = $this->metaDataManager->get($this->entityClass);
-        $this->valueSetter->setValues($metaData, $entity, $this->requestData());
+        $this->valueSetter->setValues($metaData, $entity, $this->bodyData());
 
         em()->persist($entity);
         em()->flush();

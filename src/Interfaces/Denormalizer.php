@@ -6,5 +6,5 @@ namespace Medas\RestRequestHandler\Interfaces;
 
 interface Denormalizer
 {
-    public function denormalize(array $data): object;
+    public function denormalize(array $data): array;
 }

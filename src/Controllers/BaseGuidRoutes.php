@@ -20,7 +20,7 @@ abstract class BaseGuidRoutes extends BaseController
     #[Post]
     public function createEntity(): EntityResponse
     {
-        return $this->createEntityFromData($this->requestData());
+        return $this->createEntityFromData($this->bodyData());
     }
 
     protected function createEntityFromData(array $data): EntityResponse
@@ -73,7 +73,9 @@ abstract class BaseGuidRoutes extends BaseController
     {
         $entity = em()->get($this->entityClass, $id);
         $metaData = $this->metaDataManager->get($this->entityClass);
-        $this->valueSetter->setValues($metaData, $entity, $this->requestData());
+
+        $this->valueSetter->setValues($metaData, $entity, $this->bodyData());
+
         em()->persist($entity);
         em()->flush();
 
