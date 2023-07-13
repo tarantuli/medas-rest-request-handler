@@ -6,10 +6,9 @@ namespace Medas\RestRequestHandler\Serializers;
 
 use DateTimeInterface;
 use Medas\Core\Attributes\Service;
-use Medas\Core\Interfaces\{Guid, HasId, Serializer, Type};
+use Medas\Core\Exceptions\GuidProviderIsNotAvailable;
+use Medas\Core\Interfaces\{Guid, GuidProvider, HasId, Serializer, Type};
 use Medas\EntityManager\Types\{Boolean, DateTime, Guid as GuidType, Relation};
-use Medas\RamseyUuidBridge\GuidProvider;
-use Medas\ServiceManager\Exceptions\GuidProviderIsNotAvailable;
 
 #[Service]
 class JsonSerializer implements Serializer

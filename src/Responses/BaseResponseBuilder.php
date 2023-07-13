@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Responses;
 
-use Medas\core\Interfaces\Serializer;
-use Medas\ObjectInstantiator\Attributes\PreferredDefault;
+use Medas\Core\Attributes\PreferredDefault;
+use Medas\Core\Interfaces\Serializer;
 use Medas\RestRequestHandler\Interfaces\Normalizer;
 use Medas\RestRequestHandler\Serializers\JsonSerializer;
 

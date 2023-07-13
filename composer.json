@@ -11,16 +11,17 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "morphp/medas-service-manager": "dev-dev",
-        "morphp/medas-http-request-handler": "dev-dev",
+        "morphp/medas-core": "dev-dev",
         "morphp/medas-entity-manager": "dev-dev",
+        "morphp/medas-http-request-handler": "dev-dev",
         "morphp/medas-routing": "dev-dev"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
         "morphp/medas-config-manager": "dev-dev",
         "morphp/medas-config-options": "dev-dev",
-        "morphp/medas-ramsey-uuid-bridge": "dev-dev"
+        "morphp/medas-ramsey-uuid-bridge": "dev-dev",
+        "morphp/medas-service-manager": "dev-dev",
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\Core\Attributes\Service;
-use Medas\core\Interfaces\Serializer;
+use Medas\Core\Attributes\{PreferredDefault, Service};
+use Medas\Core\Interfaces\Serializer;
 use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
 use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Selector\{Conditions\WhereContains,
@@ -19,7 +19,6 @@ use Medas\EntityManager\Selector\{Conditions\WhereContains,
     Operants\Property,
     Operants\Value};
 use Medas\EntityManager\Types\Relation;
-use Medas\ObjectInstantiator\Attributes\PreferredDefault;
 use Medas\RestRequestHandler\Serializers\JsonSerializer;
 
 #[Service]
