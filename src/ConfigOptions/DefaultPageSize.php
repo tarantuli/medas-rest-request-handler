@@ -28,7 +28,7 @@ class DefaultPageSize implements ConfigOption, Validator
 
     public function description(): string
     {
-        return 'The default size of pages when paginating.';
+        return 'The default size of pages when paginating';
     }
 
     public function hasDefault(): bool
