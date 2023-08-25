@@ -38,7 +38,7 @@ readonly class ComparisonParser
         $type = null;
 
         try {
-            $metaData = $this->metaDataManager->get($querySelector->definition()->entity);
+            $metaData = $this->metaDataManager->get($querySelector->entity());
             $type = $metaData->property($name)->type;
 
             if ($type instanceof Relation) {
