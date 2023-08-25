@@ -8,10 +8,10 @@ use Medas\Core\Attributes\Service;
 use Medas\Core\Interfaces\{ConfigGroup, ConfigOption, Validator};
 
 #[Service]
-class AllowedOrigins implements ConfigOption, Validator
+readonly class AllowedOrigins implements ConfigOption, Validator
 {
     public function __construct(
-        private readonly RestRequestHandlerGroup $group,
+        private RestRequestHandlerGroup $group,
     )
     {
     }

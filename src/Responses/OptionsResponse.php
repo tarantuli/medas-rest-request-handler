@@ -6,12 +6,12 @@ namespace Medas\RestRequestHandler\Responses;
 
 use Medas\HttpRequestHandler\ResponseTypes\HtmlResponse;
 
-class OptionsResponse implements HtmlResponse
+readonly class OptionsResponse implements HtmlResponse
 {
     public function __construct(
-        private readonly string      $origin,
-        private readonly string      $method,
-        private readonly string|null $headers,
+        private string      $origin,
+        private string      $method,
+        private string|null $headers,
     )
     {
     }

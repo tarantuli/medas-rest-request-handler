@@ -22,12 +22,12 @@ use Medas\EntityManager\Types\Relation;
 use Medas\RestRequestHandler\Serializers\JsonSerializer;
 
 #[Service]
-class ComparisonParser
+readonly class ComparisonParser
 {
     public function __construct(
-        private readonly MetaDataManager $metaDataManager,
+        private MetaDataManager $metaDataManager,
         #[PreferredDefault(JsonSerializer::class)]
-        private readonly Serializer      $serializer,
+        private Serializer      $serializer,
     )
     {
     }

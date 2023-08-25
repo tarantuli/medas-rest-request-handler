@@ -6,10 +6,10 @@ namespace Medas\RestRequestHandler\Responses;
 
 use Medas\HttpRequestHandler\ResponseTypes\JsonResponse;
 
-class SuccessResponse implements JsonResponse
+readonly class SuccessResponse implements JsonResponse
 {
     public function __construct(
-        private readonly bool $success,
+        private bool $success,
     )
     {
     }

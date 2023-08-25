@@ -14,12 +14,12 @@ use Medas\RestRequestHandler\Responses\OptionsResponse;
 use Medas\Routing\{Methods\Options, Parameters\Anything, Route};
 
 #[Service, Route(new Anything())]
-class OptionsController
+readonly class OptionsController
 {
     public function __construct(
-        private readonly RequestDataManager $requestDataManager,
+        private RequestDataManager $requestDataManager,
         #[ConfigValue(AllowedOrigins::class)]
-        private readonly string             $allowedOrigins,
+        private string             $allowedOrigins,
     )
     {
     }

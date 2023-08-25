@@ -9,11 +9,11 @@ use Medas\Core\Interfaces\{ArgumentProcessor, Serializer};
 use Medas\EntityManager\Types\DateTime;
 
 #[Service]
-class ArgumentDeserializer implements ArgumentProcessor
+readonly class ArgumentDeserializer implements ArgumentProcessor
 {
     public function __construct(
         #[PreferredDefault(JsonSerializer::class)]
-        private readonly Serializer $serializer,
+        private Serializer $serializer,
     )
     {
     }

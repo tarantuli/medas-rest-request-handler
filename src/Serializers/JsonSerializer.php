@@ -11,10 +11,10 @@ use Medas\Core\Interfaces\{Guid, GuidProvider, HasId, Serializer, Type};
 use Medas\EntityManager\Types\{Boolean, DateTime, Guid as GuidType, Relation};
 
 #[Service]
-class JsonSerializer implements Serializer
+readonly class JsonSerializer implements Serializer
 {
     public function __construct(
-        private readonly GuidProvider|null $guidProvider,
+        private GuidProvider|null $guidProvider,
     )
     {
     }

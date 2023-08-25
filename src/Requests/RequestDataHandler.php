@@ -9,11 +9,11 @@ use Medas\Core\Interfaces\Serializer;
 use Medas\RestRequestHandler\{Interfaces\Denormalizer, Serializers\JsonSerializer};
 
 #[Service]
-class RequestDataHandler
+readonly class RequestDataHandler
 {
     public function __construct(
         #[PreferredDefault(JsonSerializer::class)]
-        private readonly Serializer $serializer,
+        private Serializer $serializer,
     )
     {
     }
