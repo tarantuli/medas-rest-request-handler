@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Serializers;
 
-use Medas\Core\Attributes\{PreferredDefault, Service};
-use Medas\Core\Interfaces\{ArgumentProcessor, Serializer};
+use Medas\Core\{Attributes\PreferredDefault, Attributes\Service, Interfaces\ArgumentProcessor, Interfaces\Serializer};
 use Medas\EntityManager\Types\DateTime;
 
 #[Service]

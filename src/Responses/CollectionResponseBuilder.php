@@ -12,8 +12,6 @@ class CollectionResponseBuilder extends BaseResponseBuilder
     /** @param object[] $entities */
     public function build(array $entities, object $controller): CollectionResponse
     {
-        return new CollectionResponse(
-            array_map(fn($entity) => $this->serialize($entity, $controller), $entities)
-        );
+        return new CollectionResponse(array_map(fn($entity) => $this->serialize($entity, $controller), $entities));
     }
 }

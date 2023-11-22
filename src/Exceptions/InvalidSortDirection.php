@@ -8,7 +8,8 @@ use Medas\Core\Exceptions\BaseException;
 
 class InvalidSortDirection extends BaseException
 {
-    public function __construct(private readonly string $direction
+    public function __construct(
+        private readonly string $direction,
     )
     {
         parent::__construct($this->direction);

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\Core\Attributes\ConfigValue;
-use Medas\Core\Attributes\Service;
+use Medas\Core\Attributes\{ConfigValue, Service};
 use Medas\EntityManager\Selector\Pagination;
 use Medas\RestRequestHandler\ConfigOptions\{DefaultPageSize, MultisortQueryName, PageQueryName, PerPageQueryName};
 
@@ -18,10 +17,13 @@ class SelectorBuilder
     public function __construct(
         #[ConfigValue(MultisortQueryName::class)]
         private readonly string|null      $multisortQueryName,
+
         #[ConfigValue(DefaultPageSize::class)]
         private readonly int              $defaultPageSize,
+
         #[ConfigValue(PageQueryName::class)]
         private readonly string|null      $pageQueryName,
+
         #[ConfigValue(PerPageQueryName::class)]
         private readonly string|null      $perPageQueryName,
         private readonly MultisortParser  $multisortParser,
@@ -65,8 +67,6 @@ class SelectorBuilder
             return;
         }
 
-        $selector->definition()->add(
-            new Pagination($this->page, $this->pageSize ?? $this->defaultPageSize)
-        );
+        $selector->definition()->add(new Pagination($this->page, $this->pageSize ?? $this->defaultPageSize));
     }
 }

@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Controllers;
 
-use Medas\Core\Attributes\ConfigValue;
-use Medas\Core\Attributes\Service;
-use Medas\HttpRequestHandler\Request\RequestDataManager;
-use Medas\HttpRequestHandler\ResponseTypes\Response;
-use Medas\RestRequestHandler\ConfigOptions\AllowedOrigins;
-use Medas\RestRequestHandler\Responses\BadRequestResponse;
-use Medas\RestRequestHandler\Responses\OptionsResponse;
+use Medas\Core\Attributes\{ConfigValue, Service};
+use Medas\HttpRequestHandler\{Request\RequestDataManager, ResponseTypes\Response};
+use Medas\RestRequestHandler\{ConfigOptions\AllowedOrigins, Responses\BadRequestResponse, Responses\OptionsResponse};
 use Medas\Routing\{Methods\Options, Parameters\Anything, Route};
 
 #[Service, Route(new Anything())]
@@ -18,6 +14,7 @@ readonly class OptionsController
 {
     public function __construct(
         private RequestDataManager $requestDataManager,
+
         #[ConfigValue(AllowedOrigins::class)]
         private string             $allowedOrigins,
     )

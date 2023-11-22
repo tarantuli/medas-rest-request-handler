@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Controllers;
 
-use Medas\EntityManager\Hydration\ValueSetter;
-use Medas\EntityManager\MetaDataManager;
-use Medas\EntityManager\Repository;
+use Medas\EntityManager\{Hydration\ValueSetter, MetaDataManager, Repository};
 use Medas\HttpRequestHandler\Request\RequestDataManager;
-use Medas\RestRequestHandler\Exceptions\RouteDoesNotSpecifyEntity;
-use Medas\RestRequestHandler\Requests\RequestDataHandler;
-use Medas\RestRequestHandler\Responses\{CollectionResponseBuilder, EntityResponseBuilder};
+use Medas\RestRequestHandler\{
+    Exceptions\RouteDoesNotSpecifyEntity,
+    Requests\RequestDataHandler,
+    Responses\CollectionResponseBuilder,
+    Responses\EntityResponseBuilder
+};
 use Medas\Routing\Route;
 
 abstract class BaseController
@@ -41,10 +42,7 @@ abstract class BaseController
     {
         if (!isset($this->bodyData)) {
             $data = $this->requestDataManager->get();
-            $this->bodyData = $this->requestDataHandler->deserialize(
-                $data->bodyData->data(),
-                $this
-            );
+            $this->bodyData = $this->requestDataHandler->deserialize($data->bodyData->data(), $this);
         }
 
         return $this->bodyData;

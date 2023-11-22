@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Controllers;
 
 use Medas\RestRequestHandler\Responses\{CollectionResponse, EntityResponse};
-use Medas\Routing\Methods\{Delete, Get, Post, Put};
-use Medas\Routing\Parameters\Integer;
+use Medas\Routing\{Methods\Delete, Methods\Get, Methods\Post, Methods\Put, Parameters\Integer};
 
 abstract class BaseRoutes extends BaseController
 {
@@ -16,10 +15,7 @@ abstract class BaseRoutes extends BaseController
     #[Get(isCollectionEndpoint: true)]
     public function get(): CollectionResponse
     {
-        return $this->collectionResponseBuilder->build(
-            $this->repository->fetchAll($this->entityClass),
-            $this
-        );
+        return $this->collectionResponseBuilder->build($this->repository->fetchAll($this->entityClass), $this);
     }
 
     /**
@@ -42,10 +38,7 @@ abstract class BaseRoutes extends BaseController
     #[Get(new Integer('id'), isEntityEndpoint: true)]
     public function getEntity(int $id): EntityResponse
     {
-        return $this->entityResponseBuilder->build(
-            em()->get($this->entityClass, $id),
-            $this
-        );
+        return $this->entityResponseBuilder->build(em()->get($this->entityClass, $id), $this);
     }
 
     /**
@@ -56,6 +49,7 @@ abstract class BaseRoutes extends BaseController
     {
         $entity = em()->get($this->entityClass, $id);
         $metaData = $this->metaDataManager->get($this->entityClass);
+
         $this->valueSetter->setValues($metaData, $entity, $this->bodyData());
 
         em()->persist($entity);
@@ -71,6 +65,7 @@ abstract class BaseRoutes extends BaseController
     public function removeEntity(int $id): bool
     {
         $entity = em()->get($this->entityClass, $id);
+
         em()->delete($entity);
         em()->flush();
 

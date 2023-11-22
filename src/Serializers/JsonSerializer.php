@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Serializers;
 
-use DateTimeInterface;
-use Medas\Core\Attributes\Service;
-use Medas\Core\Exceptions\GuidProviderIsNotAvailable;
-use Medas\Core\Interfaces\{Guid, GuidProvider, HasId, Serializer, Type};
+use Medas\Core\{
+    Attributes\Service,
+    Exceptions\GuidProviderIsNotAvailable,
+    Interfaces\Guid,
+    Interfaces\GuidProvider,
+    Interfaces\HasId,
+    Interfaces\Serializer,
+    Interfaces\Type
+};
 use Medas\EntityManager\Types\{Boolean, DateTime, Guid as GuidType, Relation};
 
 #[Service]
@@ -33,8 +38,8 @@ readonly class JsonSerializer implements Serializer
             $value = (int) $value;
         }
 
-        if ($value instanceof DateTimeInterface) {
-            $value = $value->format(DateTimeInterface::RFC3339_EXTENDED);
+        if ($value instanceof \DateTimeInterface) {
+            $value = $value->format(\DateTimeInterface::RFC3339_EXTENDED);
         }
 
         return $value;
@@ -74,7 +79,7 @@ readonly class JsonSerializer implements Serializer
         }
 
         if ($type instanceof DateTime) {
-            $value = \DateTime::createFromFormat(DateTimeInterface::RFC3339_EXTENDED, $value);
+            $value = \DateTime::createFromFormat(\DateTimeInterface::RFC3339_EXTENDED, $value);
         }
 
         return $value;
