@@ -6,7 +6,11 @@ namespace Medas\RestRequestHandler\Controllers;
 
 use Medas\Core\Attributes\{ConfigValue, Service};
 use Medas\HttpRequestHandler\{Request\RequestDataManager, ResponseTypes\Response};
-use Medas\RestRequestHandler\{ConfigOptions\AllowedOrigins, Responses\BadRequestResponse, Responses\OptionsResponse};
+use Medas\RestRequestHandler\{
+    ConfigOptions\AllowedOrigins,
+    Responses\BadRequestResponse,
+    Responses\OptionsResponse
+};
 use Medas\Routing\{Methods\Options, Parameters\Anything, Route};
 
 #[Service, Route(new Anything())]

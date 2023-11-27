@@ -19,7 +19,9 @@ abstract class BaseResponseBuilder
     protected function serialize(object $entity, object $controller): array
     {
         // Normalize the object to an array of values
-        $data = $controller instanceof Normalizer ? $controller->normalize($entity) : get_object_vars($entity);
+        $data = $controller instanceof Normalizer
+            ? $controller->normalize($entity)
+            : get_object_vars($entity);
 
         // Then, serialize each value. Don't recurse, the serializer should flatten the values
         array_walk($data, fn($value) => $this->serializer->serialize($value));

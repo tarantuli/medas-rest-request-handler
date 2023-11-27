@@ -42,7 +42,11 @@ abstract class BaseController
     {
         if (!isset($this->bodyData)) {
             $data = $this->requestDataManager->get();
-            $this->bodyData = $this->requestDataHandler->deserialize($data->bodyData->data(), $this);
+
+            $this->bodyData = $this->requestDataHandler->deserialize(
+                $data->bodyData->data(),
+                $this
+            );
         }
 
         return $this->bodyData;

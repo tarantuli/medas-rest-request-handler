@@ -15,7 +15,10 @@ abstract class BaseRoutes extends BaseController
     #[Get(isCollectionEndpoint: true)]
     public function get(): CollectionResponse
     {
-        return $this->collectionResponseBuilder->build($this->repository->fetchAll($this->entityClass), $this);
+        return $this->collectionResponseBuilder->build(
+            $this->repository->fetchAll($this->entityClass),
+            $this
+        );
     }
 
     /**

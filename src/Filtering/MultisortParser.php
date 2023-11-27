@@ -24,12 +24,11 @@ class MultisortParser
 
             $property = substr($part, 1);
 
-            $querySelector->definition()->add(
-                SortBy::c(
-                    Property::c($property),
-                    $direction === '>' ? SortDirection::DESC : SortDirection::ASC
-                )
-            );
+            $querySelector->definition()->add(SortBy::c(
+                Property::c($property), $direction === '>'
+                ? SortDirection::DESC
+                : SortDirection::ASC
+            ));
         }
     }
 }

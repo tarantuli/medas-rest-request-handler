@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\ConfigOptions;
 
-use Medas\Core\{Attributes\Service, Interfaces\ConfigGroup, Interfaces\ConfigOption, Interfaces\Validator};
+use Medas\Core\{
+    Attributes\Service,
+    Interfaces\ConfigGroup,
+    Interfaces\ConfigOption,
+    Interfaces\Validator
+};
 
 #[Service]
 readonly class PerPageQueryName implements ConfigOption, Validator
