@@ -1,6 +1,10 @@
 {
     "name": "morphp/medas-rest-request-handler",
     "description": "Medas rest request handler",
+    "keywords": [
+        "http",
+        "entities"
+    ],
     "authors": [
         {
             "name": "Patrick Morpey",
