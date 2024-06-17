@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Controllers;
 
 use Medas\EntityManager\Exceptions\PropertyDoesNotExist;
-use Medas\RestRequestHandler\{
-    Exceptions\EntityDoesNotHaveProperty,
+use Medas\RestRequestHandler\{Exceptions\EntityDoesNotHaveProperty,
     Filtering\SelectorBuilder,
     Responses\CollectionResponse,
     Responses\EntityResponse,
-    Responses\SuccessResponse
-};
-use Medas\Routing\{Methods\Delete, Methods\Get, Methods\Post, Methods\Put, Parameters\Integer};
+    Responses\ScalarResponse,
+    Responses\SuccessResponse};
+use Medas\Routing\{Methods\Delete, Methods\Get, Methods\Post, Methods\Put, Parameters\Constant, Parameters\Integer};
 
 abstract class BaseRoutes extends BaseController
 {
@@ -65,6 +64,24 @@ abstract class BaseRoutes extends BaseController
         }
 
         return $this->collectionResponseBuilder->build($entities, $this);
+    }
+
+    /**
+     * GET /entities/count
+     */
+    #[Get(new Constant('count'))]
+    public function getCount(): ScalarResponse
+    {
+        if ($queryData = $this->queryData()) {
+            $selectorBuilder = service(SelectorBuilder::class);
+            $selector = $selectorBuilder->build($this->entityClass, $queryData);
+            $count = $this->repository->fetchCount($selector);
+        }
+        else {
+            $count = $this->repository->fetchCount($this->entityClass);
+        }
+
+        return new ScalarResponse($count);
     }
 
     /**
