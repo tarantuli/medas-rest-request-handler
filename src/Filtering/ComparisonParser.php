@@ -7,18 +7,17 @@ namespace Medas\RestRequestHandler\Filtering;
 use Medas\Core\{Attributes\PreferredDefault, Attributes\Service, Interfaces\Serializer};
 use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
 use Medas\EntityManager\MetaDataManager;
-use Medas\EntityManager\Selector\{
-    Conditions\WhereContains,
+use Medas\EntityManager\Selector\{Conditions\WhereContains,
     Conditions\WhereEndsWith,
     Conditions\WhereIs,
     Conditions\WhereIsAtLeast,
     Conditions\WhereIsAtMost,
     Conditions\WhereIsLessThan,
     Conditions\WhereIsMoreThan,
+    Conditions\WhereIsNot,
     Conditions\WhereStartsWith,
     Operants\Property,
-    Operants\Value
-};
+    Operants\Value};
 use Medas\EntityManager\Types\Relation;
 use Medas\RestRequestHandler\Serializers\JsonSerializer;
 
@@ -103,6 +102,12 @@ readonly class ComparisonParser
             $name = substr($name, 0, -1);
 
             return WhereContains::class;
+        }
+
+        if (str_ends_with($name, '!')) {
+            $name = substr($name, 0, -1);
+
+            return WhereIsNot::class;
         }
 
         return WhereIs::class;
