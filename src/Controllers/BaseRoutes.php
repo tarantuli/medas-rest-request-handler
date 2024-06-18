@@ -5,13 +5,22 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Controllers;
 
 use Medas\EntityManager\Exceptions\PropertyDoesNotExist;
-use Medas\RestRequestHandler\{Exceptions\EntityDoesNotHaveProperty,
+use Medas\RestRequestHandler\{
+    Exceptions\EntityDoesNotHaveProperty,
     Filtering\SelectorBuilder,
     Responses\CollectionResponse,
     Responses\EntityResponse,
     Responses\ScalarResponse,
-    Responses\SuccessResponse};
-use Medas\Routing\{Methods\Delete, Methods\Get, Methods\Post, Methods\Put, Parameters\Constant, Parameters\Integer};
+    Responses\SuccessResponse
+};
+use Medas\Routing\{
+    Methods\Delete,
+    Methods\Get,
+    Methods\Post,
+    Methods\Put,
+    Parameters\Constant,
+    Parameters\Integer
+};
 
 abstract class BaseRoutes extends BaseController
 {

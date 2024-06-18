@@ -7,7 +7,8 @@ namespace Medas\RestRequestHandler\Filtering;
 use Medas\Core\{Attributes\PreferredDefault, Attributes\Service, Interfaces\Serializer};
 use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
 use Medas\EntityManager\MetaDataManager;
-use Medas\EntityManager\Selector\{Conditions\WhereContains,
+use Medas\EntityManager\Selector\{
+    Conditions\WhereContains,
     Conditions\WhereEndsWith,
     Conditions\WhereIs,
     Conditions\WhereIsAtLeast,
@@ -17,9 +18,10 @@ use Medas\EntityManager\Selector\{Conditions\WhereContains,
     Conditions\WhereIsNot,
     Conditions\WhereStartsWith,
     Operants\Property,
-    Operants\Value};
+    Operants\Value
+};
 use Medas\EntityManager\Types\Relation;
-use Medas\RestRequestHandler\Serializers\JsonSerializer;
+use Medas\RestRequestHandler\Serializers\QueryDataSerializer;
 
 #[Service]
 readonly class ComparisonParser
@@ -27,7 +29,7 @@ readonly class ComparisonParser
     public function __construct(
         private MetaDataManager $metaDataManager,
 
-        #[PreferredDefault(JsonSerializer::class)]
+        #[PreferredDefault(QueryDataSerializer::class)]
         private Serializer      $serializer,
     )
     {
