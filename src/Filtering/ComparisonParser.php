@@ -16,6 +16,8 @@ use Medas\EntityManager\Selector\{
     Conditions\WhereIsLessThan,
     Conditions\WhereIsMoreThan,
     Conditions\WhereIsNot,
+    Conditions\WhereIsNotNull,
+    Conditions\WhereIsNull,
     Conditions\WhereStartsWith,
     Operants\Property,
     Operants\Value
@@ -52,11 +54,21 @@ readonly class ComparisonParser
             // Do nothing
         }
 
-        $value = $this->serializer->unserialize($value, $type);
+        $unserializedValue = $this->serializer->unserialize($value, $type);
+
+        if ($unserializedValue === null) {
+            if ($comparisonType === WhereIs::class) {
+                $comparisonType = WhereIsNull::class;
+            }
+
+            if ($comparisonType === WhereIsNot::class) {
+                $comparisonType = WhereIsNotNull::class;
+            }
+        }
 
         $element = new $comparisonType(
             Property::c($name),
-            Value::c($value),
+            Value::c($unserializedValue),
         );
 
         $querySelector->definition()->add($element);
