@@ -12,6 +12,7 @@ use Medas\RestRequestHandler\ConfigOptions\{
     PageQueryName,
     PerPageQueryName
 };
+use Medas\RestRequestHandler\Exceptions\CannotParseQueryValue;
 
 #[Service]
 class SelectorBuilder
@@ -62,7 +63,12 @@ class SelectorBuilder
             $this->pageSize = (int) $value;
         }
         else {
-            $this->comparisonParser->parse($selector, $name, $value);
+            try {
+                $this->comparisonParser->parse($selector, $name, $value);
+            }
+            catch (\Exception) {
+                throw new CannotParseQueryValue($name, $value);
+            }
         }
     }
 
