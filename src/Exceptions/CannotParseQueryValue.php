@@ -15,6 +15,6 @@ class CannotParseQueryValue extends BadRequest
 
     public function pattern(): string
     {
-        return 'cannot parse query part %s with value %s';
+        return 'cannot parse query part "%s" with value "%s"';
     }
 }
