@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\Core\{Attributes\PreferredDefault, Attributes\Service, Interfaces\Serializer};
+use Medas\Core\{
+    Attributes\ConfigValue,
+    Attributes\PreferredDefault,
+    Attributes\Service,
+    Interfaces\Serializer
+};
 use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
 use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Selector\{
@@ -27,6 +32,7 @@ use Medas\EntityManager\Selector\{
     Operants\Values
 };
 use Medas\EntityManager\Types\Relation;
+use Medas\RestRequestHandler\ConfigOptions\ComparisonOperators\IsLessThanOperator;
 use Medas\RestRequestHandler\Serializers\QueryDataSerializer;
 
 #[Service]
@@ -39,6 +45,9 @@ readonly class ComparisonParser
 
         #[PreferredDefault(QueryDataSerializer::class)]
         private Serializer      $serializer,
+
+        #[ConfigValue(IsLessThanOperator::class)]
+        private string|null     $isLessThanOperator,
     )
     {
     }
@@ -72,8 +81,8 @@ readonly class ComparisonParser
 
     private function extractComparisonType(&$name): string
     {
-        if (str_ends_with($name, '<<')) {
-            $name = substr($name, 0, -2);
+        if ($this->isLessThanOperator !== null && str_ends_with($name, $this->isLessThanOperator)) {
+            $name = substr($name, 0, -strlen($this->isLessThanOperator));
 
             return WhereIsLessThan::class;
         }
