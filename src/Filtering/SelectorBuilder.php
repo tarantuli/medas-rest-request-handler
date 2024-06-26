@@ -6,13 +6,13 @@ namespace Medas\RestRequestHandler\Filtering;
 
 use Medas\Core\Attributes\{ConfigValue, Service};
 use Medas\EntityManager\Selector\Pagination;
-use Medas\RestRequestHandler\ConfigOptions\{
-    DefaultPageSize,
-    MultisortQueryName,
-    PageQueryName,
-    PerPageQueryName
+use Medas\RestRequestHandler\{
+    ConfigOptions\DefaultPageSize,
+    ConfigOptions\MultisortQueryName,
+    ConfigOptions\PageQueryName,
+    ConfigOptions\PerPageQueryName,
+    Exceptions\CannotParseQueryValue
 };
-use Medas\RestRequestHandler\Exceptions\CannotParseQueryValue;
 
 #[Service]
 class SelectorBuilder

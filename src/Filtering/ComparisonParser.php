@@ -10,6 +10,7 @@ use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Selector\{
     Conditions\WhereContains,
     Conditions\WhereEndsWith,
+    Conditions\WhereIn,
     Conditions\WhereIs,
     Conditions\WhereIsAtLeast,
     Conditions\WhereIsAtMost,
@@ -18,9 +19,12 @@ use Medas\EntityManager\Selector\{
     Conditions\WhereIsNot,
     Conditions\WhereIsNotNull,
     Conditions\WhereIsNull,
+    Conditions\WhereNotIn,
     Conditions\WhereStartsWith,
+    Element,
     Operants\Property,
-    Operants\Value
+    Operants\Value,
+    Operants\Values
 };
 use Medas\EntityManager\Types\Relation;
 use Medas\RestRequestHandler\Serializers\QueryDataSerializer;
@@ -28,6 +32,8 @@ use Medas\RestRequestHandler\Serializers\QueryDataSerializer;
 #[Service]
 readonly class ComparisonParser
 {
+    private const ARRAY_VALUE_COMPARISON_TYPES = [WhereIn::class, WhereNotIn::class];
+
     public function __construct(
         private MetaDataManager $metaDataManager,
 
@@ -39,7 +45,7 @@ readonly class ComparisonParser
 
     public function parse(QuerySelector $querySelector, string $name, string $value): void
     {
-        $comparisonType = $this->getComparisonType($name);
+        $comparisonType = $this->extractComparisonType($name);
         $type = null;
 
         try {
@@ -54,27 +60,17 @@ readonly class ComparisonParser
             // Do nothing
         }
 
-        $unserializedValue = $this->serializer->unserialize($value, $type);
-
-        if ($unserializedValue === null) {
-            if ($comparisonType === WhereIs::class) {
-                $comparisonType = WhereIsNull::class;
-            }
-
-            if ($comparisonType === WhereIsNot::class) {
-                $comparisonType = WhereIsNotNull::class;
-            }
+        if (in_array($comparisonType, self::ARRAY_VALUE_COMPARISON_TYPES, true)) {
+            $element = $this->createArrayValueElement($name, $comparisonType, $value, $type);
         }
-
-        $element = new $comparisonType(
-            Property::c($name),
-            Value::c($unserializedValue),
-        );
+        else {
+            $element = $this->createSingletonValueElement($name, $comparisonType, $value, $type);
+        }
 
         $querySelector->definition()->add($element);
     }
 
-    private function getComparisonType(&$name): string
+    private function extractComparisonType(&$name): string
     {
         if (str_ends_with($name, '<<')) {
             $name = substr($name, 0, -2);
@@ -124,6 +120,61 @@ readonly class ComparisonParser
             return WhereIsNot::class;
         }
 
+        if (str_ends_with($name, '∈')) {
+            $name = substr($name, 0, -1);
+
+            return WhereIn::class;
+        }
+
+        if (str_ends_with($name, '∉')) {
+            $name = substr($name, 0, -1);
+
+            return WhereNotIn::class;
+        }
+
         return WhereIs::class;
+    }
+
+    private function createArrayValueElement(
+        string $name,
+        string $comparisonType,
+        string $value,
+        mixed  $type
+    ): Element
+    {
+        $values = [];
+
+        foreach (explode(',', $value) as $value) {
+            $values[] = $this->serializer->unserialize($value, $type);
+        }
+
+        return new $comparisonType(
+            Property::c($name),
+            Values::c($values),
+        );
+    }
+
+    private function createSingletonValueElement(
+        string $name,
+        string $comparisonType,
+        string $value,
+        mixed  $type
+    ): Element
+    {
+        $unserializedValue = $this->serializer->unserialize($value, $type);
+
+        if ($unserializedValue === null) {
+            if ($comparisonType === WhereIs::class) {
+                $comparisonType = WhereIsNull::class;
+            }
+            elseif ($comparisonType === WhereIsNot::class) {
+                $comparisonType = WhereIsNotNull::class;
+            }
+        }
+
+        return new $comparisonType(
+            Property::c($name),
+            Value::c($unserializedValue),
+        );
     }
 }
