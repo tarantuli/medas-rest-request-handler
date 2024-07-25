@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Authentication;
 
-use Medas\Core\{Attributes\Service, Interfaces\BearerTokenValidator};
+use Medas\Core\{Attributes\EventListener, Attributes\Service, Interfaces\BearerTokenValidator};
 use Medas\HttpRequestHandler\{AccessManagement\AuthenticationVote, Request\HeaderFinder};
 
 #[Service]
@@ -17,6 +17,7 @@ readonly class BearerTokenHandler
     {
     }
 
+    #[EventListener]
     public function validate(AuthenticationVote $vote): void
     {
         if ($this->validator === null) {
