@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Controllers;
 
 use Medas\Core\Attributes\{ConfigValue, Service};
-use Medas\HttpRequestHandler\{Request\RequestDataManager, ResponseTypes\Response};
+use Medas\HttpRequestHandler\{RequestDataManager, ResponseTypes\Response};
 use Medas\RestRequestHandler\{
     ConfigOptions\AllowedOrigins,
     Responses\BadRequestResponse,

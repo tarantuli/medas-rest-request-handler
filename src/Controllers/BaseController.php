@@ -10,7 +10,7 @@ use Medas\EntityManager\{
     MetaDataManager,
     Repository
 };
-use Medas\HttpRequestHandler\Request\RequestDataManager;
+use Medas\HttpRequestHandler\RequestDataManager;
 use Medas\RestRequestHandler\{
     Exceptions\EntityDoesNotHaveProperty,
     Exceptions\RouteDoesNotSpecifyEntity,
