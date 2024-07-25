@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Authentication;
 
-use Medas\Core\{Attributes\EventListener, Attributes\Service, Interfaces\BearerTokenValidator};
+use Medas\Core\{Attributes\ConfigValue, Attributes\EventListener, Attributes\Service, Interfaces\BearerTokenValidator};
 use Medas\HttpRequestHandler\{AccessManagement\AuthenticationVote, Request\HeaderFinder};
+use Medas\RestRequestHandler\ConfigOptions\UsersClass;
 
 #[Service]
 readonly class BearerTokenHandler
@@ -13,6 +14,9 @@ readonly class BearerTokenHandler
     public function __construct(
         private BearerTokenValidator|null $validator,
         private HeaderFinder              $headerFinder,
+
+        #[ConfigValue(UsersClass::class)]
+        private string|null $usersClass,
     )
     {
     }
@@ -20,7 +24,7 @@ readonly class BearerTokenHandler
     #[EventListener]
     public function validate(AuthenticationVote $vote): void
     {
-        if ($this->validator === null) {
+        if ($this->validator === null || $this->usersClass === null) {
             return;
         }
 
@@ -35,6 +39,10 @@ readonly class BearerTokenHandler
         }
 
         $token = substr($header, 7);
-        $vote->user = $this->validator->user($token);
+        $userId = $this->validator->userId($token);
+
+        if ($userId) {
+            $vote->user = em()->get($this->usersClass, $userId);
+        }
     }
 }
