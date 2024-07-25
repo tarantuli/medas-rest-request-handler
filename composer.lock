@@ -61,12 +61,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:tarantuli/medas-core.git",
-                "reference": "93619fdf9ebb76a520cf8cc4cee3c15efbb3fff2"
+                "reference": "a352908303605400c81f5e7d84ea93058808a11d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tarantuli/medas-core/zipball/93619fdf9ebb76a520cf8cc4cee3c15efbb3fff2",
-                "reference": "93619fdf9ebb76a520cf8cc4cee3c15efbb3fff2",
+                "url": "https://api.github.com/repos/tarantuli/medas-core/zipball/a352908303605400c81f5e7d84ea93058808a11d",
+                "reference": "a352908303605400c81f5e7d84ea93058808a11d",
                 "shasum": ""
             },
             "require": {
@@ -103,7 +103,7 @@
                 "source": "https://github.com/tarantuli/medas-core/tree/dev",
                 "issues": "https://github.com/tarantuli/medas-core/issues"
             },
-            "time": "2024-07-25T08:42:21+00:00"
+            "time": "2024-07-25T12:43:08+00:00"
         },
         {
             "name": "morphp/medas-entity-manager",
@@ -161,12 +161,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:tarantuli/medas-http-request-handler.git",
-                "reference": "6509f2b9efe8af0e257289c30519a68a0f72f8d8"
+                "reference": "8a91093cec42a0b4d911df82cdb06f29960dcf49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tarantuli/medas-http-request-handler/zipball/6509f2b9efe8af0e257289c30519a68a0f72f8d8",
-                "reference": "6509f2b9efe8af0e257289c30519a68a0f72f8d8",
+                "url": "https://api.github.com/repos/tarantuli/medas-http-request-handler/zipball/8a91093cec42a0b4d911df82cdb06f29960dcf49",
+                "reference": "8a91093cec42a0b4d911df82cdb06f29960dcf49",
                 "shasum": ""
             },
             "require": {
@@ -199,7 +199,7 @@
                 "source": "https://github.com/tarantuli/medas-http-request-handler/tree/dev",
                 "issues": "https://github.com/tarantuli/medas-http-request-handler/issues"
             },
-            "time": "2024-07-25T09:43:41+00:00"
+            "time": "2024-07-25T12:33:41+00:00"
         },
         {
             "name": "morphp/medas-object-instantiator",

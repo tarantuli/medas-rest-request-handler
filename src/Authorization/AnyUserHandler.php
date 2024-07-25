@@ -16,17 +16,17 @@ use Medas\Routing\RouteHandler;
 readonly class AnyUserHandler
 {
     #[EventListener]
-    public function handleAuthorizationVote(AuthorizationVote $authorizationVote): void
+    public function handleAuthorizationVote(AuthorizationVote $vote): void
     {
-        if (!$authorizationVote->requestHandler instanceof RouteHandler) {
+        if (!$vote->requestHandler instanceof RouteHandler) {
             return;
         }
 
-        $methodReflector = $authorizationVote->requestHandler->handlerMethod();
+        $methodReflector = $vote->requestHandler->handlerMethod();
 
         if (attribute(AnyUser::class, $methodReflector)
                 || attribute(AnyUser::class, $methodReflector->getDeclaringClass())) {
-            $authorizationVote->allowedAccess = $authorizationVote->request->authentication->user !== null;
+            $vote->allowedAccess = $vote->request->authentication->user !== null;
         }
     }
 }
