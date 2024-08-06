@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Authentication;
 
-use Medas\Core\{Attributes\ConfigValue, Attributes\EventListener, Attributes\Service, Interfaces\BearerTokenValidator};
+use Medas\Core\{
+    Attributes\ConfigValue,
+    Attributes\EventListener,
+    Attributes\Service,
+    Interfaces\BearerTokenValidator
+};
 use Medas\HttpRequestHandler\{AccessManagement\AuthenticationVote, Request\HeaderFinder};
 use Medas\RestRequestHandler\ConfigOptions\UsersClass;
 
@@ -16,7 +21,7 @@ readonly class BearerTokenHandler
         private HeaderFinder              $headerFinder,
 
         #[ConfigValue(UsersClass::class)]
-        private string|null $usersClass,
+        private string|null               $usersClass,
     )
     {
     }

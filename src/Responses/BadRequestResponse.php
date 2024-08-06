@@ -10,7 +10,9 @@ class BadRequestResponse implements HtmlResponse, JsonResponse
 {
     public function outputHtmlResponse(): void
     {
-        http_response_code(400);
+        if (!headers_sent()) {
+            http_response_code(400);
+        }
     }
 
     public function getJsonResponse(): null
