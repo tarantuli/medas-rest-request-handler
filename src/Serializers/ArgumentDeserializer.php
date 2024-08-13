@@ -44,6 +44,6 @@ readonly class ArgumentDeserializer implements ArgumentProcessor
             $type = new Integer();
         }
 
-        return $type === null ? $type : $this->serializer->unserialize($argument, $type);
+        return $type === null ? $argument : $this->serializer->unserialize($argument, $type);
     }
 }
