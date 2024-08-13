@@ -13,7 +13,7 @@ use Medas\Core\{
     Interfaces\Serializer,
     Interfaces\Type
 };
-use Medas\EntityManager\Types\{Boolean, DateTime, Guid as GuidType, Relation};
+use Medas\EntityManager\Types\{Boolean, DateTime, Guid as GuidType, Integer, Relation};
 
 #[Service]
 readonly class JsonSerializer implements Serializer
@@ -76,6 +76,10 @@ readonly class JsonSerializer implements Serializer
 
         if ($type instanceof Boolean) {
             $value = (bool) $value;
+        }
+
+        if ($type instanceof Integer) {
+            $value = (int) $value;
         }
 
         if ($type instanceof DateTime) {

@@ -10,7 +10,7 @@ use Medas\Core\{
     Interfaces\ArgumentProcessor,
     Interfaces\Serializer
 };
-use Medas\EntityManager\Types\DateTime;
+use Medas\EntityManager\Types\{DateTime, Integer};
 
 #[Service]
 readonly class ArgumentDeserializer implements ArgumentProcessor
@@ -35,11 +35,15 @@ readonly class ArgumentDeserializer implements ArgumentProcessor
 
         // Should be TypeFinder, but for parameters instead of just properties
         $type = null;
+        $name = parameterTypes($parameter)[0]->getName();
 
-        if (parameterTypes($parameter)[0]->getName() === \DateTime::class) {
+        if ($name === \DateTime::class) {
             $type = new DateTime();
         }
+        elseif ($name === 'int') {
+            $type = new Integer();
+        }
 
-        return $this->serializer->unserialize($argument, $type);
+        return $type === null ? $type : $this->serializer->unserialize($argument, $type);
     }
 }
