@@ -4,33 +4,15 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\Core\Attributes\{ConfigValue, Service};
-use Medas\EntityManager\Selector\Pagination;
-use Medas\RestRequestHandler\{
-    ConfigOptions\DefaultPageSize,
-    ConfigOptions\MultisortQueryName,
-    ConfigOptions\PageQueryName,
-    ConfigOptions\PerPageQueryName,
-    Exceptions\CannotParseQueryValue
-};
+use Medas\Core\Attributes\Service;
+use Medas\EntityManager\{Exceptions\ClassIsNotAnEntity, MetaDataManager, Types\Relation};
 
 #[Service]
 readonly class SelectorBuilder
 {
     public function __construct(
-        #[ConfigValue(MultisortQueryName::class)]
-        private string|null      $multisortQueryName,
-
-        #[ConfigValue(DefaultPageSize::class)]
-        private int              $defaultPageSize,
-
-        #[ConfigValue(PageQueryName::class)]
-        private string|null      $pageQueryName,
-
-        #[ConfigValue(PerPageQueryName::class)]
-        private string|null      $perPageQueryName,
-        private MultisortParser  $multisortParser,
-        private ComparisonParser $comparisonParser,
+        private MetaDataManager $metaDataManager,
+        private FilterParser    $filterParser,
     )
     {
     }
@@ -38,45 +20,29 @@ readonly class SelectorBuilder
     public function build(string $entity, array $filters): QuerySelector
     {
         $selector = new QuerySelector($entity);
-        $job = new SelectorBuilder\Job();
+        $typeFinder = function ($name) use ($selector) {
+            try {
+                $metaData = $this->metaDataManager->get($selector->entity());
+                $type = $metaData->property($name)->type;
 
-        foreach ($filters as $name => $value) {
-            $this->processFilter($selector, $job, $name, $value);
+                if ($type instanceof Relation) {
+                    return $this->metaDataManager->get($type->entity)->idProperty->type;
+                }
+            }
+            catch (ClassIsNotAnEntity) {
+                // Do nothing
+            }
+
+            return null;
+        };
+
+        $elements = $this->filterParser->parse($filters, $typeFinder);
+        $definition = $selector->definition();
+
+        foreach ($elements as $element) {
+            $definition->add($element);
         }
-
-        $this->processPagination($selector, $job);
 
         return $selector;
-    }
-
-    private function processFilter(
-        QuerySelector       $selector,
-        SelectorBuilder\Job $job,
-        string              $name,
-        mixed               $value
-    ): void
-    {
-        if ($name === $this->multisortQueryName) {
-            $this->multisortParser->parse($selector, $value);
-        }
-        elseif ($name === $this->pageQueryName) {
-            $job->page = (int) $value;
-        }
-        elseif ($name === $this->perPageQueryName) {
-            $job->pageSize = (int) $value;
-        }
-        else {
-            try {
-                $this->comparisonParser->parse($selector, $name, $value);
-            }
-            catch (\Exception) {
-                throw new CannotParseQueryValue($name, $value);
-            }
-        }
-    }
-
-    private function processPagination(QuerySelector $selector, SelectorBuilder\Job $job): void
-    {
-        $selector->definition()->add(new Pagination($job->page, $job->pageSize ?? $this->defaultPageSize));
     }
 }

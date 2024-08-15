@@ -10,8 +10,6 @@ use Medas\Core\{
     Attributes\Service,
     Interfaces\Serializer
 };
-use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
-use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Selector\{
     Conditions\WhereContains,
     Conditions\WhereEndsWith,
@@ -31,7 +29,6 @@ use Medas\EntityManager\Selector\{
     Operants\Value,
     Operants\Values
 };
-use Medas\EntityManager\Types\Relation;
 use Medas\RestRequestHandler\ConfigOptions\ComparisonOperators\IsLessThanOperator;
 use Medas\RestRequestHandler\Serializers\QueryDataSerializer;
 
@@ -41,33 +38,19 @@ readonly class ComparisonParser
     private const ARRAY_VALUE_COMPARISON_TYPES = [WhereIn::class, WhereNotIn::class];
 
     public function __construct(
-        private MetaDataManager $metaDataManager,
-
         #[PreferredDefault(QueryDataSerializer::class)]
-        private Serializer      $serializer,
+        private Serializer  $serializer,
 
         #[ConfigValue(IsLessThanOperator::class)]
-        private string|null     $isLessThanOperator,
+        private string|null $isLessThanOperator,
     )
     {
     }
 
-    public function parse(QuerySelector $querySelector, string $name, string $value): void
+    public function parse(string $name, string $value, \Closure $typeFinder = null): Element
     {
         $comparisonType = $this->extractComparisonType($name);
-        $type = null;
-
-        try {
-            $metaData = $this->metaDataManager->get($querySelector->entity());
-            $type = $metaData->property($name)->type;
-
-            if ($type instanceof Relation) {
-                $type = $this->metaDataManager->get($type->entity)->idProperty->type;
-            }
-        }
-        catch (ClassIsNotAnEntity) {
-            // Do nothing
-        }
+        $type = $typeFinder ? $typeFinder($name) : null;
 
         if (in_array($comparisonType, self::ARRAY_VALUE_COMPARISON_TYPES, true)) {
             $element = $this->createArrayValueElement($name, $comparisonType, $value, $type);
@@ -76,7 +59,7 @@ readonly class ComparisonParser
             $element = $this->createSingletonValueElement($name, $comparisonType, $value, $type);
         }
 
-        $querySelector->definition()->add($element);
+        return $element;
     }
 
     private function extractComparisonType(&$name): string

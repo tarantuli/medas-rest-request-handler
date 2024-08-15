@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Medas\ConfigManager\ConfigManagerPackage;
 use Medas\ConfigOptions\ConfigOptionsPackage;
+use Medas\Events\EventsPackage;
 use Medas\RamseyUuidBridge\RamseyUuidBridgePackage;
 use Medas\RestRequestHandler\RestRequestHandlerPackage;
 use Medas\ServiceManager\ServiceConfig;
@@ -18,6 +19,7 @@ new ServiceManager(function (): ServiceConfig {
         RestRequestHandlerPackage::instance(),
         ConfigManagerPackage::instance(),
         ConfigOptionsPackage::instance(),
+        EventsPackage::instance(),
         RamseyUuidBridgePackage::instance(),
     ]);
 

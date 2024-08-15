@@ -11,7 +11,7 @@ use Medas\RestRequestHandler\Exceptions\InvalidSortDirection;
 #[Service]
 class MultisortParser
 {
-    public function parse(QuerySelector $querySelector, string $value): void
+    public function parse(FilterParser\Job $job, string $value): void
     {
         $parts = explode(',', $value);
 
@@ -24,11 +24,10 @@ class MultisortParser
 
             $property = substr($part, 1);
 
-            $querySelector->definition()->add(SortBy::c(
-                Property::c($property), $direction === '>'
-                ? SortDirection::DESC
-                : SortDirection::ASC
-            ));
+            $job->elements[] = SortBy::c(
+                Property::c($property),
+                $direction === '>' ? SortDirection::DESC : SortDirection::ASC
+            );
         }
     }
 }
