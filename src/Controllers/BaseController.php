@@ -35,9 +35,10 @@ abstract class BaseController
         protected EntityResponseBuilder     $entityResponseBuilder,
         protected MetaDataManager           $metaDataManager,
         protected Repository                $repository,
-        protected RequestDataManager        $requestDataManager,
-        protected ValueSetter               $valueSetter,
         protected RequestDataHandler        $requestDataHandler,
+        protected RequestDataManager        $requestDataManager,
+        protected SelectorBuilder           $selectorBuilder,
+        protected ValueSetter               $valueSetter,
     )
     {
         $entity = attribute(Route::class, new \ReflectionClass($this))->endpointForEntity();
@@ -89,8 +90,7 @@ abstract class BaseController
     protected function _get(): CollectionResponse
     {
         if ($queryData = $this->queryData()) {
-            $selectorBuilder = service(SelectorBuilder::class);
-            $selector = $selectorBuilder->build($this->entityClass, $queryData);
+            $selector = $this->selectorBuilder->build($this->entityClass, $queryData);
             $entities = $this->repository->fetch($selector);
         }
         else {
@@ -108,8 +108,7 @@ abstract class BaseController
     protected function _getCount(): ScalarResponse
     {
         if ($queryData = $this->queryData()) {
-            $selectorBuilder = service(SelectorBuilder::class);
-            $selector = $selectorBuilder->build($this->entityClass, $queryData);
+            $selector = $this->selectorBuilder->build($this->entityClass, $queryData);
             $count = $this->repository->fetchCount($selector);
         }
         else {
