@@ -15,25 +15,22 @@ use Medas\RestRequestHandler\{
 };
 
 #[Service]
-class SelectorBuilder
+readonly class SelectorBuilder
 {
-    private int|null $page = null;
-    private int|null $pageSize = null;
-
     public function __construct(
         #[ConfigValue(MultisortQueryName::class)]
-        private readonly string|null      $multisortQueryName,
+        private string|null      $multisortQueryName,
 
         #[ConfigValue(DefaultPageSize::class)]
-        private readonly int              $defaultPageSize,
+        private int              $defaultPageSize,
 
         #[ConfigValue(PageQueryName::class)]
-        private readonly string|null      $pageQueryName,
+        private string|null      $pageQueryName,
 
         #[ConfigValue(PerPageQueryName::class)]
-        private readonly string|null      $perPageQueryName,
-        private readonly MultisortParser  $multisortParser,
-        private readonly ComparisonParser $comparisonParser,
+        private string|null      $perPageQueryName,
+        private MultisortParser  $multisortParser,
+        private ComparisonParser $comparisonParser,
     )
     {
     }
@@ -41,26 +38,32 @@ class SelectorBuilder
     public function build(string $entity, array $filters): QuerySelector
     {
         $selector = new QuerySelector($entity);
+        $job = new SelectorBuilder\Job();
 
         foreach ($filters as $name => $value) {
-            $this->processFilter($selector, $name, $value);
+            $this->processFilter($selector, $job, $name, $value);
         }
 
-        $this->processPagination($selector);
+        $this->processPagination($selector, $job);
 
         return $selector;
     }
 
-    private function processFilter(QuerySelector $selector, string $name, mixed $value): void
+    private function processFilter(
+        QuerySelector       $selector,
+        SelectorBuilder\Job $job,
+        string              $name,
+        mixed               $value
+    ): void
     {
         if ($name === $this->multisortQueryName) {
             $this->multisortParser->parse($selector, $value);
         }
         elseif ($name === $this->pageQueryName) {
-            $this->page = (int) $value;
+            $job->page = (int) $value;
         }
         elseif ($name === $this->perPageQueryName) {
-            $this->pageSize = (int) $value;
+            $job->pageSize = (int) $value;
         }
         else {
             try {
@@ -72,12 +75,8 @@ class SelectorBuilder
         }
     }
 
-    private function processPagination(QuerySelector $selector): void
+    private function processPagination(QuerySelector $selector, SelectorBuilder\Job $job): void
     {
-        if ($this->page === null) {
-            return;
-        }
-
-        $selector->definition()->add(new Pagination($this->page, $this->pageSize ?? $this->defaultPageSize));
+        $selector->definition()->add(new Pagination($job->page, $job->pageSize ?? $this->defaultPageSize));
     }
 }
