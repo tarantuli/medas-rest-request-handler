@@ -37,11 +37,8 @@ readonly class SelectorBuilder
         };
 
         $elements = $this->filterParser->parse($filters, $typeFinder);
-        $definition = $selector->definition();
 
-        foreach ($elements as $element) {
-            $definition->add($element);
-        }
+        $selector->definition()->add(...$elements);
 
         return $selector;
     }
