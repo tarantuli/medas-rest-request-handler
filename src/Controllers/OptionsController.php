@@ -7,6 +7,7 @@ namespace Medas\RestRequestHandler\Controllers;
 use Medas\Core\Attributes\{ConfigValue, Service};
 use Medas\HttpRequestHandler\{RequestDataManager, ResponseTypes\Response};
 use Medas\RestRequestHandler\{
+    Authorization\PublicResource,
     ConfigOptions\AllowedOrigins,
     Responses\BadRequestResponse,
     Responses\OptionsResponse
@@ -25,7 +26,7 @@ readonly class OptionsController
     {
     }
 
-    #[Options]
+    #[Options, PublicResource]
     public function getOptions(): Response
     {
         $serverData = $this->requestDataManager->get()->serverData;
