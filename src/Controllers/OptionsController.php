@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Controllers;
 
-use Medas\Core\Attributes\{ConfigValue, Service};
-use Medas\HttpRequestHandler\{RequestDataManager, ResponseTypes\Response};
-use Medas\RestRequestHandler\{
-    Authorization\PublicResource,
-    ConfigOptions\AllowedOrigins,
-    Responses\BadRequestResponse,
-    Responses\OptionsResponse
-};
-use Medas\Routing\{Methods\Options, Parameters\Anything, Route};
+use Medas\Core\Attributes\{ConfigValue,Service};
+use Medas\HttpRequestHandler\{Authorization\PublicResource,RequestDataManager,ResponseTypes\Response};
+use Medas\RestRequestHandler\{ConfigOptions\AllowedOrigins,Responses\BadRequestResponse,Responses\OptionsResponse};
+use Medas\Routing\{Methods\Options,Parameters\Anything,Route};
 
 #[Service, Route(new Anything())]
 readonly class OptionsController

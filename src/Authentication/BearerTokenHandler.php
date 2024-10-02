@@ -10,7 +10,7 @@ use Medas\Core\{
     Attributes\Service,
     Interfaces\BearerTokenValidator
 };
-use Medas\HttpRequestHandler\{AccessManagement\AuthenticationVote, Request\HeaderFinder};
+use Medas\HttpRequestHandler\{Authentication\AuthenticationVote, Request\HeaderFinder};
 use Medas\RestRequestHandler\ConfigOptions\UsersClass;
 
 #[Service]
