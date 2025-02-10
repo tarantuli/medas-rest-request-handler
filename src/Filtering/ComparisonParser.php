@@ -119,7 +119,7 @@ readonly class ComparisonParser
         }
 
         if (str_ends_with($name, '∉')) {
-            $name = substr($name, 0, -1);
+            $name = substr($name, 0,  -strlen('∉'));
 
             return WhereNotIn::class;
         }

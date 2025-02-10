@@ -27,7 +27,9 @@ readonly class IsLessThanOperator implements ConfigOption
 
     public function description(): string
     {
-        return 'The operator to use in queries to filter on "a < b". For example, if this operator is "<<", then "entities?a<<=1" would return entities with a less than 1. Set to null to disable this operator.';
+        return 'The operator to use in queries to filter on "a < b".
+        
+        For example, if this operator is "<<", then "entities?foo<<=1" would return entities with foo less than 1. Set to null to disable this operator';
     }
 
     public function hasDefault(): bool
