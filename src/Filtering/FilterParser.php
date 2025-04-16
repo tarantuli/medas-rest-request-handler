@@ -6,6 +6,7 @@ namespace Medas\RestRequestHandler\Filtering;
 
 use Medas\Core\Attributes\{ConfigValue, Service};
 use Medas\EntityManager\Selector\{Element, Pagination};
+use Medas\Json\StringProtector;
 use Medas\RestRequestHandler\{
     ConfigOptions\DefaultPageSize,
     ConfigOptions\MultisortQueryName,
@@ -31,6 +32,7 @@ readonly class FilterParser
         private string|null      $perPageQueryName,
         private ComparisonParser $comparisonParser,
         private MultisortParser  $multisortParser,
+        private StringProtector  $stringProtector,
     )
     {
     }
@@ -67,7 +69,11 @@ readonly class FilterParser
         }
         else {
             try {
-                $job->elements[] = $this->comparisonParser->parse($name, $value, $typeFinder);
+                $job->elements[] = $this->comparisonParser->parse(
+                    $name,
+                    $this->stringProtector->decode($value),
+                    $typeFinder
+                );
             }
             catch (\Exception) {
                 throw new CannotParseQueryValue($name, $value);
