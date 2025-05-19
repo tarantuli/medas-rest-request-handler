@@ -48,12 +48,11 @@ readonly class CreateGetInstance extends BaseConsoleCommand
         $entityClassName = $this->classNameNormalizer->normalize($entityClassName);
         $useUuid = ($arguments[2] ?? null) !== '--id';
 
-        if (!preg_match('#^/(\w+)(/.+)?/(\w+)$#', $entityClassName, $match)) {
+        if (!preg_match('#^(\w+)(/.+)?/(\w+)$#', $entityClassName, $match)) {
             exit($entityClassName . ' is not a valid entity class name');
         }
 
-        $handlerClassName = '/'
-            . $match[1]
+        $handlerClassName = $match[1]
             . '/RestControllers/'
             . ($match[2] ?? '')
             . '/Get'
