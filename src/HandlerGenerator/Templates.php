@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
+use Medas\Core\Interfaces\Uuid as UuidType;
 use Medas\RestRequestHandler\Responses\{EntityResponse, EntityResponseBuilder};
 use Medas\Routing\{Methods\Get, Parameters\Uuid, Route};
 
@@ -31,9 +32,9 @@ readonly class {{shortClassName}}
     }
 
     #[Get(new Uuid('id'))]
-    public function handle(\Medas\Core\Interfaces\Uuid $id): EntityResponse
+    public function handle(UuidType $id): EntityResponse
     {
-        return $this->entityResponseBuilder->build(em()->get({{entityClassName}}::class, $id), $this);
+        return $this->entityResponseBuilder->build(em()->get(\{{entityClassName}}::class, $id), $this);
     }
 }
 
@@ -64,7 +65,7 @@ readonly class {{shortClassName}}
     #[Get(new Integer('id'))]
     public function handle(int $id): EntityResponse
     {
-        return $this->entityResponseBuilder->build(em()->get({{entityClassName}}::class, $id), $this);
+        return $this->entityResponseBuilder->build(em()->get(\{{entityClassName}}::class, $id), $this);
     }
 }
 
