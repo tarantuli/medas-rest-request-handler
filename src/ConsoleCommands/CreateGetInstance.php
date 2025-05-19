@@ -6,16 +6,17 @@ namespace Medas\RestRequestHandler\ConsoleCommands;
 
 use Medas\Console\Commands\{BaseConsoleCommand, ConsoleCommandGroup};
 use Medas\Core\Attributes\Service;
-use Medas\EntityManager\Entities\Generator\FileNameFinder;
+use Medas\EntityManager\Entities\Generator\{ClassNameNormalizer, FileNameFinder};
 use Medas\RestRequestHandler\HandlerGenerator\{ClassGenerator, Templates};
 
 #[Service]
 readonly class CreateGetInstance extends BaseConsoleCommand
 {
     public function __construct(
-        private RestRequestHandlerGroup $group,
-        private FileNameFinder          $fileNameFinder,
         private ClassGenerator          $classGenerator,
+        private ClassNameNormalizer     $classNameNormalizer,
+        private FileNameFinder          $fileNameFinder,
+        private RestRequestHandlerGroup $group,
         private Templates               $templates,
     )
     {
@@ -44,6 +45,7 @@ readonly class CreateGetInstance extends BaseConsoleCommand
     public function process(array $arguments): void
     {
         $entityClassName = $arguments[1];
+        $entityClassName = $this->classNameNormalizer->normalize($entityClassName);
         $useUuid = ($arguments[2] ?? null) !== '--id';
 
         if (!preg_match('#^/(\w+)(/.+)?/(\w+)$#', $entityClassName, $match)) {

@@ -6,7 +6,6 @@ namespace Medas\RestRequestHandler\HandlerGenerator;
 
 use Medas\Core\Attributes\Service;
 use Medas\EntityManager\Entities\Generator\{
-    ClassNameNormalizer,
     Exceptions\ClassHasNoNamespace,
     NameConverters\NameConverter
 };
@@ -15,15 +14,13 @@ use Medas\EntityManager\Entities\Generator\{
 readonly class ClassGenerator
 {
     public function __construct(
-        private ClassNameNormalizer $classNameNormalizer,
-        private NameConverter       $storeNameConverter,
+        private NameConverter $storeNameConverter,
     )
     {
     }
 
     public function generate(string $entityClassName, string $handlerClassName, string $template): string
     {
-        $entityClassName = $this->classNameNormalizer->normalize($entityClassName);
         [, $entityShortClassName] = $this->splitClassName($entityClassName);
         $routePath = $this->storeNameConverter->convert($entityShortClassName);
         [$namespace, $shortClassName] = $this->splitClassName($handlerClassName);
