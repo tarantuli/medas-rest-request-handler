@@ -47,7 +47,7 @@ readonly class CreatePutInstance extends BaseConsoleCommand
         $this->classGenerator->generate(
             $entityClassName,
             $useUuid ? $this->templates->putInstanceByUuid() : $this->templates->putInstanceByInteger(),
-            'Get',
+            'Put',
             '',
         );
     }

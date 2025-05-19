@@ -107,8 +107,8 @@ readonly class {{shortClassName}}
     #[Put(new Uuid('id'))]
     public function handle(UuidType $id): EntityResponse
     {
-        $entity = em()->get({{entityClassName}}::class, $id);
-        $metaData = $this->metaDataManager->get({{entityClassName}}::class);
+        $entity = em()->get(\{{entityClassName}}::class, $id);
+        $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
 
         $bodyData = $this->requestDataHandler->deserialize(
             $this->requestDataManager->get()->bodyData->data(),
@@ -161,8 +161,8 @@ readonly class {{shortClassName}}
     #[Put(new Integer('id'))]
     public function handle(int $id): EntityResponse
     {
-        $entity = em()->get({{entityClassName}}::class, $id);
-        $metaData = $this->metaDataManager->get({{entityClassName}}::class);
+        $entity = em()->get(\{{entityClassName}}::class, $id);
+        $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
 
         $bodyData = $this->requestDataHandler->deserialize(
             $this->requestDataManager->get()->bodyData->data(),
