@@ -6,20 +6,20 @@ namespace Medas\RestRequestHandler\Serializers;
 
 use Medas\Core\{
     Attributes\Service,
-    Exceptions\GuidProviderIsNotAvailable,
-    Interfaces\Guid,
-    Interfaces\GuidProvider,
+    Exceptions\UuidProviderIsNotAvailable,
     Interfaces\HasId,
     Interfaces\Serializer,
-    Interfaces\Type
+    Interfaces\Type,
+    Interfaces\Uuid,
+    Interfaces\UuidProvider
 };
-use Medas\EntityManager\Types\{Boolean, DateTime, Guid as GuidType, Integer, Relation};
+use Medas\EntityManager\Types\{Boolean, DateTime, Integer, Relation, Uuid as UuidType};
 
 #[Service]
 readonly class JsonSerializer implements Serializer
 {
     public function __construct(
-        private GuidProvider|null $guidProvider,
+        private UuidProvider|null $UuidProvider,
     )
     {
     }
@@ -30,7 +30,7 @@ readonly class JsonSerializer implements Serializer
             $value = $value->id();
         }
 
-        if ($value instanceof Guid) {
+        if ($value instanceof Uuid) {
             return (string) $value;
         }
 
@@ -47,12 +47,12 @@ readonly class JsonSerializer implements Serializer
 
     public function unserialize(mixed $value, Type $type = null): mixed
     {
-        if ($type instanceof GuidType) {
-            if ($this->guidProvider === null) {
-                throw new GuidProviderIsNotAvailable();
+        if ($type instanceof UuidType) {
+            if ($this->UuidProvider === null) {
+                throw new UuidProviderIsNotAvailable();
             }
 
-            $value = $this->guidProvider->fromString($value);
+            $value = $this->UuidProvider->fromString($value);
         }
 
         if ($type instanceof Relation) {

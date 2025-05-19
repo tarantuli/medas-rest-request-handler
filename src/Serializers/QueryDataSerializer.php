@@ -6,10 +6,10 @@ namespace Medas\RestRequestHandler\Serializers;
 
 use Medas\Core\{
     Attributes\Service,
-    Interfaces\Guid,
     Interfaces\HasId,
     Interfaces\Serializer,
-    Interfaces\Type
+    Interfaces\Type,
+    Interfaces\Uuid
 };
 use Medas\EntityManager\Types\{Boolean, DateTime, Integer};
 
@@ -22,7 +22,7 @@ readonly class QueryDataSerializer implements Serializer
             $value = $value->id();
         }
 
-        if ($value instanceof Guid) {
+        if ($value instanceof Uuid) {
             return (string) $value;
         }
 
