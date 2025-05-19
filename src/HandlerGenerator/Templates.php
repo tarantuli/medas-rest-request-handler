@@ -400,4 +400,41 @@ readonly class {{shortClassName}}
 
 PHP;
     }
+
+    public function entityNormalizer(): string
+    {
+        return <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+namespace {{namespace}};
+
+use Medas\Core\{Attributes\Service, Interfaces\HasId, Interfaces\Uuid};
+use Medas\RestRequestHandler\Interfaces\Normalizer;
+
+#[Service]
+readonly class {{shortClassName}} implements Normalizer
+{
+    public function normalize(object $entity): array
+    {
+        /** @var \{{entityClassName}} $entity */
+        $properties = get_object_vars($entity);
+
+        foreach ($properties as &$value) {
+            if ($value instanceof HasId) {
+                $value = $value->id();
+            }
+
+            if ($value instanceof Uuid) {
+                $value = (string) $value;
+            }
+        }
+
+        return $properties;
+    }
+}
+
+PHP;
+    }
 }
