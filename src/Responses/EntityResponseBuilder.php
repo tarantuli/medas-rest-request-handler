@@ -9,8 +9,8 @@ use Medas\Core\Attributes\Service;
 #[Service]
 class EntityResponseBuilder extends BaseResponseBuilder
 {
-    public function build(object $entity, object $controller): EntityResponse
+    public function build(object $entity, object|null $normalizer): EntityResponse
     {
-        return new EntityResponse($this->serialize($entity, $controller));
+        return new EntityResponse($this->serialize($entity, $normalizer));
     }
 }

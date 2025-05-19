@@ -10,8 +10,8 @@ use Medas\Core\Attributes\Service;
 class CollectionResponseBuilder extends BaseResponseBuilder
 {
     /** @param object[] $entities */
-    public function build(array $entities, object $controller): CollectionResponse
+    public function build(array $entities, object|null $normalizer): CollectionResponse
     {
-        return new CollectionResponse(array_map(fn($entity) => $this->serialize($entity, $controller), $entities));
+        return new CollectionResponse(array_map(fn($entity) => $this->serialize($entity, $normalizer), $entities));
     }
 }

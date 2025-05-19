@@ -16,11 +16,11 @@ abstract class BaseResponseBuilder
     {
     }
 
-    protected function serialize(object $entity, object $controller): array
+    protected function serialize(object $entity, object|null $normalizer): array
     {
         // Normalize the object to an array of values
-        $data = $controller instanceof Normalizer
-            ? $controller->normalize($entity)
+        $data = $normalizer instanceof Normalizer
+            ? $normalizer->normalize($entity)
             : get_object_vars($entity);
 
         // Then, serialize each value. Don't recurse, the serializer should flatten the values
