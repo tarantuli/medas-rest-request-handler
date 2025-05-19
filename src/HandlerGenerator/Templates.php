@@ -27,6 +27,7 @@ readonly class {{shortClassName}}
 {
     public function __construct(
         protected EntityResponseBuilder $entityResponseBuilder,
+        protected \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -34,7 +35,7 @@ readonly class {{shortClassName}}
     #[Get(new Uuid('id'))]
     public function handle(UuidType $id): EntityResponse
     {
-        return $this->entityResponseBuilder->build(em()->get(\{{entityClassName}}::class, $id), $this);
+        return $this->entityResponseBuilder->build(em()->get(\{{entityClassName}}::class, $id), $this->normalizer);
     }
 }
 
@@ -58,6 +59,7 @@ readonly class {{shortClassName}}
 {
     public function __construct(
         protected EntityResponseBuilder $entityResponseBuilder,
+        protected \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -65,7 +67,7 @@ readonly class {{shortClassName}}
     #[Get(new Integer('id'))]
     public function handle(int $id): EntityResponse
     {
-        return $this->entityResponseBuilder->build(em()->get(\{{entityClassName}}::class, $id), $this);
+        return $this->entityResponseBuilder->build(em()->get(\{{entityClassName}}::class, $id), $this->normalizer);
     }
 }
 
@@ -100,6 +102,7 @@ readonly class {{shortClassName}}
         protected RequestDataHandler    $requestDataHandler,
         protected RequestDataManager    $requestDataManager,
         protected ValueSetter           $valueSetter,
+        protected \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -120,7 +123,7 @@ readonly class {{shortClassName}}
         em()->persist($entity);
         em()->flush();
 
-        return $this->entityResponseBuilder->build($entity, $this);
+        return $this->entityResponseBuilder->build($entity, $this->normalizer);
     }
 }
 
@@ -153,6 +156,7 @@ readonly class {{shortClassName}}
         protected MetaDataManager       $metaDataManager,
         protected RequestDataHandler    $requestDataHandler,
         protected ValueSetter           $valueSetter,
+        protected \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -170,7 +174,7 @@ readonly class {{shortClassName}}
         em()->persist($entity);
         em()->flush();
 
-        return $this->entityResponseBuilder->build($entity, $this);
+        return $this->entityResponseBuilder->build($entity, $this->normalizer);
     }
 }
 
@@ -201,6 +205,7 @@ readonly class {{shortClassName}}
     public function __construct(
         protected EntityResponseBuilder $entityResponseBuilder,
         protected RequestDataHandler    $requestDataHandler,
+        protected \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -220,7 +225,7 @@ readonly class {{shortClassName}}
         em()->persist($entity);
         em()->flush();
 
-        return $this->entityResponseBuilder->build($entity, $this);
+        return $this->entityResponseBuilder->build($entity, $this->normalizer);
     }
 }
 
@@ -328,6 +333,7 @@ readonly class {{shortClassName}}
         protected Repository                $repository,
         protected RequestDataHandler        $requestDataHandler,
         protected SelectorBuilder           $selectorBuilder,
+        protected \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -343,7 +349,7 @@ readonly class {{shortClassName}}
             $entities = $this->repository->fetchAll(\{{entityClassName}}::class);
         }
 
-        return $this->collectionResponseBuilder->build($entities, $this);
+        return $this->collectionResponseBuilder->build($entities, $this->normalizer);
     }
 }
 
@@ -368,7 +374,7 @@ use Medas\RestRequestHandler\{
     Responses\EntityResponseBuilder,
     Responses\ScalarResponse
 };
-use Medas\Routing\{Methods\Get, Route};
+use Medas\Routing\{Methods\Get, Parameters\Constant, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
@@ -383,7 +389,7 @@ readonly class {{shortClassName}}
     {
     }
 
-    #[Get]
+    #[Get(new Constant('count'))]
     public function handle(): ScalarResponse
     {
         if ($queryData = $this->requestDataHandler->getQueryData()) {

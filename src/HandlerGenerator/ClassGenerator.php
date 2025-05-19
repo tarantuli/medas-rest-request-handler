@@ -53,13 +53,31 @@ readonly class ClassGenerator
             . $match[3]
             . $handlerSuffix;
 
-        $code = $this->compile($entityClassName, $handlerClassName, $template);
+        $normalizerClassName = $prefix
+            . '\RestControllers'
+            . ($match[2] ?? '\\')
+            . '\\'
+            . $match[3]
+            . 'Normalizer';
+
+        $code = $this->compile(
+            $entityClassName,
+            $handlerClassName,
+            $normalizerClassName,
+            $template
+        );
+
         $fileName = $this->fileNameFinder->find($handlerClassName);
 
         $this->fileNameFinder->writeToFile($code, $fileName);
     }
 
-    public function compile(string $entityClassName, string $handlerClassName, string $template): string
+    public function compile(
+        string $entityClassName,
+        string $handlerClassName,
+        string $normalizerClassName,
+        string $template
+    ): string
     {
         [, $entityShortClassName] = $this->splitClassName($entityClassName);
         $routePath = $this->storeNameConverter->convert($entityShortClassName);
@@ -70,6 +88,7 @@ readonly class ClassGenerator
             '{{routePath}}' => $routePath,
             '{{shortClassName}}' => $shortClassName,
             '{{entityClassName}}' => $entityClassName,
+            '{{normalizerClassName}}' => $normalizerClassName,
         ];
 
         return str_replace(array_keys($replacements), array_values($replacements), $template);

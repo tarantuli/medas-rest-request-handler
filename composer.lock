@@ -112,12 +112,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:tarantuli/medas-entity-manager.git",
-                "reference": "71abeb4fc320e51ee849926ba2b6a496f09f2f9a"
+                "reference": "b84123972899dd434300d51dc6689e5a06e96e58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tarantuli/medas-entity-manager/zipball/71abeb4fc320e51ee849926ba2b6a496f09f2f9a",
-                "reference": "71abeb4fc320e51ee849926ba2b6a496f09f2f9a",
+                "url": "https://api.github.com/repos/tarantuli/medas-entity-manager/zipball/b84123972899dd434300d51dc6689e5a06e96e58",
+                "reference": "b84123972899dd434300d51dc6689e5a06e96e58",
                 "shasum": ""
             },
             "require": {
@@ -154,7 +154,7 @@
                 "source": "https://github.com/tarantuli/medas-entity-manager/tree/dev",
                 "issues": "https://github.com/tarantuli/medas-entity-manager/issues"
             },
-            "time": "2025-05-19T10:24:01+00:00"
+            "time": "2025-05-19T13:42:33+00:00"
         },
         {
             "name": "morphp/medas-file-system",
@@ -390,12 +390,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:tarantuli/medas-routing.git",
-                "reference": "7364d06bed6626297359ca515bb83ca6e5bf91ba"
+                "reference": "0667e1232d3e550fdfbb055a48702aff4c4369be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tarantuli/medas-routing/zipball/7364d06bed6626297359ca515bb83ca6e5bf91ba",
-                "reference": "7364d06bed6626297359ca515bb83ca6e5bf91ba",
+                "url": "https://api.github.com/repos/tarantuli/medas-routing/zipball/0667e1232d3e550fdfbb055a48702aff4c4369be",
+                "reference": "0667e1232d3e550fdfbb055a48702aff4c4369be",
                 "shasum": ""
             },
             "require": {
@@ -430,7 +430,7 @@
                 "source": "https://github.com/tarantuli/medas-routing/tree/dev",
                 "issues": "https://github.com/tarantuli/medas-routing/issues"
             },
-            "time": "2025-05-19T09:28:56+00:00"
+            "time": "2025-05-19T13:24:14+00:00"
         },
         {
             "name": "morphp/medas-service-manager",
