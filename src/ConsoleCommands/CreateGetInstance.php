@@ -54,7 +54,7 @@ readonly class CreateGetInstance extends BaseConsoleCommand
 
         $handlerClassName = '/'
             . $match[1]
-            . '/RestControllers.'
+            . '/RestControllers/'
             . ($match[2] ?? '')
             . '/Get'
             . $match[3];
