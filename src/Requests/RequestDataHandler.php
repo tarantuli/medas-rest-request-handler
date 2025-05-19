@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Requests;
 
 use Medas\Core\{Attributes\PreferredDefault, Attributes\Service, Interfaces\Serializer};
+use Medas\HttpRequestHandler\RequestDataManager;
 use Medas\RestRequestHandler\{Interfaces\Denormalizer, Serializers\JsonSerializer};
 
 #[Service]
@@ -12,7 +13,8 @@ readonly class RequestDataHandler
 {
     public function __construct(
         #[PreferredDefault(JsonSerializer::class)]
-        private Serializer $serializer,
+        private Serializer           $serializer,
+        protected RequestDataManager $requestDataManager,
     )
     {
     }
@@ -28,5 +30,15 @@ readonly class RequestDataHandler
         }
 
         return $data;
+    }
+
+    public function getBodyData(object $controller): array
+    {
+        return $this->deserialize($this->requestDataManager->get()->bodyData->data(), $controller);
+    }
+
+    public function getQueryData(): array
+    {
+        return $this->requestDataManager->get()->uri->query;
     }
 }

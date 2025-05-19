@@ -10,7 +10,6 @@ use Medas\EntityManager\{
     MetaDataManager,
     Repository
 };
-use Medas\HttpRequestHandler\RequestDataManager;
 use Medas\RestRequestHandler\{
     Exceptions\EntityDoesNotHaveProperty,
     Exceptions\RouteDoesNotSpecifyEntity,
@@ -36,7 +35,6 @@ abstract class BaseController
         protected MetaDataManager           $metaDataManager,
         protected Repository                $repository,
         protected RequestDataHandler        $requestDataHandler,
-        protected RequestDataManager        $requestDataManager,
         protected SelectorBuilder           $selectorBuilder,
         protected ValueSetter               $valueSetter,
     )
@@ -78,10 +76,7 @@ abstract class BaseController
     protected function bodyData(): array
     {
         if (!isset($this->bodyData)) {
-            $this->bodyData = $this->requestDataHandler->deserialize(
-                $this->requestDataManager->get()->bodyData->data(),
-                $this
-            );
+            $this->bodyData = $this->requestDataHandler->getBodyData($this);
         }
 
         return $this->bodyData;
@@ -102,7 +97,7 @@ abstract class BaseController
 
     protected function queryData(): array
     {
-        return $this->requestDataManager->get()->uri->query;
+        return $this->requestDataHandler->getQueryData();
     }
 
     protected function _getCount(): ScalarResponse
