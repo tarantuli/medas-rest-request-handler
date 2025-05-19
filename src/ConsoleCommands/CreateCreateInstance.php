@@ -31,7 +31,7 @@ readonly class CreateCreateInstance extends BaseConsoleCommand
 
     public function aliases(): array
     {
-        return ['c.create4-instance'];
+        return ['c.create-instance'];
     }
 
     public function description(): string

@@ -307,7 +307,7 @@ PHP;
 
 declare(strict_types=1);
 
-namespace {{namespace}}
+namespace {{namespace}};
 
 use Medas\EntityManager\Repository;
 use Medas\RestRequestHandler\{
