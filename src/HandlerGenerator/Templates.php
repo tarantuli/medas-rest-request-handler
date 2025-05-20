@@ -242,18 +242,12 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Medas\Core\Interfaces\Uuid as UuidType;
-use Medas\RestRequestHandler\Responses\{EntityResponseBuilder, SuccessResponse};
+use Medas\RestRequestHandler\Responses\SuccessResponse;
 use Medas\Routing\{Methods\Delete, Parameters\Uuid, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
-    public function __construct(
-        private EntityResponseBuilder $entityResponseBuilder,
-    )
-    {
-    }
-
     #[Delete(new Uuid('id'))]
     public function handle(UuidType $id): SuccessResponse
     {
@@ -278,18 +272,12 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
-use Medas\RestRequestHandler\Responses\{EntityResponseBuilder, SuccessResponse};
+use Medas\RestRequestHandler\Responses\SuccessResponse;
 use Medas\Routing\{Methods\Delete, Parameters\Integer, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
-    public function __construct(
-        private EntityResponseBuilder $entityResponseBuilder,
-    )
-    {
-    }
-
     #[Delete(new Integer('id'))]
     public function handle(int $id): SuccessResponse
     {
@@ -319,8 +307,7 @@ use Medas\RestRequestHandler\{
     Filtering\SelectorBuilder,
     Requests\RequestDataHandler,
     Responses\CollectionResponse,
-    Responses\CollectionResponseBuilder,
-    Responses\EntityResponseBuilder
+    Responses\CollectionResponseBuilder
 };
 use Medas\Routing\{Methods\Get, Route};
 
@@ -329,7 +316,6 @@ readonly class {{shortClassName}}
 {
     public function __construct(
         private CollectionResponseBuilder $collectionResponseBuilder,
-        private EntityResponseBuilder     $entityResponseBuilder,
         private Repository                $repository,
         private RequestDataHandler        $requestDataHandler,
         private SelectorBuilder           $selectorBuilder,
@@ -370,8 +356,6 @@ use Medas\EntityManager\Selector\Selectors\AllEntities;
 use Medas\RestRequestHandler\{
     Filtering\SelectorBuilder,
     Requests\RequestDataHandler,
-    Responses\CollectionResponseBuilder,
-    Responses\EntityResponseBuilder,
     Responses\ScalarResponse
 };
 use Medas\Routing\{Methods\Get, Parameters\Constant, Route};
@@ -380,8 +364,6 @@ use Medas\Routing\{Methods\Get, Parameters\Constant, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private CollectionResponseBuilder $collectionResponseBuilder,
-        private EntityResponseBuilder     $entityResponseBuilder,
         private Repository                $repository,
         private RequestDataHandler        $requestDataHandler,
         private SelectorBuilder           $selectorBuilder,
