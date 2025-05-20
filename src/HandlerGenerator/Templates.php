@@ -85,7 +85,6 @@ namespace {{namespace}};
 
 use Medas\Core\Interfaces\Uuid as UuidType;
 use Medas\EntityManager\{Hydration\ValueSetter, MetaDataManager};
-use Medas\HttpRequestHandler\RequestDataManager;
 use Medas\RestRequestHandler\{
     Requests\RequestDataHandler,
     Responses\EntityResponse,
@@ -100,7 +99,6 @@ readonly class {{shortClassName}}
         private EntityResponseBuilder $entityResponseBuilder,
         private MetaDataManager       $metaDataManager,
         private RequestDataHandler    $requestDataHandler,
-        private RequestDataManager    $requestDataManager,
         private ValueSetter           $valueSetter,
         private \{{normalizerClassName}} $normalizer,
     )
@@ -112,13 +110,9 @@ readonly class {{shortClassName}}
     {
         $entity = em()->get(\{{entityClassName}}::class, $id);
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
+        $data = $this->requestDataHandler->getBodyData($this->normalizer);
 
-        $bodyData = $this->requestDataHandler->deserialize(
-            $this->requestDataManager->get()->bodyData->data(),
-            $this
-        );
-
-        $this->valueSetter->setValues($metaData, $entity, $bodyData);
+        $this->valueSetter->setValues($metaData, $entity, $data);
 
         em()->persist($entity);
         em()->flush();
@@ -140,7 +134,6 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Medas\EntityManager\{Hydration\ValueSetter, MetaDataManager};
-use Medas\HttpRequestHandler\RequestDataManager;
 use Medas\RestRequestHandler\{
     Requests\RequestDataHandler,
     Responses\EntityResponse,
@@ -167,7 +160,7 @@ readonly class {{shortClassName}}
         $entity = em()->get(\{{entityClassName}}::class, $id);
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
 
-        $data = $this->requestDataHandler->getBodyData($this);
+        $data = $this->requestDataHandler->getBodyData($this->normalizer);
 
         $this->valueSetter->setValues($metaData, $entity, $data);
 
@@ -213,7 +206,7 @@ readonly class {{shortClassName}}
     #[Post]
     public function handle(): EntityResponse
     {
-        $data = $this->requestDataHandler->getBodyData($this);
+        $data = $this->requestDataHandler->getBodyData($this->normalizer);
 
         try {
             $entity = em()->create(\{{entityClassName}}::class, $data);
@@ -399,10 +392,10 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Medas\Core\{Attributes\Service, Interfaces\HasId, Interfaces\Uuid};
-use Medas\RestRequestHandler\Interfaces\Normalizer;
+use Medas\RestRequestHandler\Interfaces\{Denormalizer, Normalizer};
 
 #[Service]
-readonly class {{shortClassName}} implements Normalizer
+readonly class {{shortClassName}} implements Normalizer, Denormalizer
 {
     public function normalize(object $entity): array
     {
@@ -420,6 +413,11 @@ readonly class {{shortClassName}} implements Normalizer
         }
 
         return $properties;
+    }
+
+    public function denormalize(array $data): array
+    {
+        return $data;
     }
 }
 
