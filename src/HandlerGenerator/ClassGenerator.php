@@ -45,9 +45,13 @@ readonly class ClassGenerator
             exit($entityClassName . ' is not a valid entity class name');
         }
 
+        [, $entityShortClassName] = $this->splitClassName($entityClassName);
+
         $handlerClassName = $prefix
             . '\RestControllers'
             . ($match[2] ?? '\\')
+            . '\\'
+            . $entityShortClassName
             . '\\'
             . $handlerPrefix
             . $match[3]
@@ -56,6 +60,8 @@ readonly class ClassGenerator
         $normalizerClassName = $prefix
             . '\RestControllers'
             . ($match[2] ?? '\\')
+            . '\\'
+            . $entityShortClassName
             . '\\'
             . $match[3]
             . 'Normalizer';
