@@ -26,8 +26,8 @@ use Medas\Routing\{Methods\Get, Parameters\Uuid, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
-        protected EntityResponseBuilder $entityResponseBuilder,
-        protected \{{normalizerClassName}} $normalizer,
+        private EntityResponseBuilder $entityResponseBuilder,
+        private \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -58,8 +58,8 @@ use Medas\Routing\{Methods\Get,Parameters\Integer, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
-        protected EntityResponseBuilder $entityResponseBuilder,
-        protected \{{normalizerClassName}} $normalizer,
+        private EntityResponseBuilder $entityResponseBuilder,
+        private \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -97,12 +97,12 @@ use Medas\Routing\{Methods\Put, Parameters\Uuid, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
-        protected EntityResponseBuilder $entityResponseBuilder,
-        protected MetaDataManager       $metaDataManager,
-        protected RequestDataHandler    $requestDataHandler,
-        protected RequestDataManager    $requestDataManager,
-        protected ValueSetter           $valueSetter,
-        protected \{{normalizerClassName}} $normalizer,
+        private EntityResponseBuilder $entityResponseBuilder,
+        private MetaDataManager       $metaDataManager,
+        private RequestDataHandler    $requestDataHandler,
+        private RequestDataManager    $requestDataManager,
+        private ValueSetter           $valueSetter,
+        private \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -152,11 +152,11 @@ use Medas\Routing\{Methods\Put, Parameters\Integer, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
-        protected EntityResponseBuilder $entityResponseBuilder,
-        protected MetaDataManager       $metaDataManager,
-        protected RequestDataHandler    $requestDataHandler,
-        protected ValueSetter           $valueSetter,
-        protected \{{normalizerClassName}} $normalizer,
+        private EntityResponseBuilder $entityResponseBuilder,
+        private MetaDataManager       $metaDataManager,
+        private RequestDataHandler    $requestDataHandler,
+        private ValueSetter           $valueSetter,
+        private \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -203,9 +203,9 @@ use Medas\Routing\{Methods\Post, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
-        protected EntityResponseBuilder $entityResponseBuilder,
-        protected RequestDataHandler    $requestDataHandler,
-        protected \{{normalizerClassName}} $normalizer,
+        private EntityResponseBuilder $entityResponseBuilder,
+        private RequestDataHandler    $requestDataHandler,
+        private \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -249,7 +249,7 @@ use Medas\Routing\{Methods\Delete, Parameters\Uuid, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
-        protected EntityResponseBuilder $entityResponseBuilder,
+        private EntityResponseBuilder $entityResponseBuilder,
     )
     {
     }
@@ -285,7 +285,7 @@ use Medas\Routing\{Methods\Delete, Parameters\Integer, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
-        protected EntityResponseBuilder $entityResponseBuilder,
+        private EntityResponseBuilder $entityResponseBuilder,
     )
     {
     }
@@ -328,12 +328,12 @@ use Medas\Routing\{Methods\Get, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
-        protected CollectionResponseBuilder $collectionResponseBuilder,
-        protected EntityResponseBuilder     $entityResponseBuilder,
-        protected Repository                $repository,
-        protected RequestDataHandler        $requestDataHandler,
-        protected SelectorBuilder           $selectorBuilder,
-        protected \{{normalizerClassName}} $normalizer,
+        private CollectionResponseBuilder $collectionResponseBuilder,
+        private EntityResponseBuilder     $entityResponseBuilder,
+        private Repository                $repository,
+        private RequestDataHandler        $requestDataHandler,
+        private SelectorBuilder           $selectorBuilder,
+        private \{{normalizerClassName}} $normalizer,
     )
     {
     }
@@ -380,11 +380,11 @@ use Medas\Routing\{Methods\Get, Parameters\Constant, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
-        protected CollectionResponseBuilder $collectionResponseBuilder,
-        protected EntityResponseBuilder     $entityResponseBuilder,
-        protected Repository                $repository,
-        protected RequestDataHandler        $requestDataHandler,
-        protected SelectorBuilder           $selectorBuilder,
+        private CollectionResponseBuilder $collectionResponseBuilder,
+        private EntityResponseBuilder     $entityResponseBuilder,
+        private Repository                $repository,
+        private RequestDataHandler        $requestDataHandler,
+        private SelectorBuilder           $selectorBuilder,
     )
     {
     }
