@@ -15,6 +15,7 @@ use Medas\RestRequestHandler\ConfigOptions\ClassGenerators\{
     HandlerClassNamePattern,
     NormalizerClassNamePattern
 };
+use Medas\RestRequestHandler\Exceptions\StringIsNotAValidEntityClassName;
 
 #[Service]
 readonly class ClassGenerator
@@ -45,7 +46,7 @@ readonly class ClassGenerator
         $pattern = '#^(' . str_replace('\\', '\\\\', $prefix) . ')(\\\\.+)?\\\\(\w+)$#';
 
         if (!preg_match($pattern, $entityClassName, $match)) {
-            exit($entityClassName . ' is not a valid entity class name');
+            throw new StringIsNotAValidEntityClassName($entityClassName);
         }
 
         [, $entityShortClassName] = $this->splitClassName($entityClassName);
