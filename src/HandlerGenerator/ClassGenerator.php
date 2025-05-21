@@ -42,14 +42,7 @@ readonly class ClassGenerator
     {
         $entityClassName = $this->classNameNormalizer->normalize($entityClassName);
         $prefix = rtrim($this->fileNameFinder->findPrefix($entityClassName), '\\');
-
-        $pattern = '#^('
-            . str_replace('\\', '\\\\', $prefix)
-            . ')('
-            . '\\\\'
-            . '.+)?'
-            . '\\\\'
-            . '(\w+)$#';
+        $pattern = '#^(' . str_replace('\\', '\\\\', $prefix) . ')(\\\\.+)?\\\\(\w+)$#';
 
         if (!preg_match($pattern, $entityClassName, $match)) {
             exit($entityClassName . ' is not a valid entity class name');
@@ -66,14 +59,14 @@ readonly class ClassGenerator
         ];
 
         $handlerClassName = str_replace(
-            array_values($replacements),
             array_keys($replacements),
+            array_values($replacements),
             $this->handlerClassNamePattern
         );
 
         $normalizerClassName = str_replace(
-            array_values($replacements),
             array_keys($replacements),
+            array_values($replacements),
             $this->normalizerClassNamePattern
         );
 
