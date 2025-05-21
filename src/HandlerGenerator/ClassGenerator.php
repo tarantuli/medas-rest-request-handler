@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\HandlerGenerator;
 
-use Medas\Core\Attributes\Service;
+use Medas\Core\Attributes\{ConfigValue, Service};
 use Medas\EntityManager\Entities\Generator\{
     ClassNameNormalizer,
     Exceptions\ClassHasNoNamespace,
     FileNameFinder,
     NameConverters\NameConverter
+};
+use Medas\RestRequestHandler\ConfigOptions\ClassGenerators\{
+    HandlerClassNamePattern,
+    NormalizerClassNamePattern
 };
 
 #[Service]
@@ -19,6 +23,12 @@ readonly class ClassGenerator
         private ClassNameNormalizer $classNameNormalizer,
         private NameConverter       $storeNameConverter,
         private FileNameFinder      $fileNameFinder,
+
+        #[ConfigValue(HandlerClassNamePattern::class)]
+        private string              $handlerClassNamePattern,
+
+        #[ConfigValue(NormalizerClassNamePattern::class)]
+        private string              $normalizerClassNamePattern,
     )
     {
     }
@@ -47,24 +57,25 @@ readonly class ClassGenerator
 
         [, $entityShortClassName] = $this->splitClassName($entityClassName);
 
-        $handlerClassName = $prefix
-            . '\RestControllers'
-            . ($match[2] ?? '\\')
-            . '\\'
-            . $entityShortClassName
-            . '\\'
-            . $handlerPrefix
-            . $match[3]
-            . $handlerSuffix;
+        $replacements = [
+            '{{psr4Prefix}}' => $prefix,
+            '{{subPath}}' => $match[2] ?? '',
+            '{{entityName}}' => $entityShortClassName,
+            '{{handlerPrefix}}' => $handlerPrefix,
+            '{{handlerSuffix}}' => $handlerSuffix,
+        ];
 
-        $normalizerClassName = $prefix
-            . '\RestControllers'
-            . ($match[2] ?? '\\')
-            . '\\'
-            . $entityShortClassName
-            . '\\'
-            . $match[3]
-            . 'Normalizer';
+        $handlerClassName = str_replace(
+            array_values($replacements),
+            array_keys($replacements),
+            $this->handlerClassNamePattern
+        );
+
+        $normalizerClassName = str_replace(
+            array_values($replacements),
+            array_keys($replacements),
+            $this->normalizerClassNamePattern
+        );
 
         $code = $this->compile(
             $entityClassName,

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Medas\RestRequestHandler\ConfigOptions\ComparisonOperators;
+namespace Medas\RestRequestHandler\ConfigOptions\ClassGenerators;
 
 use Medas\Core\{Attributes\Service, Interfaces\ConfigGroup};
 use Medas\RestRequestHandler\ConfigOptions\RestRequestHandlerGroup;
 
 #[Service]
-readonly class ComparisonOperatorGroup implements ConfigGroup
+readonly class ClassGeneratorGroup implements ConfigGroup
 {
     public function __construct(
         private RestRequestHandlerGroup $group,
@@ -23,6 +23,6 @@ readonly class ComparisonOperatorGroup implements ConfigGroup
 
     public function name(): string
     {
-        return 'comparison-operators';
+        return 'class-generators';
     }
 }
