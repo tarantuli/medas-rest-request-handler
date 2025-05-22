@@ -333,7 +333,9 @@ readonly class {{shortClassName}}
             $entities = $this->repository->fetchAll(\{{entityClassName}}::class);
         }
 
-        array_map(fn ($entity) => $this->normalizer->normalizeAndSerialize($entity), $entities);
+        array_walk($entities, function (&$entity) {
+            $entity = $this->normalizer->normalizeAndSerialize($entity);
+        });
 
         return new CollectionResponse($entities);
     }
@@ -419,14 +421,18 @@ readonly class {{shortClassName}} implements EntityNormalizer
         /** @var \{{entityClassName}} $entity */
         $data = get_object_vars($entity);
 
-        array_walk($data, fn($value) => $this->serializer->serialize($value));
+        array_walk($data, function (&$value) {
+            $value = $this->serializer->serialize($value);
+        });
 
         return $data;
     }
 
     public function unserializeAndDenormalize(array $data): array
     {
-        array_walk($data, fn($value) => $this->serializer->unserialize($value));
+        array_walk($data, function (&$value) {
+            $value = $this->serializer->unserialize($value);
+        });
 
         return $data;
     }
