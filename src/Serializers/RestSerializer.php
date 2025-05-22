@@ -16,7 +16,7 @@ use Medas\Core\{
 use Medas\EntityManager\Types\{Boolean, DateTime, Integer, Relation, Uuid as UuidType};
 
 #[Service]
-readonly class JsonSerializer implements Serializer
+readonly class RestSerializer implements Serializer
 {
     public function __construct(
         private UuidProvider|null $UuidProvider,

@@ -19,14 +19,13 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Medas\Core\Interfaces\Uuid as UuidType;
-use Medas\RestRequestHandler\Responses\{EntityResponse, EntityResponseBuilder};
+use Medas\RestRequestHandler\Responses\EntityResponse;
 use Medas\Routing\{Methods\Get, Parameters\Uuid, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private EntityResponseBuilder $entityResponseBuilder,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -35,7 +34,10 @@ readonly class {{shortClassName}}
     #[Get(new Uuid('id'))]
     public function handle(UuidType $id): EntityResponse
     {
-        return $this->entityResponseBuilder->build(em()->get(\{{entityClassName}}::class, $id), $this->normalizer);
+        $entity = em()->get(\{{entityClassName}}::class, $id);
+        $data = $this->normalizer->normalize($entity);
+
+        return new EntityResponse($data);
     }
 }
 
@@ -51,14 +53,13 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
-use Medas\RestRequestHandler\Responses\{EntityResponse, EntityResponseBuilder};
-use Medas\Routing\{Methods\Get,Parameters\Integer, Route};
+use Medas\RestRequestHandler\Responses\EntityResponse;
+use Medas\Routing\{Methods\Get, Parameters\Uuid, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private EntityResponseBuilder $entityResponseBuilder,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -67,7 +68,10 @@ readonly class {{shortClassName}}
     #[Get(new Integer('id'))]
     public function handle(int $id): EntityResponse
     {
-        return $this->entityResponseBuilder->build(em()->get(\{{entityClassName}}::class, $id), $this->normalizer);
+        $entity = em()->get(\{{entityClassName}}::class, $id);
+        $data = $this->normalizer->normalize($entity);
+
+        return new EntityResponse($data);
     }
 }
 
@@ -86,20 +90,18 @@ namespace {{namespace}};
 use Medas\Core\Interfaces\Uuid as UuidType;
 use Medas\EntityManager\{Hydration\ValueSetter, MetaDataManager};
 use Medas\RestRequestHandler\{
-    Requests\RequestDataHandler,
-    Responses\EntityResponse,
-    Responses\EntityResponseBuilder
+    Responses\EntityResponse
 };
+use Medas\HttpRequestHandler\RequestDataManager;
 use Medas\Routing\{Methods\Put, Parameters\Uuid, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private EntityResponseBuilder $entityResponseBuilder,
-        private MetaDataManager       $metaDataManager,
-        private RequestDataHandler    $requestDataHandler,
-        private ValueSetter           $valueSetter,
+        private MetaDataManager    $metaDataManager,
+        private RequestDataManager $requestDataManager,
+        private ValueSetter        $valueSetter,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -110,14 +112,17 @@ readonly class {{shortClassName}}
     {
         $entity = em()->get(\{{entityClassName}}::class, $id);
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
-        $data = $this->requestDataHandler->getBodyData($this->normalizer);
+        $data = $this->requestDataManager->get()->bodyData->data();
+        $data = $this->normalizer->denormalize($data);
 
         $this->valueSetter->setValues($metaData, $entity, $data);
 
         em()->persist($entity);
         em()->flush();
 
-        return $this->entityResponseBuilder->build($entity, $this->normalizer);
+        $data = $this->normalizer->normalize($entity);
+
+        return new EntityResponse($data);
     }
 }
 
@@ -135,20 +140,18 @@ namespace {{namespace}};
 
 use Medas\EntityManager\{Hydration\ValueSetter, MetaDataManager};
 use Medas\RestRequestHandler\{
-    Requests\RequestDataHandler,
-    Responses\EntityResponse,
-    Responses\EntityResponseBuilder
+    Responses\EntityResponse
 };
+use Medas\HttpRequestHandler\RequestDataManager;
 use Medas\Routing\{Methods\Put, Parameters\Integer, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private EntityResponseBuilder $entityResponseBuilder,
-        private MetaDataManager       $metaDataManager,
-        private RequestDataHandler    $requestDataHandler,
-        private ValueSetter           $valueSetter,
+        private MetaDataManager    $metaDataManager,
+        private RequestDataManager $requestDataManager,
+        private ValueSetter        $valueSetter,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -160,14 +163,17 @@ readonly class {{shortClassName}}
         $entity = em()->get(\{{entityClassName}}::class, $id);
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
 
-        $data = $this->requestDataHandler->getBodyData($this->normalizer);
+        $data = $this->requestDataManager->get()->bodyData->data();
+        $data = $this->normalizer->denormalize($data);
 
         $this->valueSetter->setValues($metaData, $entity, $data);
 
         em()->persist($entity);
         em()->flush();
 
-        return $this->entityResponseBuilder->build($entity, $this->normalizer);
+        $data = $this->normalizer->normalize($entity);
+
+        return new EntityResponse($data);
     }
 }
 
@@ -186,18 +192,16 @@ namespace {{namespace}};
 use Medas\EntityManager\Exceptions\PropertyDoesNotExist;
 use Medas\RestRequestHandler\{
     Exceptions\EntityDoesNotHaveProperty,
-    Requests\RequestDataHandler,
-    Responses\EntityResponse,
-    Responses\EntityResponseBuilder
+    Responses\EntityResponse
 };
+use Medas\HttpRequestHandler\RequestDataManager;
 use Medas\Routing\{Methods\Post, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private EntityResponseBuilder $entityResponseBuilder,
-        private RequestDataHandler    $requestDataHandler,
+        private RequestDataManager $requestDataManager,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -206,7 +210,8 @@ readonly class {{shortClassName}}
     #[Post]
     public function handle(): EntityResponse
     {
-        $data = $this->requestDataHandler->getBodyData($this->normalizer);
+        $data = $this->requestDataManager->get()->bodyData->data();
+        $data = $this->normalizer->denormalize($data);
 
         try {
             $entity = em()->create(\{{entityClassName}}::class, $data);
@@ -218,7 +223,9 @@ readonly class {{shortClassName}}
         em()->persist($entity);
         em()->flush();
 
-        return $this->entityResponseBuilder->build($entity, $this->normalizer);
+        $data = $this->normalizer->normalize($entity);
+
+        return new EntityResponse($data);
     }
 }
 
@@ -298,20 +305,18 @@ namespace {{namespace}};
 use Medas\EntityManager\Repository;
 use Medas\RestRequestHandler\{
     Filtering\SelectorBuilder,
-    Requests\RequestDataHandler,
-    Responses\CollectionResponse,
-    Responses\CollectionResponseBuilder
+    Responses\CollectionResponse
 };
+use Medas\HttpRequestHandler\RequestDataManager;
 use Medas\Routing\{Methods\Get, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private CollectionResponseBuilder $collectionResponseBuilder,
-        private Repository                $repository,
-        private RequestDataHandler        $requestDataHandler,
-        private SelectorBuilder           $selectorBuilder,
+        private Repository         $repository,
+        private RequestDataManager $requestDataManager,
+        private SelectorBuilder    $selectorBuilder,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -320,7 +325,7 @@ readonly class {{shortClassName}}
     #[Get]
     public function handle(): CollectionResponse
     {
-        if ($queryData = $this->requestDataHandler->getQueryData()) {
+        if ($queryData = $this->requestDataManager->get()->uri->query) {
             $selector = $this->selectorBuilder->build(\{{entityClassName}}::class, $queryData);
             $entities = $this->repository->fetch($selector);
         }
@@ -328,7 +333,9 @@ readonly class {{shortClassName}}
             $entities = $this->repository->fetchAll(\{{entityClassName}}::class);
         }
 
-        return $this->collectionResponseBuilder->build($entities, $this->normalizer);
+        array_map(fn ($entity) => $this->normalizer->normalize($entity), $entities);
+
+        return new CollectionResponse($entities);
     }
 }
 
@@ -348,18 +355,18 @@ use Medas\EntityManager\Repository;
 use Medas\EntityManager\Selector\Selectors\AllEntities;
 use Medas\RestRequestHandler\{
     Filtering\SelectorBuilder,
-    Requests\RequestDataHandler,
     Responses\ScalarResponse
 };
+use Medas\HttpRequestHandler\RequestDataManager;
 use Medas\Routing\{Methods\Get, Parameters\Constant, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private Repository                $repository,
-        private RequestDataHandler        $requestDataHandler,
-        private SelectorBuilder           $selectorBuilder,
+        private Repository         $repository,
+        private RequestDataManager $requestDataManager,
+        private SelectorBuilder    $selectorBuilder,
     )
     {
     }
@@ -367,7 +374,7 @@ readonly class {{shortClassName}}
     #[Get(new Constant('count'))]
     public function handle(): ScalarResponse
     {
-        if ($queryData = $this->requestDataHandler->getQueryData()) {
+        if ($queryData = $this->requestDataManager->get()->uri->query) {
             $selector = $this->selectorBuilder->build(\{{entityClassName}}::class, $queryData);
             $count = $this->repository->fetchCount($selector);
         }
@@ -391,32 +398,37 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
-use Medas\Core\{Attributes\Service, Interfaces\HasId, Interfaces\Uuid};
-use Medas\RestRequestHandler\Interfaces\{Denormalizer, Normalizer};
+use Medas\Core\{Attributes\Service, Interfaces\HasId, Interfaces\Serializer, Interfaces\Uuid, PreferredDefault};
+use Medas\RestRequestHandler\{
+    Interfaces\Denormalizer,
+    Interfaces\Normalizer,
+    Serializers\RestSerializer
+};
 
 #[Service]
 readonly class {{shortClassName}} implements Normalizer, Denormalizer
 {
+    public function __construct(
+        #[PreferredDefault(RestSerializer::class)]
+        private readonly Serializer $serializer,
+    )
+    {
+    }
+
     public function normalize(object $entity): array
     {
         /** @var \{{entityClassName}} $entity */
-        $properties = get_object_vars($entity);
+        $data = get_object_vars($entity);
 
-        foreach ($properties as &$value) {
-            if ($value instanceof HasId) {
-                $value = $value->id();
-            }
+        array_walk($data, fn($value) => $this->serializer->serialize($value));
 
-            if ($value instanceof Uuid) {
-                $value = (string) $value;
-            }
-        }
-
-        return $properties;
+        return $data;
     }
 
     public function denormalize(array $data): array
     {
+        array_walk($data, fn($value) => $this->serializer->unserialize($value));
+
         return $data;
     }
 }

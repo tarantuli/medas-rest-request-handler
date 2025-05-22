@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Responses;
 
 use Medas\Core\{Attributes\PreferredDefault, Interfaces\Serializer};
-use Medas\RestRequestHandler\{Interfaces\Normalizer, Serializers\JsonSerializer};
+use Medas\RestRequestHandler\{Interfaces\Normalizer, Serializers\RestSerializer};
 
 abstract class BaseResponseBuilder
 {
     public function __construct(
-        #[PreferredDefault(JsonSerializer::class)]
+        #[PreferredDefault(RestSerializer::class)]
         private readonly Serializer $serializer,
     )
     {

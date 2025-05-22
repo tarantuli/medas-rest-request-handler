@@ -16,7 +16,7 @@ use Medas\EntityManager\Types\{DateTime, Integer};
 readonly class ArgumentDeserializer implements ArgumentProcessor
 {
     public function __construct(
-        #[PreferredDefault(JsonSerializer::class)]
+        #[PreferredDefault(RestSerializer::class)]
         private Serializer $serializer,
     )
     {
