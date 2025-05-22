@@ -35,7 +35,7 @@ readonly class {{shortClassName}}
     public function handle(UuidType $id): EntityResponse
     {
         $entity = em()->get(\{{entityClassName}}::class, $id);
-        $data = $this->normalizer->normalize($entity);
+        $data = $this->normalizer->normalizeAndSerialize($entity);
 
         return new EntityResponse($data);
     }
@@ -69,7 +69,7 @@ readonly class {{shortClassName}}
     public function handle(int $id): EntityResponse
     {
         $entity = em()->get(\{{entityClassName}}::class, $id);
-        $data = $this->normalizer->normalize($entity);
+        $data = $this->normalizer->normalizeAndSerialize($entity);
 
         return new EntityResponse($data);
     }
@@ -113,14 +113,14 @@ readonly class {{shortClassName}}
         $entity = em()->get(\{{entityClassName}}::class, $id);
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
         $data = $this->requestDataManager->get()->bodyData->data();
-        $data = $this->normalizer->denormalize($data);
+        $data = $this->normalizer->unserializeAndDenormalize($data);
 
         $this->valueSetter->setValues($metaData, $entity, $data);
 
         em()->persist($entity);
         em()->flush();
 
-        $data = $this->normalizer->normalize($entity);
+        $data = $this->normalizer->normalizeAndSerialize($entity);
 
         return new EntityResponse($data);
     }
@@ -164,14 +164,14 @@ readonly class {{shortClassName}}
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
 
         $data = $this->requestDataManager->get()->bodyData->data();
-        $data = $this->normalizer->denormalize($data);
+        $data = $this->normalizer->unserializeAndDenormalize($data);
 
         $this->valueSetter->setValues($metaData, $entity, $data);
 
         em()->persist($entity);
         em()->flush();
 
-        $data = $this->normalizer->normalize($entity);
+        $data = $this->normalizer->normalizeAndSerialize($entity);
 
         return new EntityResponse($data);
     }
@@ -211,7 +211,7 @@ readonly class {{shortClassName}}
     public function handle(): EntityResponse
     {
         $data = $this->requestDataManager->get()->bodyData->data();
-        $data = $this->normalizer->denormalize($data);
+        $data = $this->normalizer->unserializeAndDenormalize($data);
 
         try {
             $entity = em()->create(\{{entityClassName}}::class, $data);
@@ -223,7 +223,7 @@ readonly class {{shortClassName}}
         em()->persist($entity);
         em()->flush();
 
-        $data = $this->normalizer->normalize($entity);
+        $data = $this->normalizer->normalizeAndSerialize($entity);
 
         return new EntityResponse($data);
     }
@@ -333,7 +333,7 @@ readonly class {{shortClassName}}
             $entities = $this->repository->fetchAll(\{{entityClassName}}::class);
         }
 
-        array_map(fn ($entity) => $this->normalizer->normalize($entity), $entities);
+        array_map(fn ($entity) => $this->normalizer->normalizeAndSerialize($entity), $entities);
 
         return new CollectionResponse($entities);
     }
@@ -398,24 +398,23 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
-use Medas\Core\{Attributes\Service, Interfaces\HasId, Interfaces\Serializer, Interfaces\Uuid, PreferredDefault};
+use Medas\Core\{Attributes\PreferredDefault, Attributes\Service, Interfaces\Serializer};
 use Medas\RestRequestHandler\{
-    Interfaces\Denormalizer,
-    Interfaces\Normalizer,
+    Interfaces\EntityNormalizer,
     Serializers\RestSerializer
 };
 
 #[Service]
-readonly class {{shortClassName}} implements Normalizer, Denormalizer
+readonly class {{shortClassName}} implements EntityNormalizer
 {
     public function __construct(
         #[PreferredDefault(RestSerializer::class)]
-        private readonly Serializer $serializer,
+        private Serializer $serializer,
     )
     {
     }
 
-    public function normalize(object $entity): array
+    public function normalizeAndSerialize(object $entity): array
     {
         /** @var \{{entityClassName}} $entity */
         $data = get_object_vars($entity);
@@ -425,7 +424,7 @@ readonly class {{shortClassName}} implements Normalizer, Denormalizer
         return $data;
     }
 
-    public function denormalize(array $data): array
+    public function unserializeAndDenormalize(array $data): array
     {
         array_walk($data, fn($value) => $this->serializer->unserialize($value));
 
