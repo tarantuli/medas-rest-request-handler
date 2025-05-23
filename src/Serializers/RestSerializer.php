@@ -7,6 +7,7 @@ namespace Medas\RestRequestHandler\Serializers;
 use Medas\Core\{
     Attributes\Service,
     Exceptions\UuidProviderIsNotAvailable,
+    Interfaces\Collection,
     Interfaces\HasId,
     Interfaces\Serializer,
     Interfaces\Type,
@@ -40,6 +41,12 @@ readonly class RestSerializer implements Serializer
 
         if ($value instanceof \DateTimeInterface) {
             $value = $value->format(\DateTimeInterface::RFC3339_EXTENDED);
+        }
+
+        if ($value instanceof Collection) {
+            $value = array_map(function (&$value) {
+                $value = $this->serialize($value);
+            }, iterator_to_array($value));
         }
 
         return $value;
