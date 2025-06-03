@@ -6,10 +6,10 @@ namespace Medas\RestRequestHandler\Responses;
 
 use Medas\HttpRequestHandler\ResponseTypes\JsonResponse;
 
-readonly class EntityResponse implements JsonResponse
+class EntityResponse implements JsonResponse
 {
     public function __construct(
-        private array $entityData,
+        public array $entityData,
     )
     {
     }
