@@ -35,7 +35,7 @@ readonly class UsersClass implements ConfigOption
         return true;
     }
 
-    public function default(): null
+    public function default(): string|null
     {
         return null;
     }
