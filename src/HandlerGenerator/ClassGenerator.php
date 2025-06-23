@@ -42,7 +42,13 @@ readonly class ClassGenerator
     ): void
     {
         $entityClassName = $this->classNameNormalizer->normalize($entityClassName);
-        $prefix = rtrim($this->fileNameFinder->findPrefix($entityClassName), '\\');
+        $prefix = $this->fileNameFinder->findPrefix($entityClassName);
+
+        if ($prefix === null) {
+            throw new StringIsNotAValidEntityClassName($entityClassName);
+        }
+
+        $prefix = rtrim($prefix, '\\');
         $pattern = '#^(' . str_replace('\\', '\\\\', $prefix) . ')(\\\\.+)?\\\\(\w+)$#';
 
         if (!preg_match($pattern, $entityClassName, $match)) {
