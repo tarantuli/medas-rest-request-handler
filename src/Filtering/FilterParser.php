@@ -20,20 +20,21 @@ readonly class FilterParser
 {
     public function __construct(
         #[ConfigValue(MultisortQueryName::class)]
-        private string|null       $multisortQueryName,
+        private string|null         $multisortQueryName,
 
         #[ConfigValue(DefaultPageSize::class)]
-        private int               $defaultPageSize,
+        private int                 $defaultPageSize,
 
         #[ConfigValue(PageQueryName::class)]
-        private string|null       $pageQueryName,
+        private string|null         $pageQueryName,
 
         #[ConfigValue(PerPageQueryName::class)]
-        private string|null       $perPageQueryName,
-        private ComparisonParser  $comparisonParser,
-        private MultisortParser   $multisortParser,
-        private StringProtector   $stringProtector,
-        private EntityClassFinder $entityClassFinder,
+        private string|null         $perPageQueryName,
+        private ComparisonExtractor $comparisonExtractor,
+        private ComparisonParser    $comparisonParser,
+        private EntityClassFinder   $entityClassFinder,
+        private MultisortParser     $multisortParser,
+        private StringProtector     $stringProtector,
     )
     {
     }
@@ -87,11 +88,13 @@ readonly class FilterParser
         ?\Closure        $typeFinder
     ): void
     {
+        $comparisonType = $this->comparisonExtractor->extract($name);
+
         if (str_contains($name, '.')) {
             [$subStore, $subName] = explode('.', $name);
-            $subEntity = $this->entityClassFinder->getByStore($subStore);
-            $job->referencedEntities[$subEntity] = true;
-            $type = $typeFinder ? $typeFinder($subName, $subEntity) : null;
+            $metaData = $this->entityClassFinder->getByStore($subStore);
+            $job->referencedEntities[$metaData->className] = true;
+            $type = $typeFinder ? $typeFinder($subName, $metaData->className) : null;
         }
         else {
             $type = $typeFinder ? $typeFinder($name, $entity) : null;
@@ -99,6 +102,7 @@ readonly class FilterParser
 
         $job->elements[] = $this->comparisonParser->parse(
             $name,
+            $comparisonType,
             $this->stringProtector->decode($value),
             $type
         );
