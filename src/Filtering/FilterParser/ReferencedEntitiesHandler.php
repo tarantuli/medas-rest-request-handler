@@ -18,8 +18,10 @@ readonly class ReferencedEntitiesHandler
 
     public function handle(Job $job): void
     {
+        $metaData = $this->metaDataManager->get($job->entity);
+
         foreach ($job->referencedEntities as $referencedEntity => $dump) {
-            $metaData = $this->metaDataManager->get($referencedEntity);
+            // Turn the reference into a Relation Element
         }
     }
 }

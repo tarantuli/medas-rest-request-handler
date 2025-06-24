@@ -43,10 +43,10 @@ readonly class FilterParser
     /** @return Element[] */
     public function parse(string $entity, array $filters, \Closure $typeFinder = null): array
     {
-        $job = new FilterParser\Job();
+        $job = new FilterParser\Job($entity);
 
         foreach ($filters as $name => $value) {
-            $this->processFilter($job, $entity, $name, $value, $typeFinder);
+            $this->processFilter($job, $name, $value, $typeFinder);
         }
 
         $this->processPagination($job);
@@ -57,7 +57,6 @@ readonly class FilterParser
 
     private function processFilter(
         FilterParser\Job $job,
-        string           $entity,
         string           $name,
         mixed            $value,
         \Closure         $typeFinder = null
@@ -74,7 +73,7 @@ readonly class FilterParser
         }
         else {
             try {
-                $this->parseComparison($job, $entity, $name, $value, $typeFinder);
+                $this->parseComparison($job, $name, $value, $typeFinder);
             }
             catch (\Exception) {
                 throw new CannotParseQueryValue($name, $value);
@@ -82,13 +81,7 @@ readonly class FilterParser
         }
     }
 
-    private function parseComparison(
-        FilterParser\Job $job,
-        string           $entity,
-        string           $name,
-        mixed            $value,
-        ?\Closure        $typeFinder
-    ): void
+    private function parseComparison(FilterParser\Job $job, string $name, mixed $value, ?\Closure $typeFinder): void
     {
         $comparisonType = $this->comparisonExtractor->extract($name);
 
@@ -97,6 +90,9 @@ readonly class FilterParser
             $metaData = $this->entityClassFinder->getByStore($subStore);
             $entity = $metaData->className;
             $job->referencedEntities[$entity] = true;
+        }
+        else {
+            $entity = $job->entity;
         }
 
         $type = $typeFinder ? $typeFinder($name, $entity) : null;

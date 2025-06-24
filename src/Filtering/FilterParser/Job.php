@@ -10,4 +10,10 @@ class Job
     public int $pageSize;
     public array $elements = [];
     public array $referencedEntities = [];
+
+    public function __construct(
+        public string $entity,
+    )
+    {
+    }
 }
