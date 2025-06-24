@@ -91,16 +91,16 @@ readonly class FilterParser
         $comparisonType = $this->comparisonExtractor->extract($name);
 
         if (str_contains($name, '.')) {
-            [$subStore, $subName] = explode('.', $name);
+            [$subStore, $name] = explode('.', $name);
             $metaData = $this->entityClassFinder->getByStore($subStore);
-            $job->referencedEntities[$metaData->className] = true;
-            $type = $typeFinder ? $typeFinder($subName, $metaData->className) : null;
-        }
-        else {
-            $type = $typeFinder ? $typeFinder($name, $entity) : null;
+            $entity = $metaData->className;
+            $job->referencedEntities[$entity] = true;
         }
 
+        $type = $typeFinder ? $typeFinder($name, $entity) : null;
+
         $job->elements[] = $this->comparisonParser->parse(
+            $entity,
             $name,
             $comparisonType,
             $this->stringProtector->decode($value),

@@ -31,19 +31,32 @@ readonly class ComparisonParser
     {
     }
 
-    public function parse(string $name, string $comparisonType, string $value, mixed $type): Element
+    public function parse(string $entity, string $name, string $comparisonType, string $value, mixed $type): Element
     {
         if (in_array($comparisonType, self::ARRAY_VALUE_COMPARISON_TYPES, true)) {
-            $element = $this->createArrayValueElement($name, $comparisonType, $value, $type);
+            $element = $this->createArrayValueElement(
+                $entity,
+                $name,
+                $comparisonType,
+                $value,
+                $type
+            );
         }
         else {
-            $element = $this->createSingletonValueElement($name, $comparisonType, $value, $type);
+            $element = $this->createSingletonValueElement(
+                $entity,
+                $name,
+                $comparisonType,
+                $value,
+                $type
+            );
         }
 
         return $element;
     }
 
     private function createArrayValueElement(
+        string $entity,
         string $name,
         string $comparisonType,
         string $value,
@@ -57,12 +70,13 @@ readonly class ComparisonParser
         }
 
         return new $comparisonType(
-            Property::c($name),
+            Property::c($name, $entity),
             Values::c($values),
         );
     }
 
     private function createSingletonValueElement(
+        string $entity,
         string $name,
         string $comparisonType,
         string $value,
@@ -81,7 +95,7 @@ readonly class ComparisonParser
         }
 
         return new $comparisonType(
-            Property::c($name),
+            Property::c($name, $entity),
             Value::c($unserializedValue),
         );
     }
