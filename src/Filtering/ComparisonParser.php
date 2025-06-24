@@ -47,10 +47,9 @@ readonly class ComparisonParser
     {
     }
 
-    public function parse(string $name, string $value, \Closure $typeFinder = null): Element
+    public function parse(string $name, string $value, mixed $type): Element
     {
         $comparisonType = $this->extractComparisonType($name);
-        $type = $typeFinder ? $typeFinder($name) : null;
 
         if (in_array($comparisonType, self::ARRAY_VALUE_COMPARISON_TYPES, true)) {
             $element = $this->createArrayValueElement($name, $comparisonType, $value, $type);

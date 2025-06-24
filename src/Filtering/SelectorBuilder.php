@@ -20,9 +20,9 @@ readonly class SelectorBuilder
     public function build(string $entity, array $filters): QuerySelector
     {
         $selector = new QuerySelector($entity);
-        $typeFinder = function ($name) use ($selector) {
+        $typeFinder = function ($name, $entity) {
             try {
-                $metaData = $this->metaDataManager->get($selector->entity());
+                $metaData = $this->metaDataManager->get($entity);
                 $type = $metaData->property($name)->type;
 
                 if ($type instanceof Relation) {
@@ -36,7 +36,7 @@ readonly class SelectorBuilder
             return null;
         };
 
-        $elements = $this->filterParser->parse($filters, $typeFinder);
+        $elements = $this->filterParser->parse($entity, $filters, $typeFinder);
 
         $selector->definition()->add(...$elements);
 
