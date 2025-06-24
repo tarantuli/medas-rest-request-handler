@@ -20,21 +20,22 @@ readonly class FilterParser
 {
     public function __construct(
         #[ConfigValue(MultisortQueryName::class)]
-        private string|null         $multisortQueryName,
+        private string|null                            $multisortQueryName,
 
         #[ConfigValue(DefaultPageSize::class)]
-        private int                 $defaultPageSize,
+        private int                                    $defaultPageSize,
 
         #[ConfigValue(PageQueryName::class)]
-        private string|null         $pageQueryName,
+        private string|null                            $pageQueryName,
 
         #[ConfigValue(PerPageQueryName::class)]
-        private string|null         $perPageQueryName,
-        private ComparisonExtractor $comparisonExtractor,
-        private ComparisonParser    $comparisonParser,
-        private EntityClassFinder   $entityClassFinder,
-        private MultisortParser     $multisortParser,
-        private StringProtector     $stringProtector,
+        private string|null                            $perPageQueryName,
+        private EntityClassFinder                      $entityClassFinder,
+        private FilterParser\ComparisonExtractor       $comparisonExtractor,
+        private FilterParser\ComparisonParser          $comparisonParser,
+        private FilterParser\MultisortParser           $multisortParser,
+        private FilterParser\ReferencedEntitiesHandler $referencedEntitiesHandler,
+        private StringProtector                        $stringProtector,
     )
     {
     }
@@ -49,6 +50,7 @@ readonly class FilterParser
         }
 
         $this->processPagination($job);
+        $this->referencedEntitiesHandler->handle($job);
 
         return $job->elements;
     }
