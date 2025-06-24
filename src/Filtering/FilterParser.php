@@ -12,6 +12,7 @@ use Medas\RestRequestHandler\{
     ConfigOptions\MultisortQueryName,
     ConfigOptions\PageQueryName,
     ConfigOptions\PerPageQueryName,
+    ConfigOptions\PredefinedQueryName,
     Exceptions\CannotParseQueryValue
 };
 
@@ -20,22 +21,26 @@ readonly class FilterParser
 {
     public function __construct(
         #[ConfigValue(MultisortQueryName::class)]
-        private string|null                            $multisortQueryName,
+        private string|null                              $multisortQueryName,
 
         #[ConfigValue(DefaultPageSize::class)]
-        private int                                    $defaultPageSize,
+        private int                                      $defaultPageSize,
 
         #[ConfigValue(PageQueryName::class)]
-        private string|null                            $pageQueryName,
+        private string|null                              $pageQueryName,
 
         #[ConfigValue(PerPageQueryName::class)]
-        private string|null                            $perPageQueryName,
-        private EntityClassFinder                      $entityClassFinder,
-        private FilterParser\ComparisonExtractor       $comparisonExtractor,
-        private FilterParser\ComparisonParser          $comparisonParser,
-        private FilterParser\MultisortParser           $multisortParser,
-        private FilterParser\ReferencedEntitiesHandler $referencedEntitiesHandler,
-        private StringProtector                        $stringProtector,
+        private string|null                              $perPageQueryName,
+
+        #[ConfigValue(PredefinedQueryName::class)]
+        private string|null                              $predefinedQueryName,
+        private EntityClassFinder                        $entityClassFinder,
+        private FilterParser\ComparisonExtractor         $comparisonExtractor,
+        private FilterParser\ComparisonParser            $comparisonParser,
+        private FilterParser\MultisortParser             $multisortParser,
+        private PredefinedQueries\PredefinedQueryHandler $predefinedQueryHandler,
+        private FilterParser\ReferencedEntitiesHandler   $referencedEntitiesHandler,
+        private StringProtector                          $stringProtector,
     )
     {
     }
@@ -70,6 +75,9 @@ readonly class FilterParser
         }
         elseif ($name === $this->perPageQueryName) {
             $job->pageSize = (int) $value;
+        }
+        elseif ($name === $this->predefinedQueryName) {
+            $this->predefinedQueryHandler->handle($job, $value);
         }
         else {
             try {
