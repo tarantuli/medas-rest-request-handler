@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering\PredefinedQueries;
 
-use Medas\Core\{Attributes\Service, Interfaces\CacheManager, Interfaces\ImplementorFinder};
+use Medas\Core\{Attributes\Service, Interfaces\ImplementorFinder};
 
 #[Service]
 readonly class PredefinedQueryManager
 {
     public function __construct(
-        private CacheManager      $cacheManager,
         private ImplementorFinder $implementorFinder,
     )
     {
@@ -30,9 +29,6 @@ readonly class PredefinedQueryManager
     /** @return PredefinedQuery[] */
     public function getAll(): array
     {
-        return $this->cacheManager->get()->get(
-            __CLASS__,
-            fn() => $this->implementorFinder->find(PredefinedQuery::class)
-        );
+        return cache(__CLASS__, fn() => $this->implementorFinder->find(PredefinedQuery::class));
     }
 }
