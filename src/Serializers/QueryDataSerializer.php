@@ -9,9 +9,11 @@ use Medas\Core\{
     Interfaces\HasId,
     Interfaces\Serializer,
     Interfaces\Type,
-    Interfaces\Uuid
+    Interfaces\Uuid,
+    Types\Boolean,
+    Types\DateTime,
+    Types\Integer
 };
-use Medas\EntityManager\Types\{Boolean, DateTime, Integer};
 
 #[Service]
 readonly class QueryDataSerializer implements Serializer

@@ -8,9 +8,10 @@ use Medas\Core\{
     Attributes\PreferredDefault,
     Attributes\Service,
     Interfaces\ArgumentProcessor,
-    Interfaces\Serializer
+    Interfaces\Serializer,
+    Types\DateTime,
+    Types\Integer
 };
-use Medas\EntityManager\Types\{DateTime, Integer};
 
 #[Service]
 readonly class ArgumentDeserializer implements ArgumentProcessor

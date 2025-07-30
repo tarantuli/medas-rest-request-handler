@@ -12,9 +12,13 @@ use Medas\Core\{
     Interfaces\Serializer,
     Interfaces\Type,
     Interfaces\Uuid,
-    Interfaces\UuidProvider
+    Interfaces\UuidProvider,
+    Types\Boolean,
+    Types\DateTime,
+    Types\Integer,
+    Types\Relation,
+    Types\Uuid as UuidType
 };
-use Medas\EntityManager\Types\{Boolean, DateTime, Integer, Relation, Uuid as UuidType};
 
 #[Service]
 readonly class RestSerializer implements Serializer
