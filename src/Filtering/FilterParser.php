@@ -109,7 +109,7 @@ readonly class FilterParser
             $entity,
             $name,
             $comparisonType,
-            $this->stringProtector->decode($value),
+            $this->stringProtector->decode($value, true),
             $type
         );
     }

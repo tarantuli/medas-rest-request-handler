@@ -9,17 +9,11 @@ use Medas\Core\Attributes\Service;
 #[Service]
 readonly class ReferencedEntitiesHandler
 {
-    public function __construct(//        private MetaDataManager $metaDataManager,
-    )
+    public function __construct()
     {
     }
 
     public function handle(Job $job): void
     {
-        //        $metaData = $this->metaDataManager->get($job->entity);
-        //
-        //        foreach ($job->referencedEntities as $referencedEntity => $dump) {
-        //           // Turn the reference into a Relation Element
-        //        }
     }
 }
