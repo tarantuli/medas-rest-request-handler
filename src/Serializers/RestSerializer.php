@@ -48,9 +48,7 @@ readonly class RestSerializer implements Serializer
         }
 
         if ($value instanceof Collection) {
-            $value = array_map(function (&$value) {
-                $value = $this->serialize($value);
-            }, iterator_to_array($value));
+            $value = array_map(fn($value) => $this->serialize($value), iterator_to_array($value));
         }
 
         return $value;
