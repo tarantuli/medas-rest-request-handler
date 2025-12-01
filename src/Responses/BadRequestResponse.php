@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Responses;
 
-use Medas\HttpRequestHandler\ResponseTypes\{HtmlResponse, JsonResponse};
+use Medas\HttpRequestHandler\ResponseTypes\{HtmlResponse, JsonResponse, SetsResponseCode};
 
-class BadRequestResponse implements HtmlResponse, JsonResponse
+class BadRequestResponse implements HtmlResponse, JsonResponse, SetsResponseCode
 {
     public function outputHtmlResponse(): void
     {
-        if (!headers_sent()) {
-            http_response_code(400);
-        }
+        // Do nothing
     }
 
     public function getJsonResponse(): null
     {
-        $this->outputHtmlResponse();
-
         return null;
+    }
+
+    public function responseCode(): int
+    {
+        return 400;
     }
 }
