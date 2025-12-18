@@ -12,9 +12,10 @@ use Medas\RestRequestHandler\{Interfaces\Denormalizer, Serializers\RestSerialize
 readonly class RequestDataHandler
 {
     public function __construct(
+        protected RequestDataManager $requestDataManager,
+
         #[PreferredDefault(RestSerializer::class)]
         private Serializer           $serializer,
-        protected RequestDataManager $requestDataManager,
     )
     {
     }

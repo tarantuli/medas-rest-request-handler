@@ -20,11 +20,19 @@ use Medas\RestRequestHandler\{
 readonly class FilterParser
 {
     public function __construct(
-        #[ConfigValue(MultisortQueryName::class)]
-        private string|null                              $multisortQueryName,
+        private EntityClassFinder                        $entityClassFinder,
+        private FilterParser\ComparisonExtractor         $comparisonExtractor,
+        private FilterParser\ComparisonParser            $comparisonParser,
+        private FilterParser\MultisortParser             $multisortParser,
+        private FilterParser\ReferencedEntitiesHandler   $referencedEntitiesHandler,
+        private PredefinedQueries\PredefinedQueryHandler $predefinedQueryHandler,
+        private StringProtector                          $stringProtector,
 
         #[ConfigValue(DefaultPageSize::class)]
         private int                                      $defaultPageSize,
+
+        #[ConfigValue(MultisortQueryName::class)]
+        private string|null                              $multisortQueryName,
 
         #[ConfigValue(PageQueryName::class)]
         private string|null                              $pageQueryName,
@@ -34,13 +42,6 @@ readonly class FilterParser
 
         #[ConfigValue(PredefinedQueryName::class)]
         private string|null                              $predefinedQueryName,
-        private EntityClassFinder                        $entityClassFinder,
-        private FilterParser\ComparisonExtractor         $comparisonExtractor,
-        private FilterParser\ComparisonParser            $comparisonParser,
-        private FilterParser\MultisortParser             $multisortParser,
-        private PredefinedQueries\PredefinedQueryHandler $predefinedQueryHandler,
-        private FilterParser\ReferencedEntitiesHandler   $referencedEntitiesHandler,
-        private StringProtector                          $stringProtector,
     )
     {
     }
@@ -109,7 +110,7 @@ readonly class FilterParser
             $entity,
             $name,
             $comparisonType,
-            $this->stringProtector->decode($value, true),
+            $this->stringProtector->decode($value),
             $type
         );
     }

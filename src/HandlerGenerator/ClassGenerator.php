@@ -22,8 +22,8 @@ readonly class ClassGenerator
 {
     public function __construct(
         private ClassNameNormalizer $classNameNormalizer,
-        private NameConverter       $storeNameConverter,
         private FileNameFinder      $fileNameFinder,
+        private NameConverter       $storeNameConverter,
 
         #[ConfigValue(HandlerClassNamePattern::class)]
         private string              $handlerClassNamePattern,

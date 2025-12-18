@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\Core\Attributes\Service;
-use Medas\EntityManager\{Exceptions\ClassIsNotAnEntity, MetaDataManager, Types\Relation};
+use Medas\Core\{Attributes\Service, Types\Relation};
+use Medas\EntityManager\{Exceptions\ClassIsNotAnEntity, MetaDataManager};
 
 #[Service]
 readonly class SelectorBuilder
 {
     public function __construct(
-        private MetaDataManager $metaDataManager,
         private FilterParser    $filterParser,
+        private MetaDataManager $metaDataManager,
     )
     {
     }
