@@ -10,7 +10,7 @@ class EntityDoesNotHaveProperty extends BaseException
 {
     public function __construct(string $className, string $propertyName)
     {
-        parent::__construct((new \ReflectionClass($className))->getShortName(), $propertyName);
+        parent::__construct(new \ReflectionClass($className)->getShortName(), $propertyName);
     }
 
     public function pattern(): string

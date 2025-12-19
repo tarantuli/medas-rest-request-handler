@@ -54,7 +54,7 @@ readonly class RestSerializer implements Serializer
         return $value;
     }
 
-    public function unserialize(mixed $value, Type $type = null): mixed
+    public function unserialize(mixed $value, Type|null $type = null): mixed
     {
         if ($type instanceof UuidType) {
             if ($this->UuidProvider === null) {

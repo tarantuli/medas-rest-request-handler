@@ -47,7 +47,7 @@ readonly class FilterParser
     }
 
     /** @return Element[] */
-    public function parse(string $entity, array $filters, \Closure $typeFinder = null): array
+    public function parse(string $entity, array $filters, \Closure|null $typeFinder = null): array
     {
         $job = new FilterParser\Job($entity);
 
@@ -65,7 +65,7 @@ readonly class FilterParser
         FilterParser\Job $job,
         string           $name,
         mixed            $value,
-        \Closure         $typeFinder = null
+        \Closure|null    $typeFinder = null
     ): void
     {
         if ($name === $this->multisortQueryName) {
@@ -90,7 +90,12 @@ readonly class FilterParser
         }
     }
 
-    private function parseComparison(FilterParser\Job $job, string $name, mixed $value, ?\Closure $typeFinder): void
+    private function parseComparison(
+        FilterParser\Job $job,
+        string           $name,
+        mixed            $value,
+        \Closure|null    $typeFinder
+    ): void
     {
         $comparisonType = $this->comparisonExtractor->extract($name);
 

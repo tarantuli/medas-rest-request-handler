@@ -17,13 +17,7 @@ readonly class PredefinedQueryManager
 
     public function getByName(string $name): PredefinedQuery|null
     {
-        foreach ($this->getAll() as $query) {
-            if ($query->name() === $name) {
-                return $query;
-            }
-        }
-
-        return null;
+        return array_find($this->getAll(), fn($query) => $query->name() === $name);
     }
 
     /** @return PredefinedQuery[] */
