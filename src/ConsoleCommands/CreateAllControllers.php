@@ -121,7 +121,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $this->classGenerator->generate(
                 $entityClassName,
                 $this->templates->crudVoteHandler(),
-                'Authorization\\Read' . $prefix,
+                'Authorization\\' . $prefix,
                 'VoteHandler',
                 ['{{voteClassName}}' => $voteClassName]
             );
