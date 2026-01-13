@@ -441,7 +441,7 @@ readonly class {{shortClassName}} implements EntityNormalizer
 PHP;
     }
 
-    public function readVote(): string
+    public function crudVote(): string
     {
         return <<<'PHP'
 <?php
@@ -452,11 +452,33 @@ namespace {{namespace}};
 
 use Medas\Core\Events\BasicVote;
 
-class ReadVote extends BasicVote
+class {{shortClassName}} extends BasicVote
 {
     public function __construct(
-        public {{entityClassName}} {{instanceVariable}},
+        public \{{entityClassName}} {{instanceVariable}},
     )
+    {
+    }
+}
+PHP;
+    }
+
+    public function crudVoteHandler(): string
+    {
+        return <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+namespace {{namespace}};
+
+use Medas\Core\Attributes\{EventListener, Service};
+
+#[Service]
+readonly class {{shortClassName}}
+{
+    #[EventListener]
+    public function handle(\{{voteClassName}} $vote): void
     {
     }
 }

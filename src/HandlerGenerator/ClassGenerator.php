@@ -42,8 +42,9 @@ readonly class ClassGenerator
         string $entityClassName,
         string $template,
         string $handlerPrefix,
-        string $handlerSuffix
-    ): void
+        string $handlerSuffix,
+        array  $replacements = []
+    ): string
     {
         $entityClassName = $this->classNameNormalizer->normalize($entityClassName);
         $prefix = $this->fileNameFinder->findPrefix($entityClassName);
@@ -64,13 +65,13 @@ readonly class ClassGenerator
 
         [, $entityShortClassName] = $this->splitClassName($entityClassName);
 
-        $replacements = [
+        $replacements = array_merge($replacements, [
             '{{psr4Prefix}}' => $prefix,
             '{{subPath}}' => $match[2] ?? '',
             '{{entityName}}' => $entityShortClassName,
             '{{handlerPrefix}}' => $handlerPrefix,
             '{{handlerSuffix}}' => $handlerSuffix,
-        ];
+        ]);
 
         $replacements['{{handlerPrefix}}'] = str_replace(
             array_keys($replacements),
@@ -87,7 +88,7 @@ readonly class ClassGenerator
         $fileName = $this->fileNameFinder->find($handlerClassName);
 
         if (file_exists($fileName)) {
-            return;
+            return $handlerClassName;
         }
 
         $normalizerClassName = str_replace(
@@ -100,32 +101,36 @@ readonly class ClassGenerator
             $entityClassName,
             $handlerClassName,
             $normalizerClassName,
-            $template
+            $template,
+            $replacements
         );
 
         $this->fileNameFinder->writeToFile($code, $fileName);
+
+        return $handlerClassName;
     }
 
     public function compile(
         string $entityClassName,
         string $handlerClassName,
         string $normalizerClassName,
-        string $template
+        string $template,
+        array  $replacements,
     ): string
     {
         [, $entityShortClassName] = $this->splitClassName($entityClassName);
         $routePath = $this->storeNameConverter->convert($entityShortClassName);
         [$namespace, $shortClassName] = $this->splitClassName($handlerClassName);
-        $instanceVariable = '$' . lcfirst($shortClassName);
+        $instanceVariable = '$' . lcfirst($entityShortClassName);
 
-        $replacements = [
+        $replacements = array_merge($replacements, [
             '{{namespace}}' => $namespace,
             '{{routePath}}' => $routePath,
             '{{shortClassName}}' => $shortClassName,
             '{{instanceVariable}}' => $instanceVariable,
             '{{entityClassName}}' => $entityClassName,
             '{{normalizerClassName}}' => $normalizerClassName,
-        ];
+        ]);
 
         return str_replace(array_keys($replacements), array_values($replacements), $template);
     }
