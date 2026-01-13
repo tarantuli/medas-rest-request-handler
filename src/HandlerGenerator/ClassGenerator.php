@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\HandlerGenerator;
 
 use Medas\Core\Attributes\{ConfigValue, Service};
+use Medas\EntityManager\ConfigOptions\GeneratorRootNamespace;
 use Medas\EntityManager\Entities\Generator\{
     ClassNameNormalizer,
     Exceptions\ClassHasNoNamespace,
@@ -30,6 +31,9 @@ readonly class ClassGenerator
 
         #[ConfigValue(NormalizerClassNamePattern::class)]
         private string              $normalizerClassNamePattern,
+
+        #[ConfigValue(GeneratorRootNamespace::class)]
+        private string|null         $rootNamespace,
     )
     {
     }
@@ -49,7 +53,10 @@ readonly class ClassGenerator
         }
 
         $prefix = rtrim($prefix, '\\');
-        $pattern = '#^(' . str_replace('\\', '\\\\', $prefix) . ')(\\\\.+)?\\\\(\w+)$#';
+
+        $pattern = '#^('
+            . str_replace('\\', '\\\\', $this->rootNamespace ?? $prefix)
+            . ')(\\\\.+)?\\\\(\w+)$#';
 
         if (!preg_match($pattern, $entityClassName, $match)) {
             throw new StringIsNotAValidEntityClassName($entityClassName);
