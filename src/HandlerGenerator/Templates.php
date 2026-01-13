@@ -440,4 +440,26 @@ readonly class {{shortClassName}} implements EntityNormalizer
 
 PHP;
     }
+
+    public function readVote(): string
+    {
+        return <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+namespace {{namespace}};
+
+use Medas\Core\Events\BasicVote;
+
+class ReadVote extends BasicVote
+{
+    public function __construct(
+        public {{entityClassName}} {{instanceVariable}},
+    )
+    {
+    }
+}
+PHP;
+    }
 }

@@ -44,6 +44,13 @@ readonly class CreateAllControllers extends BaseConsoleCommand
         $entityClassName = $arguments[1];
         $useUuid = ($arguments[2] ?? null) !== '--id';
 
+        $this->requestHandlers($entityClassName, $useUuid);
+        $this->helpers($entityClassName);
+        $this->authorization($entityClassName);
+    }
+
+    private function requestHandlers(string $entityClassName, bool $useUuid): void
+    {
         $this->classGenerator->generate(
             $entityClassName,
             $useUuid ? $this->templates->getInstanceByUuid() : $this->templates->getInstanceByInteger(),
@@ -87,12 +94,25 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             'Get',
             'Count',
         );
+    }
 
+    private function helpers(string $entityClassName): void
+    {
         $this->classGenerator->generate(
             $entityClassName,
             $this->templates->entityNormalizer(),
-            '',
+            'Helpers\\',
             'Normalizer',
+        );
+    }
+
+    private function authorization(string $entityClassName): void
+    {
+        $this->classGenerator->generate(
+            $entityClassName,
+            $this->templates->readVote(),
+            'Authorization\\Read',
+            'Vote',
         );
     }
 }

@@ -72,11 +72,23 @@ readonly class ClassGenerator
             '{{handlerSuffix}}' => $handlerSuffix,
         ];
 
+        $replacements['{{handlerPrefix}}'] = str_replace(
+            array_keys($replacements),
+            array_values($replacements),
+            $replacements['{{handlerPrefix}}']
+        );
+
         $handlerClassName = str_replace(
             array_keys($replacements),
             array_values($replacements),
             $this->handlerClassNamePattern
         );
+
+        $fileName = $this->fileNameFinder->find($handlerClassName);
+
+        if (file_exists($fileName)) {
+            return;
+        }
 
         $normalizerClassName = str_replace(
             array_keys($replacements),
@@ -91,8 +103,6 @@ readonly class ClassGenerator
             $template
         );
 
-        $fileName = $this->fileNameFinder->find($handlerClassName);
-
         $this->fileNameFinder->writeToFile($code, $fileName);
     }
 
@@ -106,11 +116,13 @@ readonly class ClassGenerator
         [, $entityShortClassName] = $this->splitClassName($entityClassName);
         $routePath = $this->storeNameConverter->convert($entityShortClassName);
         [$namespace, $shortClassName] = $this->splitClassName($handlerClassName);
+        $instanceVariable = '$' . lcfirst($shortClassName);
 
         $replacements = [
             '{{namespace}}' => $namespace,
             '{{routePath}}' => $routePath,
             '{{shortClassName}}' => $shortClassName,
+            '{{instanceVariable}}' => $instanceVariable,
             '{{entityClassName}}' => $entityClassName,
             '{{normalizerClassName}}' => $normalizerClassName,
         ];
