@@ -25,7 +25,7 @@ use Medas\Core\{
 readonly class RestSerializer implements Serializer
 {
     public function __construct(
-        private UuidProvider|null $UuidProvider,
+        private UuidProvider|null $uuidProvider,
     )
     {
     }
@@ -58,15 +58,15 @@ readonly class RestSerializer implements Serializer
     public function unserialize(mixed $value, Type|null $type = null): mixed
     {
         if ($type instanceof UuidType) {
-            if ($this->UuidProvider === null) {
+            if ($this->uuidProvider === null) {
                 throw new UuidProviderIsNotAvailable();
             }
 
-            $value = $this->UuidProvider->fromString($value);
+            $value = $this->uuidProvider->fromString($value);
         }
 
         if ($type instanceof Relation) {
-            $value = $this->resolveRelation($type, $value);
+            $value = $this->resolveRelation($type, $this->uuidProvider->fromString($value));
         }
 
         if ($type instanceof TypesCollection) {
@@ -74,7 +74,10 @@ readonly class RestSerializer implements Serializer
             $newValue = new ($type->collectionType)();
 
             foreach ($value as $item) {
-                $newValue[] = $this->resolveRelation(new Relation($type->contentType), $item);
+                $newValue[] = $this->resolveRelation(
+                    new Relation($type->contentType),
+                    $this->uuidProvider->fromString($item)
+                );
             }
 
             $value = $newValue;
