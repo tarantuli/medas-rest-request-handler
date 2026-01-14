@@ -14,6 +14,7 @@ use Medas\Core\{
     Interfaces\Uuid,
     Interfaces\UuidProvider,
     Types\Boolean,
+    Types\Collection as TypesCollection,
     Types\DateTime,
     Types\Integer,
     Types\Relation,
@@ -65,22 +66,18 @@ readonly class RestSerializer implements Serializer
         }
 
         if ($type instanceof Relation) {
-            if (enum_exists($type->entity)) {
-                $reflection = new \ReflectionEnum($type->entity);
-                $backingType = (string) $reflection->getBackingType();
+            $value = $this->resolveRelation($type, $value);
+        }
 
-                if ($backingType === 'string' && !is_string($value)) {
-                    $value = (string) $value;
-                }
-                elseif ($backingType === 'int' && !is_int($value)) {
-                    $value = (int) $value;
-                }
+        if ($type instanceof TypesCollection) {
+            /** @var Collection $newValue */
+            $newValue = new ($type->collectionType)();
 
-                $value = ($type->entity)::from($value);
+            foreach ($value as $item) {
+                $newValue[] = $this->resolveRelation(new Relation($type->contentType), $item);
             }
-            else {
-                $value = em()->get($type->entity, $value);
-            }
+
+            $value = $newValue;
         }
 
         if ($type instanceof Boolean) {
@@ -93,6 +90,29 @@ readonly class RestSerializer implements Serializer
 
         if ($type instanceof DateTime) {
             $value = \DateTime::createFromFormat(\DateTimeInterface::RFC3339_EXTENDED, $value);
+        }
+
+        return $value;
+    }
+
+    private function resolveRelation(Relation $type, mixed $value): object
+    {
+        if (enum_exists($type->entity)) {
+            $reflection = new \ReflectionEnum($type->entity);
+            $backingType = (string) $reflection->getBackingType();
+
+            if ($backingType === 'string' && !is_string($value)) {
+                $value = (string) $value;
+            }
+            elseif ($backingType === 'int' && !is_int($value)) {
+                $value = (int) $value;
+            }
+
+            /** @noinspection PhpUndefinedMethodInspection */
+            $value = ($type->entity)::from($value);
+        }
+        else {
+            $value = em()->get($type->entity, $value);
         }
 
         return $value;
