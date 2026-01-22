@@ -53,7 +53,7 @@ readonly class BearerTokenHandler
         $userId = $this->validator->userId($token);
         $type = $this->metaDataManager->get($this->usersClass)->idProperty->type;
 
-        if ($type instanceof UuidType) {
+        if ($userId !== null && $type instanceof UuidType) {
             if ($this->uuidProvider === null) {
                 throw new UuidProviderIsNotAvailable();
             }
