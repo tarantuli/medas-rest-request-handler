@@ -8,8 +8,12 @@ use Medas\Core\{
     Attributes\ConfigValue,
     Attributes\EventListener,
     Attributes\Service,
-    Interfaces\BearerTokenValidator
+    Exceptions\UuidProviderIsNotAvailable,
+    Interfaces\BearerTokenValidator,
+    Interfaces\UuidProvider,
+    Types\Uuid as UuidType
 };
+use Medas\EntityManager\MetaDataManager;
 use Medas\HttpRequestHandler\{Authentication\AuthenticationVote, Request\HeaderFinder};
 use Medas\RestRequestHandler\ConfigOptions\UsersClass;
 
@@ -19,6 +23,8 @@ readonly class BearerTokenHandler
     public function __construct(
         private BearerTokenValidator|null $validator,
         private HeaderFinder              $headerFinder,
+        private MetaDataManager           $metaDataManager,
+        private UuidProvider|null         $uuidProvider,
 
         #[ConfigValue(UsersClass::class)]
         private string|null               $usersClass,
@@ -45,6 +51,15 @@ readonly class BearerTokenHandler
 
         $token = substr($header, 7);
         $userId = $this->validator->userId($token);
+        $type = $this->metaDataManager->get($this->usersClass)->idProperty->type;
+
+        if ($type instanceof UuidType) {
+            if ($this->uuidProvider === null) {
+                throw new UuidProviderIsNotAvailable();
+            }
+
+            $userId = $this->uuidProvider->fromString($userId);
+        }
 
         if ($userId) {
             $vote->user = em()->get($this->usersClass, $userId);
