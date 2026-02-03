@@ -6,18 +6,27 @@ namespace Medas\RestRequestHandler\Serializers;
 
 use Medas\Core\{
     Attributes\Service,
+    Exceptions\UuidProviderIsNotAvailable,
     Interfaces\HasId,
     Interfaces\Serializer,
     Interfaces\Type,
     Interfaces\Uuid,
+    Interfaces\UuidProvider,
     Types\Boolean,
     Types\DateTime,
-    Types\Integer
+    Types\Integer,
+    Types\Uuid as UuidType
 };
 
 #[Service]
 readonly class QueryDataSerializer implements Serializer
 {
+    public function __construct(
+        private UuidProvider|null $uuidProvider,
+    )
+    {
+    }
+
     public function serialize(mixed $value): mixed
     {
         if ($value instanceof HasId) {
@@ -55,6 +64,14 @@ readonly class QueryDataSerializer implements Serializer
 
         if ($type instanceof DateTime) {
             return \DateTime::createFromFormat(\DateTimeInterface::RFC3339_EXTENDED, $value);
+        }
+
+        if ($type instanceof UuidType) {
+            if (!$this->uuidProvider) {
+                throw new UuidProviderIsNotAvailable();
+            }
+
+            return $this->uuidProvider->fromString($value);
         }
 
         return $value;
