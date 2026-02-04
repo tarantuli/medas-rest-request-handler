@@ -67,11 +67,13 @@ readonly class QueryDataSerializer implements Serializer
         }
 
         if ($type instanceof UuidType) {
-            if (!$this->uuidProvider) {
-                throw new UuidProviderIsNotAvailable();
-            }
+            if (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value)) {
+                if (!$this->uuidProvider) {
+                    throw new UuidProviderIsNotAvailable();
+                }
 
-            return $this->uuidProvider->fromString($value);
+                return $this->uuidProvider->fromString($value);
+            }
         }
 
         return $value;
