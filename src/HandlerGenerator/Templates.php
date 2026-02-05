@@ -54,7 +54,7 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Medas\RestRequestHandler\Responses\EntityResponse;
-use Medas\Routing\{Methods\Get, Parameters\Uuid, Route};
+use Medas\Routing\{Methods\Get, Parameters\Integer, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
