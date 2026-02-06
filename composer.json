@@ -1,39 +1,38 @@
 {
-    "name": "morphp/medas-rest-request-handler",
-    "description": "Medas rest request handler",
-    "keywords": [
-        "http",
-        "entities"
-    ],
-    "authors": [
-        {
-            "name": "Patrick Morpey",
-            "email": "patrick@morphp.nl"
-        }
-    ],
-    "type": "library",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "require": {
-        "morphp/medas-console": "dev-dev",
-        "morphp/medas-core": "dev-dev",
-        "morphp/medas-entity-manager": "dev-dev",
-        "morphp/medas-http-request-handler": "dev-dev",
-        "morphp/medas-json": "dev-dev",
-        "morphp/medas-routing": "dev-dev"
-    },
-    "require-dev": {
-        "morphp/medas-config-manager": "dev-dev",
-        "morphp/medas-config-options": "dev-dev",
-        "morphp/medas-events": "dev-dev",
-        "morphp/medas-ramsey-uuid-bridge": "dev-dev",
-        "morphp/medas-service-manager": "dev-dev",
-        "phpunit/phpunit": "^9.5"
-    },
-    "autoload": {
-        "psr-4": {
-            "Medas\\RestRequestHandler\\": "src/",
-            "Medas\\RestRequestHandlerTest\\": "tests/"
-        }
+  "name": "morphp/medas-rest-request-handler",
+  "description": "Medas rest request handler",
+  "version": "2.0.0",
+  "keywords": [
+    "http",
+    "entities"
+  ],
+  "authors": [
+    {
+      "name": "Patrick Morpey",
+      "email": "patrick@morphp.nl"
     }
+  ],
+  "type": "library",
+  "require": {
+    "morphp/medas-console": "^2",
+    "morphp/medas-core": "^2",
+    "morphp/medas-entity-manager": "^2",
+    "morphp/medas-http-request-handler": "^2",
+    "morphp/medas-json": "^2",
+    "morphp/medas-routing": "^2"
+  },
+  "require-dev": {
+    "morphp/medas-config-manager": "^2",
+    "morphp/medas-config-options": "^2",
+    "morphp/medas-events": "^2",
+    "morphp/medas-ramsey-uuid-bridge": "^2",
+    "morphp/medas-service-manager": "^2",
+    "phpunit/phpunit": "^9.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Medas\\RestRequestHandler\\": "src/",
+      "Medas\\RestRequestHandlerTest\\": "tests/"
+    }
+  }
 }
