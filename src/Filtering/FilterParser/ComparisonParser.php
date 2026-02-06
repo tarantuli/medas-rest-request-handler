@@ -22,7 +22,7 @@ use Medas\RestRequestHandler\Serializers\QueryDataSerializer;
 #[Service]
 readonly class ComparisonParser
 {
-    private const array ARRAY_VALUE_COMPARISON_TYPES = [WhereIn::class, WhereNotIn::class];
+    private const ARRAY_VALUE_COMPARISON_TYPES = [WhereIn::class, WhereNotIn::class];
 
     public function __construct(
         #[PreferredDefault(QueryDataSerializer::class)]
