@@ -26,17 +26,9 @@ use Medas\Routing\Route;
 
 abstract class BaseController
 {
-    private array $bodyData{get{
-
-        if (!isset($this->bodyData)) {
-            $this->bodyData = $this->requestDataHandler->getBodyData($this);
-            } return $this->bodyData;
-        }
-    }
-
+    private array $bodyData;
     protected string $entityClass;
 
-    #[\Deprecated('create individual Route classes instead')]
     public function __construct(
         protected CollectionResponseBuilder $collectionResponseBuilder,
         protected EntityResponseBuilder     $entityResponseBuilder,
@@ -58,7 +50,7 @@ abstract class BaseController
 
     protected function _createEntity(): EntityResponse
     {
-        return $this->createEntityFromData($this->bodyData);
+        return $this->createEntityFromData($this->bodyData());
     }
 
     protected function createEntityFromData(array $data): EntityResponse
@@ -79,6 +71,15 @@ abstract class BaseController
     protected function _getEntity(mixed $id): EntityResponse
     {
         return $this->entityResponseBuilder->build(em()->get($this->entityClass, $id), $this);
+    }
+
+    protected function bodyData(): array
+    {
+        if (!isset($this->bodyData)) {
+            $this->bodyData = $this->requestDataHandler->getBodyData($this);
+        }
+
+        return $this->bodyData;
     }
 
     protected function _get(): CollectionResponse
@@ -117,7 +118,7 @@ abstract class BaseController
         $entity = em()->get($this->entityClass, $id);
         $metaData = $this->metaDataManager->get($this->entityClass);
 
-        $this->valueSetter->setValues($metaData, $entity, $this->bodyData);
+        $this->valueSetter->setValues($metaData, $entity, $this->bodyData());
 
         em()->persist($entity);
         em()->flush();
