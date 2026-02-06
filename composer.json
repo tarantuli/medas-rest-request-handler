@@ -19,7 +19,8 @@
     "morphp/medas-entity-manager": "^2",
     "morphp/medas-http-request-handler": "^2",
     "morphp/medas-json": "^2",
-    "morphp/medas-routing": "^2"
+    "morphp/medas-routing": "^2",
+    "php": "^8.4"
   },
   "require-dev": {
     "morphp/medas-config-manager": "^2",
