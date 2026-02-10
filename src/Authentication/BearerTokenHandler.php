@@ -8,6 +8,7 @@ use Medas\Core\{
     Attributes\ConfigValue,
     Attributes\EventListener,
     Attributes\Service,
+    Events\DebugInformation,
     Exceptions\UuidProviderIsNotAvailable,
     Interfaces\BearerTokenValidator,
     Interfaces\UuidProvider,
@@ -42,10 +43,14 @@ readonly class BearerTokenHandler
         $header = $this->headerFinder->find($vote->request->serverData, 'Authorization');
 
         if ($header === null) {
+            dispatch(new DebugInformation('[bearer-token] Authorization header not found'));
+
             return;
         }
 
         if (!str_starts_with($header, 'Bearer ')) {
+            dispatch(new DebugInformation('[bearer-token] Authorization header does not start with "Bearer"'));
+
             return;
         }
 
@@ -62,7 +67,12 @@ readonly class BearerTokenHandler
         }
 
         if ($userId) {
+            dispatch(new DebugInformation('[bearer-token] found user %s', $userId));
+
             $vote->user = em()->get($this->usersClass, $userId);
+        }
+        else {
+            dispatch(new DebugInformation('[bearer-token] no user found with id "%s"', $userId));
         }
     }
 }
