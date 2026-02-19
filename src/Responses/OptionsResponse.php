@@ -18,11 +18,17 @@ readonly class OptionsResponse implements HtmlResponse, JsonResponse
 
     public function outputHtmlResponse(): void
     {
-        header('Access-Control-Allow-Origin: ' . $this->origin);
-        header('Access-Control-Allow-Methods: ' . $this->method);
+        // Defense in depth: sanitize all values even though controller should have done it
+        $origin = str_replace(["\r", "\n", "\0"], '', $this->origin);
+        $method = str_replace(["\r", "\n", "\0"], '', $this->method);
+
+        header('Access-Control-Allow-Origin: ' . $origin);
+        header('Access-Control-Allow-Methods: ' . $method);
 
         if ($this->headers !== null) {
-            header('Access-Control-Allow-Headers: ' . $this->headers);
+            $headers = str_replace(["\r", "\n", "\0"], '', $this->headers);
+
+            header('Access-Control-Allow-Headers: ' . $headers);
         }
     }
 

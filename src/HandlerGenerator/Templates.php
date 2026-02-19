@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Medas\Core\Interfaces\Uuid as UuidType;
+use Medas\EntityManager\EntityManager;
 use Medas\RestRequestHandler\Responses\EntityResponse;
 use Medas\Routing\{Methods\Get, Parameters\Uuid, Route};
 
@@ -26,6 +27,7 @@ use Medas\Routing\{Methods\Get, Parameters\Uuid, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
+        private EntityManager $entityManager,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -34,7 +36,7 @@ readonly class {{shortClassName}}
     #[Get(new Uuid('id'))]
     public function handle(UuidType $id): EntityResponse
     {
-        $entity = em()->get(\{{entityClassName}}::class, $id);
+        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
         $data = $this->normalizer->normalizeAndSerialize($entity);
 
         return new EntityResponse($data);
@@ -53,6 +55,7 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
+use Medas\EntityManager\EntityManager;
 use Medas\RestRequestHandler\Responses\EntityResponse;
 use Medas\Routing\{Methods\Get, Parameters\Integer, Route};
 
@@ -60,6 +63,7 @@ use Medas\Routing\{Methods\Get, Parameters\Integer, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
+        private EntityManager $entityManager,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -68,7 +72,7 @@ readonly class {{shortClassName}}
     #[Get(new Integer('id'))]
     public function handle(int $id): EntityResponse
     {
-        $entity = em()->get(\{{entityClassName}}::class, $id);
+        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
         $data = $this->normalizer->normalizeAndSerialize($entity);
 
         return new EntityResponse($data);
@@ -88,7 +92,7 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Medas\Core\Interfaces\Uuid as UuidType;
-use Medas\EntityManager\{Hydration\ValueSetter, MetaDataManager};
+use Medas\EntityManager\{EntityManager, Hydration\ValueSetter, MetaDataManager};
 use Medas\RestRequestHandler\{
     Responses\EntityResponse
 };
@@ -99,6 +103,7 @@ use Medas\Routing\{Methods\Put, Parameters\Uuid, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
+        private EntityManager      3$entityManager,
         private MetaDataManager    $metaDataManager,
         private RequestDataManager $requestDataManager,
         private ValueSetter        $valueSetter,
@@ -110,15 +115,15 @@ readonly class {{shortClassName}}
     #[Put(new Uuid('id'))]
     public function handle(UuidType $id): EntityResponse
     {
-        $entity = em()->get(\{{entityClassName}}::class, $id);
+        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
         $data = $this->requestDataManager->get()->bodyData->data();
         $data = $this->normalizer->unserializeAndDenormalize($data);
 
         $this->valueSetter->setValues($metaData, $entity, $data);
 
-        em()->persist($entity);
-        em()->flush();
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
 
         $data = $this->normalizer->normalizeAndSerialize($entity);
 
@@ -138,7 +143,7 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
-use Medas\EntityManager\{Hydration\ValueSetter, MetaDataManager};
+use Medas\EntityManager\{EntityManager, Hydration\ValueSetter, MetaDataManager};
 use Medas\RestRequestHandler\{
     Responses\EntityResponse
 };
@@ -149,6 +154,7 @@ use Medas\Routing\{Methods\Put, Parameters\Integer, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
+        private EntityManager      $entityManager,
         private MetaDataManager    $metaDataManager,
         private RequestDataManager $requestDataManager,
         private ValueSetter        $valueSetter,
@@ -160,7 +166,7 @@ readonly class {{shortClassName}}
     #[Put(new Integer('id'))]
     public function handle(int $id): EntityResponse
     {
-        $entity = em()->get(\{{entityClassName}}::class, $id);
+        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
 
         $data = $this->requestDataManager->get()->bodyData->data();
@@ -168,8 +174,8 @@ readonly class {{shortClassName}}
 
         $this->valueSetter->setValues($metaData, $entity, $data);
 
-        em()->persist($entity);
-        em()->flush();
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
 
         $data = $this->normalizer->normalizeAndSerialize($entity);
 
@@ -189,7 +195,7 @@ declare(strict_types=1);
 
 namespace {{namespace}};
 
-use Medas\EntityManager\Exceptions\PropertyDoesNotExist;
+use Medas\EntityManager\{EntityManager, Exceptions\PropertyDoesNotExist};
 use Medas\RestRequestHandler\{
     Exceptions\EntityDoesNotHaveProperty,
     Responses\EntityResponse
@@ -201,6 +207,7 @@ use Medas\Routing\{Methods\Post, Route};
 readonly class {{shortClassName}}
 {
     public function __construct(
+        private EntityManager      $entityManager,
         private RequestDataManager $requestDataManager,
         private \{{normalizerClassName}} $normalizer,
     )
@@ -214,14 +221,14 @@ readonly class {{shortClassName}}
         $data = $this->normalizer->unserializeAndDenormalize($data);
 
         try {
-            $entity = em()->create(\{{entityClassName}}::class, $data);
+            $entity = $this->entityManager->create(\{{entityClassName}}::class, $data);
         }
         catch (PropertyDoesNotExist $exception) {
             throw new EntityDoesNotHaveProperty(\{{entityClassName}}::class, $exception->propertyName);
         }
 
-        em()->persist($entity);
-        em()->flush();
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
 
         $data = $this->normalizer->normalizeAndSerialize($entity);
 
@@ -242,19 +249,26 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Medas\Core\Interfaces\Uuid as UuidType;
+use Medas\EntityManager\EntityManager;
 use Medas\RestRequestHandler\Responses\SuccessResponse;
 use Medas\Routing\{Methods\Delete, Parameters\Uuid, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
+    public function __construct(
+        private EntityManager $entityManager,
+    )
+    {
+    }
+
     #[Delete(new Uuid('id'))]
     public function handle(UuidType $id): SuccessResponse
     {
-        $entity = em()->get(\{{entityClassName}}::class, $id);
+        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
-        em()->delete($entity);
-        em()->flush();
+        $this->entityManager->delete($entity);
+        $this->entityManager->flush();
 
         return new SuccessResponse(true);
     }
@@ -273,18 +287,25 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Medas\RestRequestHandler\Responses\SuccessResponse;
+use Medas\EntityManager\EntityManager;
 use Medas\Routing\{Methods\Delete, Parameters\Integer, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
+    public function __construct(
+        private EntityManager $entityManager,
+    )
+    {
+    }
+
     #[Delete(new Integer('id'))]
     public function handle(int $id): SuccessResponse
     {
-        $entity = em()->get(\{{entityClassName}}::class, $id);
+        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
-        em()->delete($entity);
-        em()->flush();
+        $this->entityManager->delete($entity);
+        $this->entityManager->flush();
 
         return new SuccessResponse(true);
     }
@@ -333,10 +354,10 @@ readonly class {{shortClassName}}
             $entities = $this->repository->fetchAll(\{{entityClassName}}::class);
         }
 
-        array_walk($entities, function (&$entity) {
-            $entity = $this->normalizer->normalizeAndSerialize($entity);
-        });
-
+$entities = array_map(
+    fn($entity) => $this->normalizer->normalizeAndSerialize($entity),
+    $entities
+);
         return new CollectionResponse($entities);
     }
 }

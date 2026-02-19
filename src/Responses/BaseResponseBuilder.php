@@ -24,7 +24,7 @@ abstract class BaseResponseBuilder
             : get_object_vars($entity);
 
         // Then, serialize each value. Don't recurse, the serializer should flatten the values
-        array_walk($data, fn($value) => $this->serializer->serialize($value));
+        array_walk($data, fn(&$value) => $value = $this->serializer->serialize($value));
 
         return $data;
     }

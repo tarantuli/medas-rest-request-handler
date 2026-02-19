@@ -6,12 +6,11 @@ namespace Medas\RestRequestHandler\Filtering\FilterParser;
 
 use Medas\Core\{Attributes\PreferredDefault, Attributes\Service, Interfaces\Serializer};
 use Medas\EntityManager\Selector\{
-    Conditions\WhereIn,
+    Conditions\IsArrayComparison,
     Conditions\WhereIs,
     Conditions\WhereIsNot,
     Conditions\WhereIsNotNull,
     Conditions\WhereIsNull,
-    Conditions\WhereNotIn,
     Element,
     Operants\Property,
     Operants\Value,
@@ -22,8 +21,6 @@ use Medas\RestRequestHandler\Serializers\QueryDataSerializer;
 #[Service]
 readonly class ComparisonParser
 {
-    private const array ARRAY_VALUE_COMPARISON_TYPES = [WhereIn::class, WhereNotIn::class];
-
     public function __construct(
         #[PreferredDefault(QueryDataSerializer::class)]
         private Serializer $serializer,
@@ -33,7 +30,7 @@ readonly class ComparisonParser
 
     public function parse(string $entity, string $name, string $comparisonType, string $value, mixed $type): Element
     {
-        if (in_array($comparisonType, self::ARRAY_VALUE_COMPARISON_TYPES, true)) {
+        if (new \ReflectionClass($comparisonType)->implementsInterface(IsArrayComparison::class)) {
             $element = $this->createArrayValueElement(
                 $entity,
                 $name,

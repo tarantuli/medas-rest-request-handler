@@ -14,7 +14,7 @@ use Medas\Core\{
     Interfaces\UuidProvider,
     Types\Uuid as UuidType
 };
-use Medas\EntityManager\MetaDataManager;
+use Medas\EntityManager\{EntityManager, MetaDataManager};
 use Medas\HttpRequestHandler\{Authentication\AuthenticationVote, Request\HeaderFinder};
 use Medas\RestRequestHandler\ConfigOptions\UsersClass;
 
@@ -23,6 +23,7 @@ readonly class BearerTokenHandler
 {
     public function __construct(
         private BearerTokenValidator|null $validator,
+        private EntityManager             $entityManager,
         private HeaderFinder              $headerFinder,
         private MetaDataManager           $metaDataManager,
         private UuidProvider|null         $uuidProvider,
@@ -69,7 +70,7 @@ readonly class BearerTokenHandler
         if ($userId) {
             dispatch(new DebugInformation('[bearer-token] found user %s', $userId));
 
-            $vote->user = em()->get($this->usersClass, $userId);
+            $vote->user = $this->entityManager->get($this->usersClass, $userId);
         }
         else {
             dispatch(new DebugInformation('[bearer-token] no user found with id "%s"', $userId));

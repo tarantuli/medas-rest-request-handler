@@ -72,9 +72,17 @@ readonly class FilterParser
             $this->multisortParser->parse($job, $value);
         }
         elseif ($name === $this->pageQueryName) {
+            if (!is_numeric($value) || (int) $value < 1) {
+                throw new CannotParseQueryValue($name, $value);
+            }
+
             $job->page = (int) $value;
         }
         elseif ($name === $this->perPageQueryName) {
+            if (!is_numeric($value) || (int) $value < 1 || (int) $value > 1000) {
+                throw new CannotParseQueryValue($name, $value);
+            }
+
             $job->pageSize = (int) $value;
         }
         elseif ($name === $this->predefinedQueryName) {
@@ -107,6 +115,10 @@ readonly class FilterParser
         }
         else {
             $entity = $job->entity;
+        }
+
+        if (!property_exists($entity, $name)) {
+            throw new CannotParseQueryValue($name, $value);
         }
 
         $type = $typeFinder ? $typeFinder($name, $entity) : null;

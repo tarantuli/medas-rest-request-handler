@@ -20,11 +20,13 @@ use Medas\Core\{
     Types\Relation,
     Types\Uuid as UuidType
 };
+use Medas\EntityManager\EntityManager;
 
 #[Service]
 readonly class RestSerializer implements Serializer
 {
     public function __construct(
+        private EntityManager     $entityManager,
         private UuidProvider|null $uuidProvider,
     )
     {
@@ -66,18 +68,46 @@ readonly class RestSerializer implements Serializer
                 throw new UuidProviderIsNotAvailable();
             }
 
+            if (!is_string($value)) {
+                throw new \InvalidArgumentException(sprintf(
+                    'UUID value must be a string, %s given',
+                    get_debug_type($value)
+                ));
+            }
+
             $value = $this->uuidProvider->fromString($value);
         }
 
         if ($type instanceof Relation) {
+            if (!is_string($value)) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Relation value must be a string UUID, %s given',
+                    get_debug_type($value)
+                ));
+            }
+
             $value = $this->resolveRelation($type, $this->uuidProvider->fromString($value));
         }
 
         if ($type instanceof TypesCollection) {
+            if (!is_array($value)) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Collection value must be an array, %s given',
+                    get_debug_type($value)
+                ));
+            }
+
             /** @var Collection $newValue */
             $newValue = new ($type->collectionType)();
 
             foreach ($value as $item) {
+                if (!is_string($item)) {
+                    throw new \InvalidArgumentException(sprintf(
+                        'Collection items must be string UUIDs, %s given',
+                        get_debug_type($item)
+                    ));
+                }
+
                 $newValue[] = $this->resolveRelation(
                     new Relation($type->contentType),
                     $this->uuidProvider->fromString($item)
@@ -119,7 +149,7 @@ readonly class RestSerializer implements Serializer
             $value = ($type->entity)::from($value);
         }
         else {
-            $value = em()->get($type->entity, $value);
+            $value = $this->entityManager->get($type->entity, $value);
         }
 
         return $value;
