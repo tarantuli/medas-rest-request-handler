@@ -16,7 +16,7 @@ readonly class OptionsResponse implements HtmlResponse, JsonResponse
     {
     }
 
-    public function outputHtmlResponse(): void
+    public function getHtmlResponse(): string
     {
         // Defense in depth: sanitize all values even though controller should have done it
         $origin = str_replace(["\r", "\n", "\0"], '', $this->origin);
@@ -30,12 +30,12 @@ readonly class OptionsResponse implements HtmlResponse, JsonResponse
 
             header('Access-Control-Allow-Headers: ' . $headers);
         }
+
+        return '';
     }
 
     public function getJsonResponse(): string
     {
-        $this->outputHtmlResponse();
-
-        return '';
+        return $this->getHtmlResponse();
     }
 }

@@ -8,9 +8,9 @@ use Medas\HttpRequestHandler\ResponseTypes\{HtmlResponse, JsonResponse, SetsResp
 
 class BadRequestResponse implements HtmlResponse, JsonResponse, SetsResponseCode
 {
-    public function outputHtmlResponse(): void
+    public function getHtmlResponse(): string
     {
-        // Do nothing
+        return '';
     }
 
     public function getJsonResponse(): null

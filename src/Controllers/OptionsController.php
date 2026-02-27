@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Controllers;
 
 use Medas\Core\Attributes\{ConfigValue, Service};
-use Medas\HttpRequestHandler\{
-    Authorization\PublicResource,
-    RequestDataManager,
-    ResponseTypes\Response
-};
+use Medas\HttpRequestHandler\{Authorization\PublicResource, RequestFactory, ResponseTypes\Response};
 use Medas\RestRequestHandler\{
     ConfigOptions\AllowedOrigins,
     Responses\BadRequestResponse,
@@ -21,10 +17,10 @@ use Medas\Routing\{Methods\Options, Parameters\Anything, Route};
 readonly class OptionsController
 {
     public function __construct(
-        private RequestDataManager $requestDataManager,
+        private RequestFactory $requestFactory,
 
         #[ConfigValue(AllowedOrigins::class)]
-        private string             $allowedOrigins,
+        private string         $allowedOrigins,
     )
     {
     }
@@ -32,7 +28,7 @@ readonly class OptionsController
     #[Options, PublicResource]
     public function getOptions(): Response
     {
-        $serverData = $this->requestDataManager->get()->serverData;
+        $serverData = $this->requestFactory->get()->serverData;
 
         // Validate origin structure
         $origin = $this->validateOrigin($serverData['HTTP_ORIGIN'] ?? null);

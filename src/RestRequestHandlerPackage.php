@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler;
 
-use Medas\Core\AsSingleton;
+use Medas\Core\{AsSingleton, BasePackage, Interfaces\ServiceConfig};
 use Medas\EntityManager\EntityManagerPackage;
 use Medas\HttpRequestHandler\HttpRequestHandlerPackage;
 use Medas\Routing\RoutingPackage;
-use Medas\ServiceManager\{BasePackage, ServiceConfig};
 
 class RestRequestHandlerPackage extends BasePackage
 {

@@ -31,7 +31,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Medas\\RestRequestHandler\\": "src/",
+      "Medas\\RestRequestHandler\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
       "Medas\\RestRequestHandlerTest\\": "tests/"
     }
   }
