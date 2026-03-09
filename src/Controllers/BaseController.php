@@ -26,14 +26,7 @@ use Medas\Routing\Route;
 
 abstract class BaseController
 {
-    private array $bodyData{get{
-
-        if (!isset($this->bodyData)) {
-            $this->bodyData = $this->requestDataHandler->getBodyData($this);
-            } return $this->bodyData;
-        }
-    }
-
+    private array $bodyData;
     protected string $entityClass;
 
     #[\Deprecated('create individual Route classes instead')]
@@ -54,6 +47,15 @@ abstract class BaseController
         }
 
         $this->entityClass = $entity;
+    }
+
+    public function bodyData(): array
+    {
+        if (!isset($this->bodyData)) {
+            $this->bodyData = $this->requestDataHandler->getBodyData($this);
+        }
+
+        return $this->bodyData;
     }
 
     protected function _createEntity(): EntityResponse
