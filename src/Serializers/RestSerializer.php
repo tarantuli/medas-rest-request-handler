@@ -20,13 +20,13 @@ use Medas\Core\{
     Types\Relation,
     Types\Uuid as UuidType
 };
-use Medas\EntityManager\EntityManager;
+use Medas\EntityManager\Events\FindEntity;
+use Medas\RestRequestHandler\Exceptions\EntityNotFound;
 
 #[Service]
 readonly class RestSerializer implements Serializer
 {
     public function __construct(
-        private EntityManager     $entityManager,
         private UuidProvider|null $uuidProvider,
     )
     {
@@ -149,7 +149,13 @@ readonly class RestSerializer implements Serializer
             $value = ($type->entity)::from($value);
         }
         else {
-            $value = $this->entityManager->get($type->entity, $value);
+            dispatch($event = new FindEntity($type->entity, $value));
+
+            if (!$event->entity) {
+                throw new EntityNotFound($type->entity, $value);
+            }
+
+            $value = $event->entity;
         }
 
         return $value;
