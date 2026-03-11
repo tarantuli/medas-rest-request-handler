@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Serializers;
 
 use Medas\Core\{
+    Attributes\EventListener,
     Attributes\Service,
     Exceptions\UuidProviderIsNotAvailable,
     Interfaces\Collection,
@@ -159,5 +160,11 @@ readonly class RestSerializer implements Serializer
         }
 
         return $value;
+    }
+
+    #[EventListener]
+    public function handleEvent(DeserializeRequest $request): void
+    {
+        $request->result = $this->unserialize($request->argument, $request->type);
     }
 }

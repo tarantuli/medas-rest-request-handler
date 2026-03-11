@@ -4,25 +4,11 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Serializers;
 
-use Medas\Core\{
-    Attributes\PreferredDefault,
-    Attributes\Service,
-    Interfaces\ArgumentProcessor,
-    Interfaces\Serializer,
-    Types\DateTime,
-    Types\Integer
-};
+use Medas\Core\{Attributes\Service, Interfaces\ArgumentProcessor, Types\DateTime, Types\Integer};
 
 #[Service]
 readonly class ArgumentDeserializer implements ArgumentProcessor
 {
-    public function __construct(
-        #[PreferredDefault(RestSerializer::class)]
-        private Serializer $serializer,
-    )
-    {
-    }
-
     public function priority(): int
     {
         return -50;
@@ -45,6 +31,12 @@ readonly class ArgumentDeserializer implements ArgumentProcessor
             $type = new Integer();
         }
 
-        return $type === null ? $argument : $this->serializer->unserialize($argument, $type);
+        if ($type === null) {
+            return $argument;
+        }
+
+        dispatch($request = new DeserializeRequest($argument, $type));
+
+        return $request->result;
     }
 }
