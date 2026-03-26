@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\ConsoleCommands;
 
-use Medas\Console\Commands\{BaseConsoleCommand, ConsoleCommandGroup};
+use Medas\Console\Commands\{BaseConsoleCommand, CommandInput, ConsoleCommandGroup, Option, Range};
 use Medas\Core\Attributes\Service;
 use Medas\RestRequestHandler\HandlerGenerator\{ClassGenerator, Templates};
 
@@ -39,14 +39,25 @@ readonly class CreatePutInstance extends BaseConsoleCommand
         return 'Creates a PUT instance method for a given entity class';
     }
 
-    public function process(array $arguments): void
+    public function allowedArgumentCount(): Range
     {
-        $entityClassName = $arguments[1];
-        $useUuid = ($arguments[2] ?? null) !== '--id';
+        return new Range(1);
+    }
+
+    public function options(): array
+    {
+        return [new Option('id')];
+    }
+
+    public function process(CommandInput $input): void
+    {
+        $entityClassName = $input->getArgument(1);
 
         $this->classGenerator->generate(
             $entityClassName,
-            $useUuid ? $this->templates->putInstanceByUuid() : $this->templates->putInstanceByInteger(),
+            $input->hasOption('id')
+                ? $this->templates->putInstanceByUuid()
+                : $this->templates->putInstanceByInteger(),
             'Put',
             '',
         );
