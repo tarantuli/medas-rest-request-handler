@@ -18,78 +18,87 @@ use Medas\EntityManager\Selector\Conditions\{
     WhereNotIn,
     WhereStartsWith
 };
-use Medas\RestRequestHandler\ConfigOptions\ComparisonOperators\IsLessThanOperator;
+use Medas\RestRequestHandler\ConfigOptions\ComparisonOperators\{
+    ContainsOperator,
+    EndsWithOperator,
+    IsAtLeastOperator,
+    IsAtMostOperator,
+    IsInOperator,
+    IsLessThanOperator,
+    IsMoreThanOperator,
+    IsNotInOperator,
+    IsNotOperator,
+    StartsWithOperator
+};
 
 #[Service]
 readonly class ComparisonExtractor
 {
+    /** @var array<class-string, string> Condition classes mapped to operator strings, sorted longest-first */
+    private array $operators;
+
     public function __construct(
         #[ConfigValue(IsLessThanOperator::class)]
-        private string|null $isLessThanOperator,
+        string|null $isLessThanOperator,
+
+        #[ConfigValue(IsAtMostOperator::class)]
+        string|null $isAtMostOperator,
+
+        #[ConfigValue(IsMoreThanOperator::class)]
+        string|null $isMoreThanOperator,
+
+        #[ConfigValue(IsAtLeastOperator::class)]
+        string|null $isAtLeastOperator,
+
+        #[ConfigValue(StartsWithOperator::class)]
+        string|null $startsWithOperator,
+
+        #[ConfigValue(EndsWithOperator::class)]
+        string|null $endsWithOperator,
+
+        #[ConfigValue(ContainsOperator::class)]
+        string|null $containsOperator,
+
+        #[ConfigValue(IsNotOperator::class)]
+        string|null $isNotOperator,
+
+        #[ConfigValue(IsInOperator::class)]
+        string|null $isInOperator,
+
+        #[ConfigValue(IsNotInOperator::class)]
+        string|null $isNotInOperator,
     )
     {
+        $candidates = [
+            WhereIsLessThan::class => $isLessThanOperator,
+            WhereIsAtMost::class => $isAtMostOperator,
+            WhereIsMoreThan::class => $isMoreThanOperator,
+            WhereIsAtLeast::class => $isAtLeastOperator,
+            WhereStartsWith::class => $startsWithOperator,
+            WhereEndsWith::class => $endsWithOperator,
+            WhereContains::class => $containsOperator,
+            WhereIsNot::class => $isNotOperator,
+            WhereIn::class => $isInOperator,
+            WhereNotIn::class => $isNotInOperator,
+        ];
+
+        // Remove disabled operators (null values)
+        $operators = array_filter($candidates);
+
+        // Sort the longest operator first so e.g. "<<" is matched before "<"
+        uasort($operators, static fn(string $a, string $b): int => strlen($b) - strlen($a));
+
+        $this->operators = $operators;
     }
 
-    public function extract(&$name): string
+    public function extract(string &$name): string
     {
-        if ($this->isLessThanOperator !== null && str_ends_with($name, $this->isLessThanOperator)) {
-            $name = substr($name, 0, -strlen($this->isLessThanOperator));
+        foreach ($this->operators as $conditionClass => $operator) {
+            if (str_ends_with($name, $operator)) {
+                $name = substr($name, 0, -strlen($operator));
 
-            return WhereIsLessThan::class;
-        }
-
-        if (str_ends_with($name, '<')) {
-            $name = substr($name, 0, -1);
-
-            return WhereIsAtMost::class;
-        }
-
-        if (str_ends_with($name, '>>')) {
-            $name = substr($name, 0, -2);
-
-            return WhereIsMoreThan::class;
-        }
-
-        if (str_ends_with($name, '>')) {
-            $name = substr($name, 0, -1);
-
-            return WhereIsAtLeast::class;
-        }
-
-        if (str_ends_with($name, '^')) {
-            $name = substr($name, 0, -1);
-
-            return WhereStartsWith::class;
-        }
-
-        if (str_ends_with($name, '$')) {
-            $name = substr($name, 0, -1);
-
-            return WhereEndsWith::class;
-        }
-
-        if (str_ends_with($name, '*')) {
-            $name = substr($name, 0, -1);
-
-            return WhereContains::class;
-        }
-
-        if (str_ends_with($name, '!')) {
-            $name = substr($name, 0, -1);
-
-            return WhereIsNot::class;
-        }
-
-        if (str_ends_with($name, '∈')) {
-            $name = substr($name, 0, -strlen('∈'));
-
-            return WhereIn::class;
-        }
-
-        if (str_ends_with($name, '∉')) {
-            $name = substr($name, 0, -strlen('∉'));
-
-            return WhereNotIn::class;
+                return $conditionClass;
+            }
         }
 
         return WhereIs::class;
