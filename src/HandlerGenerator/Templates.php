@@ -595,13 +595,21 @@ declare(strict_types=1);
 namespace {{namespace}};
 
 use Medas\Core\Attributes\{EventListener, Service};
+use Medas\HttpRequestHandler\RequestFactory;
 
 #[Service]
 readonly class {{shortClassName}}
 {
+    public function __construct(
+        private RequestFactory $requestFactory,
+    )
+    {
+    }
+
     #[EventListener]
     public function handle(\{{voteClassName}} $vote): void
     {
+        $user = $this->requestFactory->get()->authentication->user;
     }
 }
 PHP;
