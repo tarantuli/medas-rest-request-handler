@@ -96,17 +96,17 @@ use Medas\EntityManager\{EntityManager, Hydration\ValueSetter, MetaDataManager};
 use Medas\RestRequestHandler\{
     Responses\EntityResponse
 };
-use Medas\HttpRequestHandler\RequestDataManager;
+use Medas\HttpRequestHandler\RequestFactory;
 use Medas\Routing\{Methods\Put, Parameters\Uuid, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private EntityManager      3$entityManager,
-        private MetaDataManager    $metaDataManager,
-        private RequestDataManager $requestDataManager,
-        private ValueSetter        $valueSetter,
+        private EntityManager $entityManager,
+        private MetaDataManager $metaDataManager,
+        private RequestFactory $RequestFactory,
+        private ValueSetter $valueSetter,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -117,7 +117,7 @@ readonly class {{shortClassName}}
     {
         $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
-        $data = $this->requestDataManager->get()->bodyData->data();
+        $data = $this->RequestFactory->get()->bodyData->data();
         $data = $this->normalizer->unserializeAndDenormalize($data);
 
         $this->valueSetter->setValues($metaData, $entity, $data);
@@ -147,17 +147,17 @@ use Medas\EntityManager\{EntityManager, Hydration\ValueSetter, MetaDataManager};
 use Medas\RestRequestHandler\{
     Responses\EntityResponse
 };
-use Medas\HttpRequestHandler\RequestDataManager;
+use Medas\HttpRequestHandler\RequestFactory;
 use Medas\Routing\{Methods\Put, Parameters\Integer, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private EntityManager      $entityManager,
-        private MetaDataManager    $metaDataManager,
-        private RequestDataManager $requestDataManager,
-        private ValueSetter        $valueSetter,
+        private EntityManager $entityManager,
+        private MetaDataManager $metaDataManager,
+        private RequestFactory $RequestFactory,
+        private ValueSetter $valueSetter,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -169,7 +169,7 @@ readonly class {{shortClassName}}
         $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
 
-        $data = $this->requestDataManager->get()->bodyData->data();
+        $data = $this->RequestFactory->get()->bodyData->data();
         $data = $this->normalizer->unserializeAndDenormalize($data);
 
         $this->valueSetter->setValues($metaData, $entity, $data);
@@ -200,15 +200,15 @@ use Medas\RestRequestHandler\{
     Exceptions\EntityDoesNotHaveProperty,
     Responses\EntityResponse
 };
-use Medas\HttpRequestHandler\RequestDataManager;
+use Medas\HttpRequestHandler\{Exceptions\RequestNotAuthorized, RequestFactory};
 use Medas\Routing\{Methods\Post, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private EntityManager      $entityManager,
-        private RequestDataManager $requestDataManager,
+        private EntityManager$entityManager,
+        private RequestFactory $RequestFactory,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -217,8 +217,13 @@ readonly class {{shortClassName}}
     #[Post]
     public function handle(): EntityResponse
     {
-        $data = $this->requestDataManager->get()->bodyData->data();
+        $data = $this->RequestFactory->get()->bodyData->data();
         $data = $this->normalizer->unserializeAndDenormalize($data);
+
+        allowElseThrow(
+            $vote = new \{{voteClassName}}($data),
+            new RequestNotAuthorized($vote->allowedAccess)
+        );
 
         try {
             $entity = $this->entityManager->create(\{{entityClassName}}::class, $data);
@@ -328,16 +333,16 @@ use Medas\RestRequestHandler\{
     Filtering\SelectorBuilder,
     Responses\CollectionResponse
 };
-use Medas\HttpRequestHandler\RequestDataManager;
+use Medas\HttpRequestHandler\RequestFactory;
 use Medas\Routing\{Methods\Get, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private Repository         $repository,
-        private RequestDataManager $requestDataManager,
-        private SelectorBuilder    $selectorBuilder,
+        private Repository $repository,
+        private RequestFactory $RequestFactory,
+        private SelectorBuilder $selectorBuilder,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -346,7 +351,7 @@ readonly class {{shortClassName}}
     #[Get]
     public function handle(): CollectionResponse
     {
-        if ($queryData = $this->requestDataManager->get()->uri->query) {
+        if ($queryData = $this->RequestFactory->get()->uri->query) {
             $selector = $this->selectorBuilder->build(\{{entityClassName}}::class, $queryData);
             $entities = $this->repository->fetch($selector);
         }
@@ -380,16 +385,16 @@ use Medas\RestRequestHandler\{
     Filtering\SelectorBuilder,
     Responses\ScalarResponse
 };
-use Medas\HttpRequestHandler\RequestDataManager;
+use Medas\HttpRequestHandler\RequestFactory;
 use Medas\Routing\{Methods\Get, Parameters\Constant, Route};
 
 #[Route('{{routePath}}')]
 readonly class {{shortClassName}}
 {
     public function __construct(
-        private Repository         $repository,
-        private RequestDataManager $requestDataManager,
-        private SelectorBuilder    $selectorBuilder,
+        private Repository $repository,
+        private RequestFactory $RequestFactory,
+        private SelectorBuilder $selectorBuilder,
     )
     {
     }
@@ -397,7 +402,7 @@ readonly class {{shortClassName}}
     #[Get(new Constant('count'))]
     public function handle(): ScalarResponse
     {
-        if ($queryData = $this->requestDataManager->get()->uri->query) {
+        if ($queryData = $this->RequestFactory->get()->uri->query) {
             $selector = $this->selectorBuilder->build(\{{entityClassName}}::class, $queryData);
             $count = $this->repository->fetchCount($selector);
         }
@@ -477,6 +482,28 @@ class {{shortClassName}} extends BasicVote
 {
     public function __construct(
         public \{{entityClassName}} {{instanceVariable}},
+    )
+    {
+    }
+}
+PHP;
+    }
+
+    public function crudDataVote(): string
+    {
+        return <<<'PHP'
+<?php
+
+declare(strict_types=1);
+
+namespace {{namespace}};
+
+use Medas\Core\Events\BasicVote;
+
+class {{shortClassName}} extends BasicVote
+{
+    public function __construct(
+        public array $data,
     )
     {
     }

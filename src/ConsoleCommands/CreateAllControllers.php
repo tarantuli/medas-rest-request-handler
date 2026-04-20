@@ -117,12 +117,20 @@ readonly class CreateAllControllers extends BaseConsoleCommand
 
     private function authorization(string $entityClassName): void
     {
-        $prefixes = ['Create', 'Read', 'Update', 'Delete'];
+        $instanceTemplate = $this->templates->crudVote();
+        $dataArrayTemplate = $this->templates->crudDataVote();
 
-        foreach ($prefixes as $prefix) {
+        $prefixes = [
+            'Create' => $dataArrayTemplate,
+            'Read' => $instanceTemplate,
+            'Update' => $instanceTemplate,
+            'Delete' => $instanceTemplate,
+        ];
+
+        foreach ($prefixes as $prefix => $template) {
             $voteClassName = $this->classGenerator->generate(
                 $entityClassName,
-                $this->templates->crudVote(),
+                $template,
                 'Authorization\\' . $prefix,
                 'Vote',
             );
