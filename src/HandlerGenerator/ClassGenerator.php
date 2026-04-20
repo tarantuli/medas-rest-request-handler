@@ -43,23 +43,11 @@ readonly class ClassGenerator
         string $template,
         string $handlerPrefix,
         string $handlerSuffix,
-        array  $replacements = []
+        array  $replacements = [],
+        bool   $isNormalizer = false,
     ): string
     {
         $entityClassName = $this->classNameNormalizer->normalize($entityClassName);
-
-        $handlerClassName = $this->generateClassName(
-            $entityClassName,
-            $handlerPrefix,
-            $handlerSuffix,
-            $replacements
-        );
-
-        $fileName = $this->fileNameFinder->find($handlerClassName);
-
-        if (file_exists($fileName)) {
-            return $handlerClassName;
-        }
 
         $replacements = $this->gatherReplacements(
             $entityClassName,
@@ -67,6 +55,28 @@ readonly class ClassGenerator
             $handlerPrefix,
             $handlerSuffix
         );
+
+        if ($isNormalizer) {
+            $handlerClassName = str_replace(
+                array_keys($replacements),
+                array_values($replacements),
+                $this->normalizerClassNamePattern
+            );
+        }
+        else {
+            $handlerClassName = $this->generateClassName(
+                $entityClassName,
+                $handlerPrefix,
+                $handlerSuffix,
+                $replacements
+            );
+        }
+
+        $fileName = $this->fileNameFinder->find($handlerClassName);
+
+        if (file_exists($fileName)) {
+            return $handlerClassName;
+        }
 
         $normalizerClassName = str_replace(
             array_keys($replacements),

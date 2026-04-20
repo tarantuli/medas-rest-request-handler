@@ -87,7 +87,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $entityClassName,
             $useUuid ? $this->templates->getInstanceByUuid() : $this->templates->getInstanceByInteger(),
             'Get',
-            '',
+            'Instance',
             $replacements
         );
 
@@ -95,7 +95,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $entityClassName,
             $useUuid ? $this->templates->putInstanceByUuid() : $this->templates->putInstanceByInteger(),
             'Put',
-            '',
+            'Instance',
             $replacements
         );
 
@@ -103,7 +103,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $entityClassName,
             $this->templates->createInstance(),
             'Create',
-            '',
+            'Instance',
             $replacements
         );
 
@@ -113,7 +113,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
                 ? $this->templates->deleteInstanceByUuid()
                 : $this->templates->deleteInstanceByInteger(),
             'Delete',
-            '',
+            'Instance',
             $replacements
         );
 
@@ -141,6 +141,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $this->templates->entityNormalizer(),
             'Helpers\\',
             'Normalizer',
+            isNormalizer: true
         );
     }
 
