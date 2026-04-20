@@ -47,6 +47,6 @@ readonly class HandlerClassNamePattern implements ConfigOption
 
     public function default(): string
     {
-        return '{{psr4Prefix}}\RestControllers{{subPath}}\{{entityName}}\{{handlerPrefix}}{{entityName}}{{handlerSuffix}}';
+        return '{{psr4Prefix}}\RestControllers{{subPath}}\{{entityName}}\{{handlerPrefix}}{{handlerSuffix}}';
     }
 }

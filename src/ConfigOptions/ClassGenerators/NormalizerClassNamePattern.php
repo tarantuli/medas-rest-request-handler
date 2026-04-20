@@ -45,6 +45,6 @@ readonly class NormalizerClassNamePattern implements ConfigOption
 
     public function default(): string
     {
-        return '{{psr4Prefix}}\RestControllers{{subPath}}\{{entityName}}\Helpers\{{entityName}}Normalizer';
+        return '{{psr4Prefix}}\RestControllers{{subPath}}\{{entityName}}\Helpers\Normalizer';
     }
 }
