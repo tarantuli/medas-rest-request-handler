@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\ConsoleCommands;
 
 use Medas\Console\Commands\{BaseConsoleCommand, CommandInput, ConsoleCommandGroup, Option, Range};
-use Medas\Core\Attributes\Service;
+use Medas\Core\Attributes\{ConfigValue, Service};
+use Medas\RestRequestHandler\ConfigOptions\ClassGenerators\{
+    CreateCountController,
+    CreateDeleteController
+};
 use Medas\RestRequestHandler\HandlerGenerator\{ClassGenerator, Templates};
 
 #[Service]
@@ -15,6 +19,12 @@ readonly class CreateAllControllers extends BaseConsoleCommand
         private ClassGenerator          $classGenerator,
         private RestRequestHandlerGroup $group,
         private Templates               $templates,
+
+        #[ConfigValue(CreateDeleteController::class)]
+        private bool                    $createDeleteController = true,
+
+        #[ConfigValue(CreateCountController::class)]
+        private bool                    $createCountController = false,
     )
     {
     }
@@ -107,15 +117,17 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $replacements
         );
 
-        $this->classGenerator->generate(
-            $entityClassName,
-            $useUuid
-                ? $this->templates->deleteInstanceByUuid()
-                : $this->templates->deleteInstanceByInteger(),
-            'Delete',
-            'Instance',
-            $replacements
-        );
+        if ($this->createDeleteController) {
+            $this->classGenerator->generate(
+                $entityClassName,
+                $useUuid
+                    ? $this->templates->deleteInstanceByUuid()
+                    : $this->templates->deleteInstanceByInteger(),
+                'Delete',
+                'Instance',
+                $replacements
+            );
+        }
 
         $this->classGenerator->generate(
             $entityClassName,
@@ -125,13 +137,15 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $replacements
         );
 
-        $this->classGenerator->generate(
-            $entityClassName,
-            $this->templates->getCollectionCount(),
-            'Get',
-            'Count',
-            $replacements
-        );
+        if ($this->createCountController) {
+            $this->classGenerator->generate(
+                $entityClassName,
+                $this->templates->getCollectionCount(),
+                'Get',
+                'Count',
+                $replacements
+            );
+        }
     }
 
     private function helpers(string $entityClassName): void
@@ -153,6 +167,10 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             'Update' => $this->templates->updateVote(),
             'Delete' => $this->templates->readDeleteVote(),
         ];
+
+        if (!$this->createDeleteController) {
+            unset($prefixes['Delete']);
+        }
 
         foreach ($prefixes as $prefix => $template) {
             $voteClassName = $this->classGenerator->generate(
