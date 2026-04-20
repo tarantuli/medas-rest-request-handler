@@ -60,11 +60,35 @@ readonly class CreateAllControllers extends BaseConsoleCommand
 
     private function requestHandlers(string $entityClassName, bool $useUuid): void
     {
+        $replacements = [
+            '{{createVoteClassName}}' => $this->classGenerator->generateClassName(
+                $entityClassName,
+                'Authorization\\Create',
+                'Vote',
+            ),
+            '{{readVoteClassName}}' => $this->classGenerator->generateClassName(
+                $entityClassName,
+                'Authorization\\Read',
+                'Vote',
+            ),
+            '{{updateVoteClassName}}' => $this->classGenerator->generateClassName(
+                $entityClassName,
+                'Authorization\\Update',
+                'Vote',
+            ),
+            '{{deleteVoteClassName}}' => $this->classGenerator->generateClassName(
+                $entityClassName,
+                'Authorization\\Delete',
+                'Vote',
+            ),
+        ];
+
         $this->classGenerator->generate(
             $entityClassName,
             $useUuid ? $this->templates->getInstanceByUuid() : $this->templates->getInstanceByInteger(),
             'Get',
             '',
+            $replacements
         );
 
         $this->classGenerator->generate(
@@ -72,6 +96,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $useUuid ? $this->templates->putInstanceByUuid() : $this->templates->putInstanceByInteger(),
             'Put',
             '',
+            $replacements
         );
 
         $this->classGenerator->generate(
@@ -79,6 +104,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $this->templates->createInstance(),
             'Create',
             '',
+            $replacements
         );
 
         $this->classGenerator->generate(
@@ -88,6 +114,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
                 : $this->templates->deleteInstanceByInteger(),
             'Delete',
             '',
+            $replacements
         );
 
         $this->classGenerator->generate(
@@ -95,6 +122,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $this->templates->getCollection(),
             'Get',
             'Collection',
+            $replacements
         );
 
         $this->classGenerator->generate(
@@ -102,6 +130,7 @@ readonly class CreateAllControllers extends BaseConsoleCommand
             $this->templates->getCollectionCount(),
             'Get',
             'Count',
+            $replacements
         );
     }
 
@@ -118,10 +147,10 @@ readonly class CreateAllControllers extends BaseConsoleCommand
     private function authorization(string $entityClassName): void
     {
         $instanceTemplate = $this->templates->crudVote();
-        $dataArrayTemplate = $this->templates->crudDataVote();
+        $crudDataVoteTemplate = $this->templates->crudDataVote();
 
         $prefixes = [
-            'Create' => $dataArrayTemplate,
+            'Create' => $crudDataVoteTemplate,
             'Read' => $instanceTemplate,
             'Update' => $instanceTemplate,
             'Delete' => $instanceTemplate,

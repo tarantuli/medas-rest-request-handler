@@ -221,7 +221,7 @@ readonly class {{shortClassName}}
         $data = $this->normalizer->unserializeAndDenormalize($data);
 
         allowElseThrow(
-            $vote = new \{{voteClassName}}($data),
+            $vote = new \{{createVoteClassName}}($data),
             new RequestNotAuthorized($vote->allowedAccess)
         );
 

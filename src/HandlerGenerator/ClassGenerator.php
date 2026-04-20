@@ -47,6 +47,74 @@ readonly class ClassGenerator
     ): string
     {
         $entityClassName = $this->classNameNormalizer->normalize($entityClassName);
+
+        $handlerClassName = $this->generateClassName(
+            $entityClassName,
+            $handlerPrefix,
+            $handlerSuffix,
+            $replacements
+        );
+
+        $fileName = $this->fileNameFinder->find($handlerClassName);
+
+        if (file_exists($fileName)) {
+            return $handlerClassName;
+        }
+
+        $replacements = $this->gatherReplacements(
+            $entityClassName,
+            $replacements,
+            $handlerPrefix,
+            $handlerSuffix
+        );
+
+        $normalizerClassName = str_replace(
+            array_keys($replacements),
+            array_values($replacements),
+            $this->normalizerClassNamePattern
+        );
+
+        $code = $this->compile(
+            $entityClassName,
+            $handlerClassName,
+            $normalizerClassName,
+            $template,
+            $replacements
+        );
+
+        $this->fileNameFinder->writeToFile($code, $fileName);
+
+        return $handlerClassName;
+    }
+
+    public function generateClassName(
+        string $entityClassName,
+        string $handlerPrefix,
+        string $handlerSuffix,
+        array  $replacements = []
+    ): string|array
+    {
+        $replacements = $this->gatherReplacements(
+            $entityClassName,
+            $replacements,
+            $handlerPrefix,
+            $handlerSuffix
+        );
+
+        return str_replace(
+            array_keys($replacements),
+            array_values($replacements),
+            $this->handlerClassNamePattern
+        );
+    }
+
+    private function gatherReplacements(
+        string $entityClassName,
+        array  $replacements,
+        string $handlerPrefix,
+        string $handlerSuffix
+    ): array
+    {
         $prefix = $this->fileNameFinder->findPrefix($entityClassName);
 
         if ($prefix === null) {
@@ -79,35 +147,7 @@ readonly class ClassGenerator
             $replacements['{{handlerPrefix}}']
         );
 
-        $handlerClassName = str_replace(
-            array_keys($replacements),
-            array_values($replacements),
-            $this->handlerClassNamePattern
-        );
-
-        $fileName = $this->fileNameFinder->find($handlerClassName);
-
-        if (file_exists($fileName)) {
-            return $handlerClassName;
-        }
-
-        $normalizerClassName = str_replace(
-            array_keys($replacements),
-            array_values($replacements),
-            $this->normalizerClassNamePattern
-        );
-
-        $code = $this->compile(
-            $entityClassName,
-            $handlerClassName,
-            $normalizerClassName,
-            $template,
-            $replacements
-        );
-
-        $this->fileNameFinder->writeToFile($code, $fileName);
-
-        return $handlerClassName;
+        return $replacements;
     }
 
     public function compile(
