@@ -94,6 +94,8 @@ readonly class ClassGenerator
         array  $replacements = []
     ): string|array
     {
+        $entityClassName = $this->classNameNormalizer->normalize($entityClassName);
+
         $replacements = $this->gatherReplacements(
             $entityClassName,
             $replacements,
