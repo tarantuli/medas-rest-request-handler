@@ -10,7 +10,7 @@ use Medas\Core\{
     Attributes\Service,
     Events\DebugInformation,
     Exceptions\UuidProviderIsNotAvailable,
-    Interfaces\BearerTokenValidator,
+    Interfaces\AuthenticationTokenController,
     Interfaces\UuidProvider,
     Types\Uuid as UuidType
 };
@@ -22,14 +22,14 @@ use Medas\RestRequestHandler\ConfigOptions\UsersClass;
 readonly class BearerTokenHandler
 {
     public function __construct(
-        private BearerTokenValidator|null $validator,
-        private EntityManager             $entityManager,
-        private HeaderFinder              $headerFinder,
-        private MetaDataManager           $metaDataManager,
-        private UuidProvider|null         $uuidProvider,
+        private AuthenticationTokenController|null $tokenController,
+        private EntityManager                      $entityManager,
+        private HeaderFinder                       $headerFinder,
+        private MetaDataManager                    $metaDataManager,
+        private UuidProvider|null                  $uuidProvider,
 
         #[ConfigValue(UsersClass::class)]
-        private string|null               $usersClass,
+        private string|null                        $usersClass,
     )
     {
     }
@@ -37,7 +37,7 @@ readonly class BearerTokenHandler
     #[EventListener]
     public function validate(AuthenticationVote $vote): void
     {
-        if ($this->validator === null || $this->usersClass === null) {
+        if ($this->tokenController === null || $this->usersClass === null) {
             return;
         }
 
@@ -56,7 +56,7 @@ readonly class BearerTokenHandler
         }
 
         $token = substr($header, 7);
-        $userId = $this->validator->userId($token);
+        $userId = $this->tokenController->userId($token);
         $type = $this->metaDataManager->get($this->usersClass)->idProperty->type;
 
         if ($userId !== null && $type instanceof UuidType) {
