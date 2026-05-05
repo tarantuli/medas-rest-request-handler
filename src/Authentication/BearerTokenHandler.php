@@ -11,6 +11,7 @@ use Medas\Core\{
     Events\DebugInformation,
     Exceptions\UuidProviderIsNotAvailable,
     Interfaces\AuthenticationTokenController,
+    Interfaces\Uuid,
     Interfaces\UuidProvider,
     Types\Uuid as UuidType
 };
@@ -59,7 +60,7 @@ readonly class BearerTokenHandler
         $userId = $this->tokenController->userId($token);
         $type = $this->metaDataManager->get($this->usersClass)->idProperty->type;
 
-        if ($userId !== null && $type instanceof UuidType) {
+        if ($userId !== null && $type instanceof UuidType && !($userId instanceof Uuid)) {
             if ($this->uuidProvider === null) {
                 throw new UuidProviderIsNotAvailable();
             }
