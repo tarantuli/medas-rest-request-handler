@@ -15,6 +15,7 @@
   "require": {
     "morphp/medas-console": "^3",
     "morphp/medas-core": "^3",
+    "morphp/medas-entity-generator": "^1",
     "morphp/medas-entity-manager": "^3",
     "morphp/medas-http-request-handler": "^3",
     "morphp/medas-json": "^3",
@@ -24,7 +25,6 @@
   "require-dev": {
     "morphp/medas-config-manager": "^3",
     "morphp/medas-config-options": "^3",
-    "morphp/medas-entity-generator": "^1",
     "morphp/medas-events": "^3",
     "morphp/medas-ramsey-uuid-bridge": "^3",
     "morphp/medas-service-manager": "^3",
