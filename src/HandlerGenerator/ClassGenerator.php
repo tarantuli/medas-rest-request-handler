@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\HandlerGenerator;
 
 use Medas\Core\Attributes\{ConfigValue, Service};
-use Medas\EntityManager\ConfigOptions\GeneratorRootNamespace;
-use Medas\EntityManager\Entities\Generator\{
+use Medas\EntityGenerator\{
     ClassNameNormalizer,
+    ConfigOptions\RootNamespace,
     Exceptions\ClassHasNoNamespace,
     FileNameFinder,
+    FileWriter,
     NameConverters\NameConverter
 };
 use Medas\RestRequestHandler\ConfigOptions\ClassGenerators\{
@@ -24,6 +25,7 @@ readonly class ClassGenerator
     public function __construct(
         private ClassNameNormalizer $classNameNormalizer,
         private FileNameFinder      $fileNameFinder,
+        private FileWriter          $fileWriter,
         private NameConverter       $storeNameConverter,
 
         #[ConfigValue(HandlerClassNamePattern::class)]
@@ -32,7 +34,7 @@ readonly class ClassGenerator
         #[ConfigValue(NormalizerClassNamePattern::class)]
         private string              $normalizerClassNamePattern,
 
-        #[ConfigValue(GeneratorRootNamespace::class)]
+        #[ConfigValue(RootNamespace::class)]
         private string|null         $rootNamespace,
     )
     {
@@ -92,7 +94,7 @@ readonly class ClassGenerator
             $replacements
         );
 
-        $this->fileNameFinder->writeToFile($code, $fileName);
+        $this->fileWriter->writeToFile($code, $fileName);
 
         return $handlerClassName;
     }
