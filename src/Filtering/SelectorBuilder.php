@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Filtering;
 
 use Medas\Core\{Attributes\Service, Types\Relation};
-use Medas\EntityManager\{Exceptions\ClassIsNotAnEntity, MetaDataManager};
+use Medas\EntityManager\{
+    Exceptions\ClassIsNotAnEntity,
+    Filters\OwnershipFilterApplier,
+    MetaDataManager
+};
 
 #[Service]
 readonly class SelectorBuilder
 {
     public function __construct(
-        private FilterParser    $filterParser,
-        private MetaDataManager $metaDataManager,
+        private FilterParser           $filterParser,
+        private MetaDataManager        $metaDataManager,
+        private OwnershipFilterApplier $ownershipFilterApplier,
     )
     {
     }
@@ -20,9 +25,10 @@ readonly class SelectorBuilder
     public function build(string $entity, array $filters): QuerySelector
     {
         $selector = new QuerySelector($entity);
-        $typeFinder = function ($name, $entity) {
+        $metaData = $this->metaDataManager->get($entity);
+        $filters = $this->ownershipFilterApplier->apply($metaData, $filters);
+        $typeFinder = function ($name, $metaData) {
             try {
-                $metaData = $this->metaDataManager->get($entity);
                 $type = $metaData->property($name)->type;
 
                 if ($type instanceof Relation) {

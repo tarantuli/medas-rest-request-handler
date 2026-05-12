@@ -394,14 +394,8 @@ readonly class {{shortClassName}}
     #[Get]
     public function handle(): CollectionResponse
     {
-        if ($queryData = $this->requestFactory->get()->uri->query) {
-            $selector = $this->selectorBuilder->build(\{{entityClassName}}::class, $queryData);
-            $entities = $this->repository->fetch($selector);
-        }
-        else {
-            $entities = $this->repository->fetchAll(\{{entityClassName}}::class);
-        }
-
+        $selector = $this->selectorBuilder->build(\{{entityClassName}}::class, $this->requestFactory->get()->uri->query);
+        $entities = $this->repository->fetch($selector);
 
         foreach ($entities as $entity) {
             allowElseThrow(
@@ -453,13 +447,8 @@ readonly class {{shortClassName}}
     #[Get(new Constant('count'))]
     public function handle(): ScalarResponse
     {
-        if ($queryData = $this->requestFactory->get()->uri->query) {
-            $selector = $this->selectorBuilder->build(\{{entityClassName}}::class, $queryData);
-            $count = $this->repository->fetchCount($selector);
-        }
-        else {
-            $count = $this->repository->fetchCount(new AllEntities(\{{entityClassName}}::class));
-        }
+        $selector = $this->selectorBuilder->build(\{{entityClassName}}::class, $this->requestFactory->get()->uri->query);
+        $count = $this->repository->fetchCount($selector);
 
         return new ScalarResponse($count);
     }
