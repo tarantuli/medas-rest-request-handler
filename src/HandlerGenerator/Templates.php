@@ -117,7 +117,7 @@ readonly class {{shortClassName}}
     public function __construct(
         private EntityManager $entityManager,
         private MetaDataManager $metaDataManager,
-        private RequestFactory $RequestFactory,
+        private RequestFactory $requestFactory,
         private ValueSetter $valueSetter,
         private \{{normalizerClassName}} $normalizer,
     )
@@ -135,7 +135,7 @@ readonly class {{shortClassName}}
         );
 
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
-        $data = $this->RequestFactory->get()->bodyData->data();
+        $data = $this->requestFactory->get()->bodyData->data();
         $data = $this->normalizer->unserializeAndDenormalize($data);
 
         allowElseThrow(
@@ -176,7 +176,7 @@ readonly class {{shortClassName}}
     public function __construct(
         private EntityManager $entityManager,
         private MetaDataManager $metaDataManager,
-        private RequestFactory $RequestFactory,
+        private RequestFactory $requestFactory,
         private ValueSetter $valueSetter,
         private \{{normalizerClassName}} $normalizer,
     )
@@ -195,7 +195,7 @@ readonly class {{shortClassName}}
 
         $metaData = $this->metaDataManager->get(\{{entityClassName}}::class);
 
-        $data = $this->RequestFactory->get()->bodyData->data();
+        $data = $this->requestFactory->get()->bodyData->data();
         $data = $this->normalizer->unserializeAndDenormalize($data);
 
         allowElseThrow(
@@ -239,7 +239,7 @@ readonly class {{shortClassName}}
 {
     public function __construct(
         private EntityManager$entityManager,
-        private RequestFactory $RequestFactory,
+        private RequestFactory $requestFactory,
         private \{{normalizerClassName}} $normalizer,
     )
     {
@@ -248,7 +248,7 @@ readonly class {{shortClassName}}
     #[Post]
     public function handle(): EntityResponse
     {
-        $data = $this->RequestFactory->get()->bodyData->data();
+        $data = $this->requestFactory->get()->bodyData->data();
         $data = $this->normalizer->unserializeAndDenormalize($data);
 
         allowElseThrow(
@@ -384,7 +384,7 @@ readonly class {{shortClassName}}
 {
     public function __construct(
         private Repository $repository,
-        private RequestFactory $RequestFactory,
+        private RequestFactory $requestFactory,
         private SelectorBuilder $selectorBuilder,
         private \{{normalizerClassName}} $normalizer,
     )
@@ -394,7 +394,7 @@ readonly class {{shortClassName}}
     #[Get]
     public function handle(): CollectionResponse
     {
-        if ($queryData = $this->RequestFactory->get()->uri->query) {
+        if ($queryData = $this->requestFactory->get()->uri->query) {
             $selector = $this->selectorBuilder->build(\{{entityClassName}}::class, $queryData);
             $entities = $this->repository->fetch($selector);
         }
@@ -444,7 +444,7 @@ readonly class {{shortClassName}}
 {
     public function __construct(
         private Repository $repository,
-        private RequestFactory $RequestFactory,
+        private RequestFactory $requestFactory,
         private SelectorBuilder $selectorBuilder,
     )
     {
@@ -453,7 +453,7 @@ readonly class {{shortClassName}}
     #[Get(new Constant('count'))]
     public function handle(): ScalarResponse
     {
-        if ($queryData = $this->RequestFactory->get()->uri->query) {
+        if ($queryData = $this->requestFactory->get()->uri->query) {
             $selector = $this->selectorBuilder->build(\{{entityClassName}}::class, $queryData);
             $count = $this->repository->fetchCount($selector);
         }
