@@ -147,7 +147,6 @@ readonly class {{shortClassName}}
         );
 
         $this->valueSetter->setValues($metaData, {{instanceVariable}}, $data);
-        $this->entityManager->persist({{instanceVariable}});
         $this->entityManager->flush();
 
         $data = $this->normalizer->normalizeAndSerialize({{instanceVariable}});
@@ -209,7 +208,6 @@ readonly class {{shortClassName}}
 
         $this->valueSetter->setValues($metaData, {{instanceVariable}}, $data);
 
-        $this->entityManager->persist({{instanceVariable}});
         $this->entityManager->flush();
 
         $data = $this->normalizer->normalizeAndSerialize({{instanceVariable}});
