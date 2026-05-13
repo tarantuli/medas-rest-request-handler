@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler;
 
 use Medas\Core\{AsSingleton, BasePackage, Interfaces\ServiceConfig};
-use Medas\EntityGenerator\EntityGeneratorPackage;
 use Medas\EntityManager\EntityManagerPackage;
 use Medas\HttpRequestHandler\HttpRequestHandlerPackage;
 use Medas\Routing\RoutingPackage;
@@ -17,7 +16,6 @@ class RestRequestHandlerPackage extends BasePackage
     public function dependencies(): array
     {
         return [
-            EntityGeneratorPackage::instance(),
             EntityManagerPackage::instance(),
             RoutingPackage::instance(),
             HttpRequestHandlerPackage::instance(),
