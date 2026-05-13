@@ -37,6 +37,7 @@ readonly class {{shortClassName}}
     #[Get(new Uuid('id'))]
     public function handle(UuidType $id): EntityResponse
     {
+        /** @var \{{entityClassName}} {{instanceVariable}} */
         {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
@@ -80,6 +81,7 @@ readonly class {{shortClassName}}
     #[Get(new Integer('id'))]
     public function handle(int $id): EntityResponse
     {
+        /** @var \{{entityClassName}} {{instanceVariable}} */
         {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
@@ -127,6 +129,7 @@ readonly class {{shortClassName}}
     #[Put(new Uuid('id'))]
     public function handle(UuidType $id): EntityResponse
     {
+        /** @var \{{entityClassName}} {{instanceVariable}} */
         {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
@@ -186,6 +189,7 @@ readonly class {{shortClassName}}
     #[Put(new Integer('id'))]
     public function handle(int $id): EntityResponse
     {
+        /** @var \{{entityClassName}} {{instanceVariable}} */
         {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
@@ -302,6 +306,7 @@ readonly class {{shortClassName}}
     #[Delete(new Uuid('id'))]
     public function handle(UuidType $id): SuccessResponse
     {
+        /** @var \{{entityClassName}} {{instanceVariable}} */
         {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
@@ -345,6 +350,7 @@ readonly class {{shortClassName}}
     #[Delete(new Integer('id'))]
     public function handle(int $id): SuccessResponse
     {
+        /** @var \{{entityClassName}} {{instanceVariable}} */
         {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
