@@ -37,14 +37,14 @@ readonly class {{shortClassName}}
     #[Get(new Uuid('id'))]
     public function handle(UuidType $id): EntityResponse
     {
-        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
+        {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
-            $vote = new \{{readVoteClassName}}($entity),
+            $vote = new \{{readVoteClassName}}({{instanceVariable}}),
             new RequestNotAuthorized($vote->allowedAccess)
         );
 
-        $data = $this->normalizer->normalizeAndSerialize($entity);
+        $data = $this->normalizer->normalizeAndSerialize({{instanceVariable}});
 
         return new EntityResponse($data);
     }
@@ -80,14 +80,14 @@ readonly class {{shortClassName}}
     #[Get(new Integer('id'))]
     public function handle(int $id): EntityResponse
     {
-        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
+        {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
-            $vote = new \{{readVoteClassName}}($entity),
+            $vote = new \{{readVoteClassName}}({{instanceVariable}}),
             new RequestNotAuthorized($vote->allowedAccess)
         );
 
-        $data = $this->normalizer->normalizeAndSerialize($entity);
+        $data = $this->normalizer->normalizeAndSerialize({{instanceVariable}});
 
         return new EntityResponse($data);
     }
@@ -127,10 +127,10 @@ readonly class {{shortClassName}}
     #[Put(new Uuid('id'))]
     public function handle(UuidType $id): EntityResponse
     {
-        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
+        {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
-            $vote = new \{{readVoteClassName}}($entity),
+            $vote = new \{{readVoteClassName}}({{instanceVariable}}),
             new RequestNotAuthorized($vote->allowedAccess)
         );
 
@@ -139,15 +139,15 @@ readonly class {{shortClassName}}
         $data = $this->normalizer->unserializeAndDenormalize($data);
 
         allowElseThrow(
-            $vote = new \{{updateVoteClassName}}($entity, $data),
+            $vote = new \{{updateVoteClassName}}({{instanceVariable}}, $data),
             new RequestNotAuthorized($vote->allowedAccess)
         );
 
-        $this->valueSetter->setValues($metaData, $entity, $data);
-        $this->entityManager->persist($entity);
+        $this->valueSetter->setValues($metaData, {{instanceVariable}}, $data);
+        $this->entityManager->persist({{instanceVariable}});
         $this->entityManager->flush();
 
-        $data = $this->normalizer->normalizeAndSerialize($entity);
+        $data = $this->normalizer->normalizeAndSerialize({{instanceVariable}});
 
         return new EntityResponse($data);
     }
@@ -186,10 +186,10 @@ readonly class {{shortClassName}}
     #[Put(new Integer('id'))]
     public function handle(int $id): EntityResponse
     {
-        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
+        {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
-            $vote = new \{{readVoteClassName}}($entity),
+            $vote = new \{{readVoteClassName}}({{instanceVariable}}),
             new RequestNotAuthorized($vote->allowedAccess)
         );
 
@@ -199,16 +199,16 @@ readonly class {{shortClassName}}
         $data = $this->normalizer->unserializeAndDenormalize($data);
 
         allowElseThrow(
-            $vote = new \{{updateVoteClassName}}($entity, $data),
+            $vote = new \{{updateVoteClassName}}({{instanceVariable}}, $data),
             new RequestNotAuthorized($vote->allowedAccess)
         );
 
-        $this->valueSetter->setValues($metaData, $entity, $data);
+        $this->valueSetter->setValues($metaData, {{instanceVariable}}, $data);
 
-        $this->entityManager->persist($entity);
+        $this->entityManager->persist({{instanceVariable}});
         $this->entityManager->flush();
 
-        $data = $this->normalizer->normalizeAndSerialize($entity);
+        $data = $this->normalizer->normalizeAndSerialize({{instanceVariable}});
 
         return new EntityResponse($data);
     }
@@ -257,16 +257,16 @@ readonly class {{shortClassName}}
         );
 
         try {
-            $entity = $this->entityManager->create(\{{entityClassName}}::class, $data);
+            {{instanceVariable}} = $this->entityManager->create(\{{entityClassName}}::class, $data);
         }
         catch (PropertyDoesNotExist $exception) {
             throw new EntityDoesNotHaveProperty(\{{entityClassName}}::class, $exception->propertyName);
         }
 
-        $this->entityManager->persist($entity);
+        $this->entityManager->persist({{instanceVariable}});
         $this->entityManager->flush();
 
-        $data = $this->normalizer->normalizeAndSerialize($entity);
+        $data = $this->normalizer->normalizeAndSerialize({{instanceVariable}});
 
         return new EntityResponse($data);
     }
@@ -302,14 +302,14 @@ readonly class {{shortClassName}}
     #[Delete(new Uuid('id'))]
     public function handle(UuidType $id): SuccessResponse
     {
-        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
+        {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
-            $vote = new \{{deleteVoteClassName}}($entity),
+            $vote = new \{{deleteVoteClassName}}({{instanceVariable}}),
             new RequestNotAuthorized($vote->allowedAccess)
         );
 
-        $this->entityManager->delete($entity);
+        $this->entityManager->delete({{instanceVariable}});
         $this->entityManager->flush();
 
         return new SuccessResponse(true);
@@ -345,14 +345,14 @@ readonly class {{shortClassName}}
     #[Delete(new Integer('id'))]
     public function handle(int $id): SuccessResponse
     {
-        $entity = $this->entityManager->get(\{{entityClassName}}::class, $id);
+        {{instanceVariable}} = $this->entityManager->get(\{{entityClassName}}::class, $id);
 
         allowElseThrow(
-            $vote = new \{{deleteVoteClassName}}($entity),
+            $vote = new \{{deleteVoteClassName}}({{instanceVariable}}),
             new RequestNotAuthorized($vote->allowedAccess)
         );
 
-        $this->entityManager->delete($entity);
+        $this->entityManager->delete({{instanceVariable}});
         $this->entityManager->flush();
 
         return new SuccessResponse(true);
@@ -402,15 +402,15 @@ readonly class {{shortClassName}}
         /** @var \{{entityClassName}}[] $entities */
         $entities = $this->repository->fetch($selector);
 
-        foreach ($entities as $entity) {
+        foreach ($entities as {{instanceVariable}}) {
             allowElseThrow(
-                $vote = new \{{readVoteClassName}}($entity),
+                $vote = new \{{readVoteClassName}}({{instanceVariable}}),
                 new RequestNotAuthorized($vote->allowedAccess)
             );
         }
 
         $entities = array_map(
-            fn($entity) => $this->normalizer->normalizeAndSerialize($entity),
+            fn({{instanceVariable}}) => $this->normalizer->normalizeAndSerialize({{instanceVariable}}),
             $entities
         );
         return new CollectionResponse($entities);
@@ -487,10 +487,10 @@ readonly class {{shortClassName}} implements EntityNormalizer
     {
     }
 
-    public function normalizeAndSerialize(object $entity): array
+    public function normalizeAndSerialize(object {{instanceVariable}}): array
     {
-        /** @var \{{entityClassName}} $entity */
-        $data = get_object_vars($entity);
+        /** @var \{{entityClassName}} {{instanceVariable}} */
+        $data = get_object_vars({{instanceVariable}});
 
         array_walk($data, function (&$value) {
             $value = $this->serializer->serialize($value);
