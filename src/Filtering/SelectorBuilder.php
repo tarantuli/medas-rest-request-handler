@@ -27,8 +27,9 @@ readonly class SelectorBuilder
         $selector = new QuerySelector($entity);
         $metaData = $this->metaDataManager->get($entity);
         $filters = $this->ownershipFilterApplier->apply($metaData, $filters);
-        $typeFinder = function ($name, $metaData) {
+        $typeFinder = function (string $name, string $entityName) {
             try {
+                $metaData = $this->metaDataManager->get($entityName);
                 $type = $metaData->property($name)->type;
 
                 if ($type instanceof Relation) {
