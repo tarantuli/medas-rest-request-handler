@@ -42,7 +42,7 @@ readonly class BearerTokenAuthenticator
             return;
         }
 
-        if (null === $authData = $this->tokenHandler->data()) {
+        if (null === $authData = $this->tokenHandler->data($vote->request->serverData)) {
             return;
         }
 

@@ -10,7 +10,7 @@ use Medas\Core\{
     Interfaces\AuthenticationData,
     Interfaces\AuthenticationTokenController
 };
-use Medas\HttpRequestHandler\{Request\HeaderFinder, RequestFactory};
+use Medas\HttpRequestHandler\Request\{HeaderFinder, ServerData};
 
 #[Service]
 readonly class BearerTokenHandler
@@ -18,21 +18,17 @@ readonly class BearerTokenHandler
     public function __construct(
         private AuthenticationTokenController|null $tokenController,
         private HeaderFinder                       $headerFinder,
-        private RequestFactory                     $requestFactory,
     )
     {
     }
 
-    public function data(): AuthenticationData|null
+    public function data(ServerData $serverData): AuthenticationData|null
     {
         if ($this->tokenController === null) {
             return null;
         }
 
-        $header = $this->headerFinder->find(
-            $this->requestFactory->get()->serverData,
-            'Authorization'
-        );
+        $header = $this->headerFinder->find($serverData, 'Authorization');
 
         if ($header === null) {
             dispatch(new DebugInformation('[bearer-token] Authorization header not found'));
