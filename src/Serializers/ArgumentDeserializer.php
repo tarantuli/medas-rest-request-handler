@@ -4,11 +4,25 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Serializers;
 
-use Medas\Core\{Attributes\Service, Interfaces\ArgumentProcessor, Types\DateTime, Types\Integer};
+use Medas\Core\{
+    Attributes\Service,
+    Exceptions\UuidProviderIsNotAvailable,
+    Interfaces\ArgumentProcessor,
+    Interfaces\Uuid,
+    Interfaces\UuidProvider,
+    Types\DateTime,
+    Types\Integer
+};
 
 #[Service]
 readonly class ArgumentDeserializer implements ArgumentProcessor
 {
+    public function __construct(
+        private UuidProvider|null $uuidProvider,
+    )
+    {
+    }
+
     public function priority(): int
     {
         return -50;
@@ -29,6 +43,13 @@ readonly class ArgumentDeserializer implements ArgumentProcessor
         }
         elseif ($name === 'int') {
             $type = new Integer();
+        }
+        elseif (is_a($name, Uuid::class, true)) {
+            if (!$this->uuidProvider) {
+                throw new UuidProviderIsNotAvailable();
+            }
+
+            return $this->uuidProvider->fromString($argument);
         }
 
         if ($type === null) {
