@@ -44,12 +44,13 @@ readonly class ArgumentDeserializer implements ArgumentProcessor
         elseif ($name === 'int') {
             $type = new Integer();
         }
-        elseif (is_a($name, Uuid::class, true)) {
+
+        if (is_string($argument) && is_a($name, Uuid::class, true)) {
             if (!$this->uuidProvider) {
                 throw new UuidProviderIsNotAvailable();
             }
 
-            return $this->uuidProvider->fromString($argument);
+            $argument = $this->uuidProvider->fromString($argument);
         }
 
         if ($type === null) {
