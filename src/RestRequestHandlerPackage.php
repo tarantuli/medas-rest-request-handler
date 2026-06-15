@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler;
 
-use Medas\Core\{AsSingleton, BasePackage, Interfaces\ServiceConfig};
+use Medas\Core\{AsSingleton, BasePackage, Interfaces\ServiceConfigBuilder};
 use Medas\EntityManager\EntityManagerPackage;
 use Medas\HttpRequestHandler\HttpRequestHandlerPackage;
 use Medas\Routing\RoutingPackage;
@@ -27,10 +27,10 @@ class RestRequestHandlerPackage extends BasePackage
         return __DIR__;
     }
 
-    public function initialize(ServiceConfig $config): void
+    public function initialize(ServiceConfigBuilder $config): void
     {
         parent::initialize($config);
 
-        $config->addArgumentProcessor(service(Serializers\ArgumentDeserializer::class));
+        $config->addArgumentProcessor(Serializers\ArgumentDeserializer::class);
     }
 }
