@@ -86,14 +86,19 @@ readonly class RestSerializer implements Serializer
         }
 
         if ($type instanceof Relation) {
-            if (!is_string($value)) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Relation value must be a string UUID, %s given',
-                    get_debug_type($value)
-                ));
+            if (enum_exists($type->entity)) {
+                $value = $this->resolveRelation($type, $value);
             }
+            else {
+                if (!is_string($value)) {
+                    throw new \InvalidArgumentException(sprintf(
+                        'Relation value must be a string UUID, %s given',
+                        get_debug_type($value)
+                    ));
+                }
 
-            $value = $this->resolveRelation($type, $this->uuidProvider->fromString($value));
+                $value = $this->resolveRelation($type, $this->uuidProvider->fromString($value));
+            }
         }
 
         if ($type instanceof TypesCollection) {
