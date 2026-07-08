@@ -105,16 +105,16 @@
         },
         {
             "name": "morphp/medas-entity-manager",
-            "version": "v3.5.3",
+            "version": "v3.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tarantuli/medas-entity-manager.git",
-                "reference": "53457241700ad9a6ff5c366aeddc683524f6fa1e"
+                "reference": "98607df64f472d98a417b8beba2da8487ab1b377"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tarantuli/medas-entity-manager/zipball/53457241700ad9a6ff5c366aeddc683524f6fa1e",
-                "reference": "53457241700ad9a6ff5c366aeddc683524f6fa1e",
+                "url": "https://api.github.com/repos/tarantuli/medas-entity-manager/zipball/98607df64f472d98a417b8beba2da8487ab1b377",
+                "reference": "98607df64f472d98a417b8beba2da8487ab1b377",
                 "shasum": ""
             },
             "require": {
@@ -153,10 +153,10 @@
                 "entities"
             ],
             "support": {
-                "source": "https://github.com/tarantuli/medas-entity-manager/tree/v3.5.3",
+                "source": "https://github.com/tarantuli/medas-entity-manager/tree/v3.5.4",
                 "issues": "https://github.com/tarantuli/medas-entity-manager/issues"
             },
-            "time": "2026-07-08T10:56:21+00:00"
+            "time": "2026-07-08T12:56:37+00:00"
         },
         {
             "name": "morphp/medas-error-reporting",

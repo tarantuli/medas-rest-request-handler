@@ -15,11 +15,13 @@ use Medas\Core\{
     Interfaces\Type,
     Interfaces\Uuid,
     Interfaces\UuidProvider,
+    Period,
     Types\Boolean,
     Types\Collection as TypesCollection,
     Types\Date as DateType,
     Types\DateTime,
     Types\Integer,
+    Types\Period as PeriodType,
     Types\Relation,
     Types\Uuid as UuidType
 };
@@ -55,6 +57,10 @@ readonly class RestSerializer implements Serializer
 
         if ($value instanceof Date) {
             $value = sprintf('%04d-%02d-%02d', $value->year, $value->month, $value->day);
+        }
+
+        if ($value instanceof Period) {
+            $value = $value->toString();
         }
 
         if ($value instanceof Collection) {
@@ -153,6 +159,10 @@ readonly class RestSerializer implements Serializer
                 (int) $parsed->format('m'),
                 (int) $parsed->format('d'),
             );
+        }
+
+        if ($type instanceof PeriodType) {
+            $value = Period::fromString($value);
         }
 
         return $value;
