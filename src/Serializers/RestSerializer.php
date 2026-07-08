@@ -7,6 +7,7 @@ namespace Medas\RestRequestHandler\Serializers;
 use Medas\Core\{
     Attributes\EventListener,
     Attributes\Service,
+    Date,
     Exceptions\UuidProviderIsNotAvailable,
     Interfaces\Collection,
     Interfaces\HasId,
@@ -16,13 +17,14 @@ use Medas\Core\{
     Interfaces\UuidProvider,
     Types\Boolean,
     Types\Collection as TypesCollection,
+    Types\Date as DateType,
     Types\DateTime,
     Types\Integer,
     Types\Relation,
     Types\Uuid as UuidType
 };
 use Medas\EntityManager\Events\FindEntity;
-use Medas\RestRequestHandler\Exceptions\EntityNotFound;
+use Medas\RestRequestHandler\Exceptions\{EntityNotFound, InvalidDateFormat};
 
 #[Service]
 readonly class RestSerializer implements Serializer
@@ -49,6 +51,10 @@ readonly class RestSerializer implements Serializer
 
         if ($value instanceof \DateTimeInterface) {
             $value = $value->format(\DateTimeInterface::RFC3339_EXTENDED);
+        }
+
+        if ($value instanceof Date) {
+            $value = sprintf('%04d-%02d-%02d', $value->year, $value->month, $value->day);
         }
 
         if ($value instanceof Collection) {
@@ -128,6 +134,20 @@ readonly class RestSerializer implements Serializer
 
         if ($type instanceof DateTime) {
             $value = \DateTime::createFromFormat(\DateTimeInterface::RFC3339_EXTENDED, $value);
+        }
+
+        if ($type instanceof DateType) {
+            $parsed = \DateTime::createFromFormat('!Y-m-d', $value);
+
+            if ($parsed === false) {
+                throw new InvalidDateFormat($value);
+            }
+
+            $value = new Date(
+                (int) $parsed->format('Y'),
+                (int) $parsed->format('m'),
+                (int) $parsed->format('d'),
+            );
         }
 
         return $value;
