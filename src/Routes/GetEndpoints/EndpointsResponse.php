@@ -67,6 +67,6 @@ readonly class EndpointsResponse implements JsonResponse
             ];
         }
 
-        return get_object_vars($type);
+        return array_filter(get_object_vars($type));
     }
 }
