@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Routes\GetEndpoints;
 
+use Medas\Core\{Interfaces\Type, Types\Collection, Types\Relation};
 use Medas\EntityManager\MetaData;
 use Medas\HttpRequestHandler\ResponseTypes\JsonResponse;
 
@@ -11,7 +12,8 @@ readonly class EndpointsResponse implements JsonResponse
 {
     /** @var EntityData[] $entities */
     public function __construct(
-        private array $entities,
+        private array              $entities,
+        private EntityNameResolver $entityNameResolver,
     )
     {
     }
@@ -34,8 +36,8 @@ readonly class EndpointsResponse implements JsonResponse
 
         foreach ($metadata->properties as $property) {
             $filtered['properties'][$property->name] = [
-                'type' => $property->type::class,
-                'typeSpecifications' => $property->type,
+                'type' => new \ReflectionClass($property->type)->getShortName(),
+                'typeSpecifications' => $this->getTypeSpecifications($property->type),
                 'hasDefault' => $property->hasDefault,
                 'default' => $property->default,
                 'isId' => $property->isId,
@@ -48,5 +50,23 @@ readonly class EndpointsResponse implements JsonResponse
         }
 
         return $filtered;
+    }
+
+    private function getTypeSpecifications(Type $type): array
+    {
+        if ($type instanceof Relation) {
+            return [
+                'entity' => $this->entityNameResolver->resolve($type->entity),
+            ];
+        }
+
+        if ($type instanceof Collection) {
+            return [
+                'collectionType' => $this->entityNameResolver->resolve($type->collectionType),
+                'contentType' => $this->entityNameResolver->resolve($type->contentType),
+            ];
+        }
+
+        return get_object_vars($type);
     }
 }

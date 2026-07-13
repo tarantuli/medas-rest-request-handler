@@ -11,7 +11,8 @@ use Medas\Routing\{Methods\Get, Route};
 readonly class GetEndpoints
 {
     public function __construct(
-        private GetEndpoints\EndpointsParser $endpointsParser,
+        private GetEndpoints\EndpointsParser    $endpointsParser,
+        private GetEndpoints\EntityNameResolver $entityNameResolver,
     )
     {
     }
@@ -21,6 +22,6 @@ readonly class GetEndpoints
     {
         $entities = $this->endpointsParser->parse();
 
-        return new GetEndpoints\EndpointsResponse($entities);
+        return new GetEndpoints\EndpointsResponse($entities, $this->entityNameResolver);
     }
 }

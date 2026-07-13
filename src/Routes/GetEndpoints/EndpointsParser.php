@@ -7,15 +7,16 @@ namespace Medas\RestRequestHandler\Routes\GetEndpoints;
 use Medas\Core\Attributes\Service;
 use Medas\EntityManager\MetaDataManager;
 use Medas\RestRequestHandler\Exceptions\TwoClassesMapToSameEntityName;
-use Medas\Routing\{EntityAlias, HandlerManager, Parameters\Constant, RouteHandler};
+use Medas\Routing\{HandlerManager, Parameters\Constant, RouteHandler};
 
 #[Service]
 readonly class EndpointsParser
 {
     public function __construct(
-        private HandlerManager  $handlerManager,
-        private MetaDataManager $metaDataManager,
-        private TypeResolver    $typeResolver,
+        private EntityNameResolver $entityNameResolver,
+        private HandlerManager     $handlerManager,
+        private MetaDataManager    $metaDataManager,
+        private TypeResolver       $typeResolver,
     )
     {
     }
@@ -46,7 +47,7 @@ readonly class EndpointsParser
     /** @param EntityData[] $entities */
     private function findOrCreateEntityData(array &$entities, string $entityClass): EntityData
     {
-        $name = $this->resolveEntityName($entityClass);
+        $name = $this->entityNameResolver->resolve($entityClass);
 
         if (isset($entities[$name])) {
             if ($entities[$name]->entityClass !== $entityClass) {
@@ -65,18 +66,6 @@ readonly class EndpointsParser
         $entityData->metadata = $this->metaDataManager->get($entityClass);
 
         return $entities[$name] = $entityData;
-    }
-
-    private function resolveEntityName(string $entityClass): string
-    {
-        $reflection = new \ReflectionClass($entityClass);
-        $aliases = $reflection->getAttributes(EntityAlias::class);
-
-        if ($aliases !== []) {
-            return $aliases[0]->newInstance()->alias;
-        }
-
-        return $reflection->getShortName();
     }
 
     private function buildOperation(RouteHandler $handler, string $entityClass): EndpointData
