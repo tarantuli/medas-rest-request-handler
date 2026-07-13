@@ -56,16 +56,16 @@
         },
         {
             "name": "morphp/medas-core",
-            "version": "v4.1.11",
+            "version": "v4.1.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tarantuli/medas-core.git",
-                "reference": "d21810629bc3a097de8b4b44652942b3c191b8d9"
+                "reference": "bd91dea5377540aab5efc821ec35fdc17551affc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tarantuli/medas-core/zipball/d21810629bc3a097de8b4b44652942b3c191b8d9",
-                "reference": "d21810629bc3a097de8b4b44652942b3c191b8d9",
+                "url": "https://api.github.com/repos/tarantuli/medas-core/zipball/bd91dea5377540aab5efc821ec35fdc17551affc",
+                "reference": "bd91dea5377540aab5efc821ec35fdc17551affc",
                 "shasum": ""
             },
             "require": {
@@ -98,10 +98,10 @@
                 "medas"
             ],
             "support": {
-                "source": "https://github.com/tarantuli/medas-core/tree/v4.1.11",
+                "source": "https://github.com/tarantuli/medas-core/tree/v4.1.12",
                 "issues": "https://github.com/tarantuli/medas-core/issues"
             },
-            "time": "2026-07-08T10:54:48+00:00"
+            "time": "2026-07-09T10:44:44+00:00"
         },
         {
             "name": "morphp/medas-entity-manager",
@@ -583,16 +583,16 @@
         },
         {
             "name": "morphp/medas-routing",
-            "version": "v3.0.6",
+            "version": "v3.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tarantuli/medas-routing.git",
-                "reference": "b74392d1c3212d21670776b7fb8af1c3c43c9090"
+                "reference": "5d7daf13742fbfa064bb4d855d23471f6a2d7c72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tarantuli/medas-routing/zipball/b74392d1c3212d21670776b7fb8af1c3c43c9090",
-                "reference": "b74392d1c3212d21670776b7fb8af1c3c43c9090",
+                "url": "https://api.github.com/repos/tarantuli/medas-routing/zipball/5d7daf13742fbfa064bb4d855d23471f6a2d7c72",
+                "reference": "5d7daf13742fbfa064bb4d855d23471f6a2d7c72",
                 "shasum": ""
             },
             "require": {
@@ -604,6 +604,7 @@
                 "morphp/medas-config-manager": "^3",
                 "morphp/medas-config-options": "^3",
                 "morphp/medas-console-printer": "^4",
+                "morphp/medas-events": "^3",
                 "morphp/medas-object-instantiator": "^4",
                 "morphp/medas-service-manager": "^4",
                 "phpunit/phpunit": "^10"
@@ -631,10 +632,10 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/tarantuli/medas-routing/tree/v3.0.6",
+                "source": "https://github.com/tarantuli/medas-routing/tree/v3.0.8",
                 "issues": "https://github.com/tarantuli/medas-routing/issues"
             },
-            "time": "2026-06-16T09:38:30+00:00"
+            "time": "2026-07-13T09:26:32+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
