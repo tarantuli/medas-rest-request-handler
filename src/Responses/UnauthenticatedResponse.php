@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Responses;
 
-class BadRequestResponse extends EmptyResponse
+class UnauthenticatedResponse extends EmptyResponse
 {
     public function responseCode(): int
     {
-        return 400;
+        return 401;
     }
 }

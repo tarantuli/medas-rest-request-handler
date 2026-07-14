@@ -14,8 +14,8 @@ readonly class SuccessResponse implements JsonResponse
     {
     }
 
-    public function getJsonResponse(): array
+    public function getJsonResponse(): bool
     {
-        return [$this->success];
+        return $this->success;
     }
 }
