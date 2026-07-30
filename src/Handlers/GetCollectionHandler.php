@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Handlers;
 
-use Medas\Core\{Attributes\ConfigValue, Attributes\Service, Events\AllowedAccess};
+use Medas\Core\{
+    Attributes\ConfigValue,
+    Attributes\PreferredDefault,
+    Attributes\Service,
+    Events\AllowedAccess,
+    Interfaces\Serializer
+};
 use Medas\EntityManager\{Repository, Selector\Selector};
 use Medas\HttpRequestHandler\RequestFactory;
 use Medas\RestRequestHandler\{
@@ -12,7 +18,8 @@ use Medas\RestRequestHandler\{
     Exceptions\ExtraSelectorHasNoRequiredParameters,
     Filtering\SelectorBuilder,
     Interfaces\EntityNormalizer,
-    Responses\CollectionResponse
+    Responses\CollectionResponse,
+    Serializers\QueryDataSerializer
 };
 
 /**
@@ -52,6 +59,9 @@ readonly class GetCollectionHandler
         private RequestFactory             $requestFactory,
         private SelectorBuilder            $selectorBuilder,
         private SelectorRequiredParameters $selectorRequiredParameters,
+
+        #[PreferredDefault(QueryDataSerializer::class)]
+        private Serializer                 $serializer,
 
         #[ConfigValue(SearchQueryName::class)]
         private string                     $searchQueryName,
@@ -116,7 +126,14 @@ readonly class GetCollectionHandler
             foreach ($extraSelector->definition()->parameters as $parameter) {
                 if (array_key_exists($parameter->name, $filters)) {
                     $consumedNames[] = $parameter->name;
-                    $arguments[$parameter->name] = $filters[$parameter->name];
+
+                    // A parameter that declares a type has its raw request
+                    // string deserialized into that type (e.g., a uuid string
+                    // into a Uuid), the same way generic field filters are
+                    // parsed; an untyped parameter is passed through as-is.
+                    $arguments[$parameter->name] = $parameter->type !== null
+                        ? $this->serializer->unserialize($filters[$parameter->name], $parameter->type)
+                        : $filters[$parameter->name];
                 }
             }
         }
