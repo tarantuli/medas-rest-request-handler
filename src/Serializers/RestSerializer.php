@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Serializers;
 
 use Medas\Core\{
+    Attributes\DataHolder as DataHolderAttribute,
     Attributes\EventListener,
     Attributes\Service,
     Date,
@@ -18,6 +19,7 @@ use Medas\Core\{
     Period,
     Types\Boolean,
     Types\Collection as TypesCollection,
+    Types\DataHolder as DataHolderType,
     Types\Date as DateType,
     Types\DateTime,
     Types\Integer,
@@ -26,13 +28,15 @@ use Medas\Core\{
     Types\Uuid as UuidType
 };
 use Medas\EntityManager\Events\FindEntity;
+use Medas\ObjectToArraySerializer\ObjectToArraySerializer;
 use Medas\RestRequestHandler\Exceptions\{EntityNotFound, InvalidDateFormat};
 
 #[Service]
 readonly class RestSerializer implements Serializer
 {
     public function __construct(
-        private UuidProvider|null $uuidProvider,
+        private ObjectToArraySerializer $objectToArraySerializer,
+        private UuidProvider|null       $uuidProvider,
     )
     {
     }
@@ -61,6 +65,10 @@ readonly class RestSerializer implements Serializer
 
         if ($value instanceof Period) {
             $value = $value->toString();
+        }
+
+        if (is_object($value) && attribute(DataHolderAttribute::class, new \ReflectionClass($value::class))) {
+            return $this->objectToArraySerializer->serialize($value);
         }
 
         if ($value instanceof Collection) {
@@ -163,6 +171,10 @@ readonly class RestSerializer implements Serializer
 
         if ($type instanceof PeriodType) {
             $value = Period::fromString($value);
+        }
+
+        if ($type instanceof DataHolderType) {
+            $value = $this->objectToArraySerializer->unserialize($value, $type, $type->className);
         }
 
         return $value;

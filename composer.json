@@ -17,6 +17,7 @@
     "morphp/medas-entity-manager": "^3",
     "morphp/medas-http-request-handler": "^3",
     "morphp/medas-json": "^3",
+    "morphp/medas-object-to-array-serializer": "^3",
     "morphp/medas-routing": "^3",
     "php": "^8.4"
   },

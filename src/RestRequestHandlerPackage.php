@@ -7,6 +7,7 @@ namespace Medas\RestRequestHandler;
 use Medas\Core\{AsSingleton, BasePackage, Interfaces\ServiceConfigBuilder};
 use Medas\EntityManager\EntityManagerPackage;
 use Medas\HttpRequestHandler\HttpRequestHandlerPackage;
+use Medas\ObjectToArraySerializer\ObjectToArraySerializerPackage;
 use Medas\Routing\RoutingPackage;
 
 class RestRequestHandlerPackage extends BasePackage
@@ -19,6 +20,7 @@ class RestRequestHandlerPackage extends BasePackage
             EntityManagerPackage::instance(),
             RoutingPackage::instance(),
             HttpRequestHandlerPackage::instance(),
+            ObjectToArraySerializerPackage::instance(),
         ];
     }
 
