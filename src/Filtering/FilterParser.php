@@ -117,7 +117,7 @@ readonly class FilterParser
             $entity = $job->entity;
         }
 
-        if (!property_exists($entity, $name)) {
+        if ($entity !== '' && !property_exists($entity, $name)) {
             throw new CannotParseQueryValue($name, $value);
         }
 
