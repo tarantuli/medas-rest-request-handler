@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Filtering;
 
 use Medas\Core\{Attributes\Service, Types\Relation};
-use Medas\EntityManager\{
-    Exceptions\ClassIsNotAnEntity,
-    Filters\OwnershipFilterApplier,
-    MetaDataManager
-};
+use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
+use Medas\EntityManager\Filters\OwnershipFilterApplier;
+use Medas\EntityManager\Interfaces\HasSoftDeletes;
+use Medas\EntityManager\MetaDataManager;
+use Medas\EntityManager\Selector\{Conditions\WhereIsNull, Operants\Property};
 
 #[Service]
 readonly class SelectorBuilder
@@ -46,6 +46,12 @@ readonly class SelectorBuilder
         $elements = $this->filterParser->parse($entity, $filters, $typeFinder);
 
         $selector->definition()->add(...$elements);
+
+        // Soft-deleted rows are ordinary rows carrying a deletedAt timestamp;
+        // hide them from collection reads, the standard default for a REST list.
+        if (is_a($entity, HasSoftDeletes::class, true)) {
+            $selector->definition()->add(WhereIsNull::c(Property::c('deletedAt')));
+        }
 
         return $selector;
     }
