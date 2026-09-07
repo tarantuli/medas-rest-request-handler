@@ -27,7 +27,7 @@ use Medas\Core\{
     Types\Relation,
     Types\Uuid as UuidType
 };
-use Medas\EntityManager\Events\FindEntity;
+use Medas\EntityManager\{Entities\IdCaster, Events\FindEntity};
 use Medas\ObjectToArraySerializer\ObjectToArraySerializer;
 use Medas\RestRequestHandler\Exceptions\{EntityNotFound, InvalidDateFormat};
 
@@ -35,6 +35,7 @@ use Medas\RestRequestHandler\Exceptions\{EntityNotFound, InvalidDateFormat};
 readonly class RestSerializer implements Serializer
 {
     public function __construct(
+        private IdCaster                $idCaster,
         private ObjectToArraySerializer $objectToArraySerializer,
         private UuidProvider|null       $uuidProvider,
     )
@@ -100,19 +101,9 @@ readonly class RestSerializer implements Serializer
         }
 
         if ($type instanceof Relation) {
-            if (enum_exists($type->entity)) {
-                $value = $this->resolveRelation($type, $value);
-            }
-            else {
-                if (!is_string($value)) {
-                    throw new \InvalidArgumentException(sprintf(
-                        'Relation value must be a string UUID, %s given',
-                        get_debug_type($value)
-                    ));
-                }
-
-                $value = $this->resolveRelation($type, $this->uuidProvider->fromString($value));
-            }
+            // resolveRelation branches on enum vs entity and, for an entity,
+            // coerces the scalar to the entity's own id type via IdCaster.
+            $value = $this->resolveRelation($type, $value);
         }
 
         if ($type instanceof TypesCollection) {
@@ -127,17 +118,7 @@ readonly class RestSerializer implements Serializer
             $newValue = new ($type->collectionType)();
 
             foreach ($value as $item) {
-                if (!is_string($item)) {
-                    throw new \InvalidArgumentException(sprintf(
-                        'Collection items must be string UUIDs, %s given',
-                        get_debug_type($item)
-                    ));
-                }
-
-                $newValue[] = $this->resolveRelation(
-                    new Relation($type->contentType),
-                    $this->uuidProvider->fromString($item)
-                );
+                $newValue[] = $this->resolveRelation(new Relation($type->contentType), $item);
             }
 
             $value = $newValue;
@@ -197,7 +178,9 @@ readonly class RestSerializer implements Serializer
             $value = ($type->entity)::from($value);
         }
         else {
-            dispatch($event = new FindEntity($type->entity, $value));
+            // The related entity decides its own id type - Uuid, string or int -
+            // so coerce the incoming scalar to match rather than assuming Uuid.
+            dispatch($event = new FindEntity($type->entity, $this->idCaster->cast($type->entity, $value)));
 
             if (!$event->entity) {
                 throw new EntityNotFound($type->entity, $value);
