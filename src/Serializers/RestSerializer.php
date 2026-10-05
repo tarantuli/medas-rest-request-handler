@@ -27,9 +27,9 @@ use Medas\Core\{
     Types\Relation,
     Types\Uuid as UuidType
 };
-use Medas\EntityManager\{Entities\IdCaster, Events\FindEntity};
+use Medas\EntityManager\{Entities\IdCaster, Repository};
 use Medas\ObjectToArraySerializer\ObjectToArraySerializer;
-use Medas\RestRequestHandler\Exceptions\{EntityNotFound, InvalidDateFormat};
+use Medas\RestRequestHandler\Exceptions\{InvalidDateFormat, RelatedEntityNotFound};
 
 #[Service]
 readonly class RestSerializer implements Serializer
@@ -37,6 +37,7 @@ readonly class RestSerializer implements Serializer
     public function __construct(
         private IdCaster                $idCaster,
         private ObjectToArraySerializer $objectToArraySerializer,
+        private Repository              $repository,
         private UuidProvider|null       $uuidProvider,
     )
     {
@@ -180,13 +181,13 @@ readonly class RestSerializer implements Serializer
         else {
             // The related entity decides its own id type - Uuid, string or int -
             // so coerce the incoming scalar to match rather than assuming Uuid.
-            dispatch($event = new FindEntity($type->entity, $this->idCaster->cast($type->entity, $value)));
-
-            if (!$event->entity) {
-                throw new EntityNotFound($type->entity, $value);
-            }
-
-            $value = $event->entity;
+            // A checked lookup: the id comes from the request, so a related entity
+            // that does not exist has to be refused here rather than passed on as
+            // an entity holding only that id.
+            $value = $this->repository->fetchById(
+                $type->entity,
+                $this->idCaster->cast($type->entity, $value)
+            ) ?? throw new RelatedEntityNotFound($type->entity, $value);
         }
 
         return $value;

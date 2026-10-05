@@ -5,16 +5,29 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Exceptions;
 
 use Medas\Core\Exceptions\BaseException;
+use Medas\HttpRequestHandler\Exceptions\DeclaresResponseCode;
 
-class EntityNotFound extends BaseException
+/**
+ * The entity a request addresses by id does not exist. Answered with 404.
+ */
+class EntityNotFound extends BaseException implements DeclaresResponseCode
 {
-    public function __construct(string $entity, mixed $value)
+    private const int NOT_FOUND = 404;
+
+    public function __construct(string $entity, mixed $id)
     {
-        parent::__construct($entity, $value);
+        // The short class name: enough for the client to tell what was missing,
+        // without exposing the backend's namespaces.
+        parent::__construct(substr(strrchr('\\' . $entity, '\\'), 1), (string) $id);
     }
 
     public function pattern(): string
     {
-        return 'entity of class %s not found with id "%s"';
+        return 'no %s found with id %s';
+    }
+
+    public function responseCode(): int
+    {
+        return self::NOT_FOUND;
     }
 }

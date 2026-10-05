@@ -23,6 +23,7 @@ readonly class EndpointsParser
 
     /**
      * Returns an array of EntityData objects, keyed by entity name.
+     *
      * @return EntityData[]
      */
     public function parse(): array
