@@ -5,31 +5,59 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Serializers;
 
 use Medas\Core\{
+    CompiledValue,
     Exceptions\ServiceNotFoundByType,
     Exceptions\UuidProviderIsNotAvailable,
-    Interfaces\ArgumentProcessor,
+    Interfaces\CompilableArgumentProcessor,
     Interfaces\Uuid,
     Interfaces\UuidProvider,
+    ProcessesByCompiling,
     Types\DateTime,
     Types\Integer
 };
 
-readonly class ArgumentDeserializer implements ArgumentProcessor
+readonly class ArgumentDeserializer implements CompilableArgumentProcessor
 {
+    use ProcessesByCompiling;
+
     public function priority(): int
     {
         return -50;
     }
 
-    public function process(\ReflectionParameter|\ReflectionProperty $parameter, mixed $argument): mixed
+    /**
+     * Only parameters whose (first) type is one this processor converts to are compiled; for all others it would
+     * return the argument unchanged.
+     */
+    public function compile(\ReflectionParameter|\ReflectionProperty $parameter): CompiledValue|null
+    {
+        // Should be TypeFinder, but for parameters instead of just properties
+        $types = normalizeType($parameter->getType());
+
+        if ($types === []) {
+            return null;
+        }
+
+        $name = $types[0]->getName();
+
+        if ($name === \DateTime::class || $name === 'int' || is_a($name, Uuid::class, true)) {
+            return new CompiledValue($name);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param CompiledValue $compiled
+     */
+    public function processCompiled(object $compiled, mixed $argument): mixed
     {
         if (is_object($argument)) {
             return $argument;
         }
 
-        // Should be TypeFinder, but for parameters instead of just properties
         $type = null;
-        $name = parameterTypes($parameter)[0]->getName();
+        $name = $compiled->value;
 
         if ($name === \DateTime::class) {
             $type = new DateTime();
