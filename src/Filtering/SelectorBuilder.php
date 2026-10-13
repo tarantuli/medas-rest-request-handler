@@ -35,6 +35,12 @@ readonly class SelectorBuilder
                 if ($type instanceof Relation) {
                     return $this->metaDataManager->get($type->entity)->idProperty->type;
                 }
+
+                // The entity's own id needs its type as much as a relation's does: a
+                // uuid given as text would otherwise never equal the stored bytes.
+                if ($name === $metaData->idProperty?->name) {
+                    return $type;
+                }
             }
             catch (ClassIsNotAnEntity) {
                 // Do nothing
