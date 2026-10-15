@@ -11,7 +11,8 @@ use Medas\Core\{
     Events\AllowedAccess,
     Interfaces\Serializer
 };
-use Medas\EntityManager\{Repository, Selector\Selector};
+use Medas\EntityManager\Repository;
+use Medas\EntityManager\Selector\{Relations\Relation, Selector};
 use Medas\HttpRequestHandler\RequestFactory;
 use Medas\RestRequestHandler\{
     ConfigOptions\SearchQueryName,
@@ -156,6 +157,7 @@ readonly class GetCollectionHandler
             $source = $applicableSelector->definition();
 
             $selector->definition()->add(
+                ...$this->newRelations($selector->definition()->relations, $source->relations),
                 ...$source->conditions,
                 ...$source->parameters,
                 ...$source->sorts,
@@ -181,5 +183,31 @@ readonly class GetCollectionHandler
         );
 
         return new CollectionResponse($entities, $totalCount);
+    }
+
+    /**
+     * A selector's joins come along with its conditions, which may well name a
+     * joined entity's property (a search on an order's tenant name, say). A join
+     * the base already has (from a dotted filter on the same entity) is left out,
+     * as joining the same table twice would make its columns ambiguous.
+     *
+     * @param Relation[] $existing
+     * @param Relation[] $relations
+     *
+     * @return Relation[]
+     */
+    private function newRelations(array $existing, array $relations): array
+    {
+        $new = [];
+
+        foreach ($relations as $relation) {
+            // Loose comparison on purpose: two joins are the same when their
+            // target and properties are, whichever instance holds them.
+            if (!in_array($relation, [...$existing, ...$new])) {
+                $new[] = $relation;
+            }
+        }
+
+        return $new;
     }
 }

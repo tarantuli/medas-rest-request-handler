@@ -15,9 +15,10 @@ use Medas\EntityManager\Selector\{Conditions\WhereIsNull, Operants\Property};
 readonly class SelectorBuilder
 {
     public function __construct(
-        private FilterParser           $filterParser,
-        private MetaDataManager        $metaDataManager,
-        private OwnershipFilterApplier $ownershipFilterApplier,
+        private FilterParser                     $filterParser,
+        private FilterParser\ComparisonExtractor $comparisonExtractor,
+        private MetaDataManager                  $metaDataManager,
+        private OwnershipFilterApplier           $ownershipFilterApplier,
     )
     {
     }
@@ -55,10 +56,30 @@ readonly class SelectorBuilder
 
         // Soft-deleted rows are ordinary rows carrying a deletedAt timestamp;
         // hide them from collection reads, the standard default for a REST list.
-        if (is_a($entity, HasSoftDeletes::class, true)) {
+        // A request that filters on deletedAt itself (e.g. deletedAt!=<null
+        // sentinel> for a trash view) decides for itself, since the default would
+        // contradict it.
+        if (is_a($entity, HasSoftDeletes::class, true) && !$this->filtersOn($filters, 'deletedAt')) {
             $selector->definition()->add(WhereIsNull::c(Property::c('deletedAt')));
         }
 
         return $selector;
+    }
+
+    // Whether any filter compares the property, with whatever operator: the
+    // operator suffix is stripped from the name the same way FilterParser does.
+    private function filtersOn(array $filters, string $property): bool
+    {
+        foreach (array_keys($filters) as $name) {
+            $name = (string) $name;
+
+            $this->comparisonExtractor->extract($name);
+
+            if ($name === $property) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
