@@ -54,6 +54,10 @@ readonly class SelectorBuilder
 
         $selector->definition()->add(...$elements);
 
+        // What the ownership filters cannot write as REST filters, they add as
+        // conditions: still part of the query, so of its paging and count too.
+        $selector->definition()->add(...$this->ownershipFilterApplier->conditions($metaData));
+
         // Soft-deleted rows are ordinary rows carrying a deletedAt timestamp;
         // hide them from collection reads, the standard default for a REST list.
         // A request that filters on deletedAt itself (e.g. deletedAt!=<null
@@ -68,6 +72,7 @@ readonly class SelectorBuilder
 
     // Whether any filter compares the property, with whatever operator: the
     // operator suffix is stripped from the name the same way FilterParser does.
+    /** @noinspection PhpSameParameterValueInspection */
     private function filtersOn(array $filters, string $property): bool
     {
         foreach (array_keys($filters) as $name) {

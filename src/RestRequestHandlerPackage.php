@@ -34,5 +34,6 @@ class RestRequestHandlerPackage extends BasePackage
         parent::initialize($config);
 
         $config->addArgumentProcessor(Serializers\ArgumentDeserializer::class);
+        $config->addManualBinding(Handlers\GetCollectionHandler::class, 'isDev', $config->isDev);
     }
 }

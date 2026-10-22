@@ -17,6 +17,7 @@ use Medas\HttpRequestHandler\RequestFactory;
 use Medas\RestRequestHandler\{
     ConfigOptions\SearchQueryName,
     Exceptions\ExtraSelectorHasNoRequiredParameters,
+    Exceptions\ReadVoteRefusedSelectedRow,
     Filtering\SelectorBuilder,
     Interfaces\EntityNormalizer,
     Responses\CollectionResponse,
@@ -44,7 +45,7 @@ use Medas\RestRequestHandler\{
  * used differently: $entityClass is just a plain reference SelectorBuilder
  * needs, and $readVoteClass is instantiated fresh per entity
  * (new $readVoteClass($entity)) - it can never be a shared instance, since
- * each one wraps a different entity. The selectors and $normalizer, by
+ * each one wraps a different entity. The selectors and $normaliser, by
  * contrast, are genuine stateless per-entity services - passed in as
  * already-constructed instances (typed against the common Selector/
  * EntityNormalizer interfaces every concrete one implements), so the calling
@@ -66,6 +67,9 @@ readonly class GetCollectionHandler
 
         #[ConfigValue(SearchQueryName::class)]
         private string                     $searchQueryName,
+
+        // Bound by RestRequestHandlerPackage from the service configuration.
+        private bool                       $isDev = false,
     )
     {
     }
@@ -129,7 +133,7 @@ readonly class GetCollectionHandler
                     $consumedNames[] = $parameter->name;
 
                     // A parameter that declares a type has its raw request
-                    // string deserialized into that type (e.g., a uuid string
+                    // string deserialized into that type (e.g. a uuid string
                     // into a Uuid), the same way generic field filters are
                     // parsed; an untyped parameter is passed through as-is.
                     $arguments[$parameter->name] = $parameter->type !== null
@@ -171,6 +175,13 @@ readonly class GetCollectionHandler
             $vote = dispatch(new $readVoteClass($entity));
 
             if ($vote->allowedAccess !== AllowedAccess::Allowed) {
+                // The query should not have selected it: it was counted and took a
+                // place on the page. Loud in development, so a missing ownership
+                // filter fails its tests; production still just leaves it out.
+                if ($this->isDev) {
+                    throw new ReadVoteRefusedSelectedRow($entityClass, $readVoteClass);
+                }
+
                 unset($entities[$i]);
             }
         }
