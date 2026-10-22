@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandlerTest\Functional\Filtering;
 
-use Medas\EntityManager\Selector\Conditions\WhereIs;
-use Medas\EntityManager\Selector\Sorting\SortDirection;
+use Medas\EntityManager\Selector\{Conditions\WhereIs, Sorting\SortDirection};
 use Medas\RestRequestHandler\Filtering\SelectorBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -13,10 +12,7 @@ class SelectorBuilderTest extends TestCase
 {
     public function testEmptyFilters(): void
     {
-        $selector = service(SelectorBuilder::class)->build(
-            'Entity',
-            []
-        );
+        $selector = service(SelectorBuilder::class)->build('Entity', []);
 
         self::assertEquals([], $selector->definition()->conditions);
         self::assertEquals([], $selector->definition()->parameters);
@@ -26,10 +22,7 @@ class SelectorBuilderTest extends TestCase
 
     public function testMultisortFilters(): void
     {
-        $selector = service(SelectorBuilder::class)->build(
-            'Entity',
-            ['multisort' => '<name,>id']
-        );
+        $selector = service(SelectorBuilder::class)->build('Entity', ['multisort' => '<name,>id']);
 
         self::assertEquals([], $selector->definition()->conditions);
         self::assertEquals([], $selector->definition()->parameters);

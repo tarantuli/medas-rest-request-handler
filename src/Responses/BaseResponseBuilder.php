@@ -18,7 +18,7 @@ abstract class BaseResponseBuilder
 
     protected function serialize(object $entity, object|null $normalizer): array
     {
-        // Normalize the object to an array of values
+        // Normalise the object to an array of values
         $data = $normalizer instanceof Normalizer
             ? $normalizer->normalize($entity)
             : get_object_vars($entity);

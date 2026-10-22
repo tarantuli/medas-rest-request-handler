@@ -24,7 +24,7 @@ readonly class CollectionResponse implements JsonResponse, HasTotalCount
     /**
      * Falls back to the number of entities actually returned when no explicit
      * count was given - correct as long as the collection isn't paginated;
-     * pass the real count explicitly (e.g., via Repository::fetchCount())
+     * pass the real count explicitly (e.g. via Repository::fetchCount())
      * once pagination is in play, since the returned page is then smaller
      * than the true total.
      */

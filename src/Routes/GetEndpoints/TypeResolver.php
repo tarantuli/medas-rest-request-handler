@@ -22,9 +22,9 @@ readonly class TypeResolver
     /**
      * Falls back to inference when a Route doesn't set endpointType explicitly. Get routes prefer
      * the isCollectionEndpoint()/isEntityEndpoint() flags, since those already handle nested
-     * routes correctly (e.g., GET /invoices/:id/lines as a collection endpoint); everything else,
+     * routes correctly (e.g. GET /invoices/:id/lines as a collection endpoint); everything else,
      * including Get routes that set neither flag, falls back to a shape check: does the route's
-     * fully compiled parameter list end in a non-constant (i.e., an id) parameter.
+     * fully compiled parameter list end in a non-constant (i.e. an id) parameter.
      */
     public function resolve(RouteHandler $handler, string $entityClass): string
     {

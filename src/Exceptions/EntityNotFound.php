@@ -16,7 +16,7 @@ class EntityNotFound extends BaseException implements DeclaresResponseCode
 
     public function __construct(string $entity, mixed $id)
     {
-        // The short class name: enough for the client to tell what was missing,
+        // The short class name: enough for the client to tell what was missing
         // without exposing the backend's namespaces.
         parent::__construct(substr(strrchr('\\' . $entity, '\\'), 1), (string) $id);
     }

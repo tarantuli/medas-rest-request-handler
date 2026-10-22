@@ -24,7 +24,7 @@ readonly class RequestDataHandler
         // Deserialize each value. Don't recurse, the serializer should handle depth
         array_walk($data, fn(&$value) => $value = $this->serializer->unserialize($value));
 
-        // Then, let the controller denormalize the values, if it can
+        // Then, let the controller denormalise the values, if it can
         if ($denormalizer instanceof Denormalizer) {
             $data = $denormalizer->denormalize($data);
         }

@@ -47,11 +47,9 @@ readonly class ArgumentDeserializer implements CompilableArgumentProcessor
         return null;
     }
 
-    /**
-     * @param CompiledValue $compiled
-     */
     public function processCompiled(object $compiled, mixed $argument): mixed
     {
+        /** @var CompiledValue $compiled */
         if (is_object($argument)) {
             return $argument;
         }

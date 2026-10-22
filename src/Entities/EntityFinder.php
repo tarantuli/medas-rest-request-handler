@@ -27,7 +27,7 @@ readonly class EntityFinder
 
     /**
      * Soft-deleted entities are still found, as with get(): whether one may be
-     * read is for the caller's authorization to decide.
+     * read is for the caller's authorisation to decide.
      *
      * @template T of object
      * @param class-string<T> $className
