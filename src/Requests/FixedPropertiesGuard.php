@@ -18,13 +18,17 @@ use Medas\RestRequestHandler\{Exceptions\PropertyCannotBeChanged, Serializers\Re
  * may send back what it read. Not checked are the id and the timestamps, which a
  * client echoes from a copy that may be older than the row, and body keys that are
  * not properties of the entity, such as computed fields.
+ *
+ * It first refuses a field the entity does not know at all (UnknownFieldsGuard), so an
+ * update gets both checks from this one call.
  */
 #[Service]
 readonly class FixedPropertiesGuard
 {
     public function __construct(
         #[PreferredDefault(RestSerializer::class)]
-        private Serializer $serializer,
+        private Serializer         $serializer,
+        private UnknownFieldsGuard $unknownFieldsGuard,
     )
     {
     }
@@ -33,11 +37,30 @@ readonly class FixedPropertiesGuard
      * @param array $body The request body as sent, keyed by field name.
      * @param string[] $handledByController Field names the controller applies
      *     itself, outside the generic writable fields.
+     * @param string[] $computedFields Field names the controller's normalizer adds to
+     *     its output, which a client may send back. Not compared with the stored value:
+     *     the normalizer shows something other than what is stored, also when the name
+     *     is a property's.
      */
-    public function check(MetaData $metaData, object $entity, array $body, array $handledByController = []): void
+    public function check(
+        MetaData $metaData,
+        object   $entity,
+        array    $body,
+        array    $handledByController = [],
+        array    $computedFields = [],
+    ): void
     {
+        $this->unknownFieldsGuard->check(
+            $metaData->className,
+            $body,
+            [...$handledByController, ...$computedFields]
+        );
+
         foreach ($this->fixedFields($metaData) as $name => $source) {
-            if (!array_key_exists($name, $body) || in_array($name, $handledByController, true)) {
+            $isNotForThisGuard = in_array($name, $handledByController, true)
+                || in_array($name, $computedFields, true);
+
+            if (!array_key_exists($name, $body) || $isNotForThisGuard) {
                 continue;
             }
 
