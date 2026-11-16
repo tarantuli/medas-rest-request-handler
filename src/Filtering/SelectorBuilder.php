@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\Core\{Attributes\Service, Types\Relation};
+use Medas\Core\{Attributes\Service, Types\Boolean, Types\Relation};
 use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
 use Medas\EntityManager\Filters\OwnershipFilterApplier;
 use Medas\EntityManager\Interfaces\HasSoftDeletes;
@@ -40,6 +40,12 @@ readonly class SelectorBuilder
                 // The entity's own id needs its type as much as a relation's does: a
                 // uuid given as text would otherwise never equal the stored bytes.
                 if ($name === $metaData->idProperty?->name) {
+                    return $type;
+                }
+
+                // Untyped, a boolean's "true" reaches the database as text, which compares
+                // as 0: true, false and anything else then all selected the false rows.
+                if ($type instanceof Boolean) {
                     return $type;
                 }
             }

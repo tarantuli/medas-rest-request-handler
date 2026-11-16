@@ -13,14 +13,14 @@ use Medas\ServiceManager\{ServiceConfigBuilder, ServiceManager};
 chdir(__DIR__);
 
 new ServiceManager(function (): ServiceConfigBuilder {
-    $config = new ServiceConfigBuilder(ObjectInstantiator::class);
+    $config = new ServiceConfigBuilder(ObjectInstantiator::class, isDev: true);
 
     $config->addPackages([
-        RestRequestHandlerPackage::instance(),
         ConfigManagerPackage::instance(),
         ConfigOptionsPackage::instance(),
         EventsPackage::instance(),
         RamseyUuidBridgePackage::instance(),
+        RestRequestHandlerPackage::instance(),
     ]);
 
     return $config;

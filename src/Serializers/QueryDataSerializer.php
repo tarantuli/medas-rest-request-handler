@@ -17,6 +17,7 @@ use Medas\Core\{
     Types\Integer,
     Types\Uuid as UuidType
 };
+use Medas\RestRequestHandler\Exceptions\QueryValueIsNotABoolean;
 
 #[Service]
 readonly class QueryDataSerializer implements Serializer
@@ -59,7 +60,7 @@ readonly class QueryDataSerializer implements Serializer
         }
 
         if ($type instanceof Boolean) {
-            return (bool) $value;
+            return $this->unserializeBoolean($value);
         }
 
         if ($type instanceof DateTime) {
@@ -77,5 +78,17 @@ readonly class QueryDataSerializer implements Serializer
         }
 
         return $value;
+    }
+
+    // A query value is a raw string, and a plain (bool) cast reads "false" as true. Both
+    // spellings are accepted: true/false as a response serves a boolean, 1/0 as clients
+    // sent it before. Anything else is refused rather than guessed.
+    private function unserializeBoolean(mixed $value): bool
+    {
+        return match ($value) {
+            'true', '1' => true,
+            'false', '0' => false,
+            default => throw new QueryValueIsNotABoolean((string) $value),
+        };
     }
 }

@@ -52,10 +52,6 @@ readonly class RestSerializer implements Serializer
             return (string) $value;
         }
 
-        if (is_bool($value)) {
-            $value = (int) $value;
-        }
-
         if ($value instanceof \DateTimeInterface) {
             $value = $value->format(\DateTimeInterface::RFC3339_EXTENDED);
         }

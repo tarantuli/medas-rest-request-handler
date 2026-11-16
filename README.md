@@ -42,6 +42,8 @@ A REST API layer built on `medas-http-request-handler` and `medas-entity-manager
 
 All comparison operators are configurable and can be disabled by setting them to `null`.
 
+A boolean filter value is `true` or `false`, as a response serves it; `1` and `0` are accepted as well. Any other value is refused with `QueryValueIsNotABoolean` (400).
+
 ## Configuration options
 
 | Option                                                   | Default      | Description                                             |
@@ -210,7 +212,7 @@ With `users-class` set and a `AuthenticationTokenController` registered (e.g., v
 | PHP type (outbound) | JSON representation       |
 |---------------------|---------------------------|
 | `Uuid`              | Hyphenated string         |
-| `bool`              | `0` / `1` integer         |
+| `bool`              | `true` / `false`          |
 | `DateTimeInterface` | RFC 3339 extended string  |
 | `Collection`        | Array of serialized items |
 | `HasId` entity      | Serialized id value       |
