@@ -6,6 +6,7 @@ namespace Medas\RestRequestHandler\Serializers;
 
 use Medas\Core\{
     CompiledValue,
+    Exceptions\IntersectionTypeNotSupported,
     Exceptions\ServiceNotFoundByType,
     Exceptions\UuidProviderIsNotAvailable,
     Interfaces\CompilableArgumentProcessor,
@@ -28,6 +29,8 @@ readonly class ArgumentDeserializer implements CompilableArgumentProcessor
     /**
      * Only parameters whose (first) type is one this processor converts to are compiled; for all others it would
      * return the argument unchanged.
+     *
+     * @throws IntersectionTypeNotSupported When the first type is an intersection type.
      */
     public function compile(\ReflectionParameter|\ReflectionProperty $parameter): CompiledValue|null
     {
@@ -36,6 +39,10 @@ readonly class ArgumentDeserializer implements CompilableArgumentProcessor
 
         if ($types === []) {
             return null;
+        }
+
+        if ($types[0] instanceof \ReflectionIntersectionType) {
+            throw new IntersectionTypeNotSupported($parameter, $types[0]);
         }
 
         $name = $types[0]->getName();
