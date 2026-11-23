@@ -17,7 +17,7 @@ use Medas\Core\{
     Types\Integer,
     Types\Uuid as UuidType
 };
-use Medas\RestRequestHandler\Exceptions\QueryValueIsNotABoolean;
+use Medas\RestRequestHandler\Exceptions\{InvalidDateTimeFormat, QueryValueIsNotABoolean};
 
 #[Service]
 readonly class QueryDataSerializer implements Serializer
@@ -64,7 +64,7 @@ readonly class QueryDataSerializer implements Serializer
         }
 
         if ($type instanceof DateTime) {
-            return \DateTime::createFromFormat(\DateTimeInterface::RFC3339_EXTENDED, $value);
+            return $this->unserializeDateTime($value);
         }
 
         if ($type instanceof UuidType) {
@@ -90,5 +90,21 @@ readonly class QueryDataSerializer implements Serializer
             'false', '0' => false,
             default => throw new QueryValueIsNotABoolean((string) $value),
         };
+    }
+
+    // createFromFormat() answers false for a value it cannot read; compared as is, that
+    // false selected nothing, so a mistyped date-time looked like an empty result.
+    private function unserializeDateTime(mixed $value): \DateTime
+    {
+        $dateTime = \DateTime::createFromFormat(
+            \DateTimeInterface::RFC3339_EXTENDED,
+            (string) $value
+        );
+
+        if ($dateTime === false) {
+            throw new InvalidDateTimeFormat((string) $value);
+        }
+
+        return $dateTime;
     }
 }

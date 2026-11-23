@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\Core\{Attributes\Service, Types\Boolean, Types\Relation};
+use Medas\Core\{Attributes\Service, Types\Boolean, Types\DateTime, Types\Relation};
 use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
 use Medas\EntityManager\Filters\OwnershipFilterApplier;
 use Medas\EntityManager\Interfaces\HasSoftDeletes;
@@ -46,6 +46,13 @@ readonly class SelectorBuilder
                 // Untyped, a boolean's "true" reaches the database as text, which compares
                 // as 0: true, false and anything else then all selected the false rows.
                 if ($type instanceof Boolean) {
+                    return $type;
+                }
+
+                // Untyped, a date-time reached the database as the text sent, which the
+                // database read in its own time zone - not PHP's, in which the value was
+                // stored. Typed, it is parsed with its offset and stored-form serialized.
+                if ($type instanceof DateTime) {
                     return $type;
                 }
             }
