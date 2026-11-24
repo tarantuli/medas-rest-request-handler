@@ -53,6 +53,7 @@ A boolean filter value is `true` or `false`, as a response serves it; `1` and `0
 | `rest-request-handler.per-page-query-name`               | `per_page`   | Query parameter name for page size                      |
 | `rest-request-handler.multisort-query-name`              | `multisort`  | Query parameter name for multi-column sort              |
 | `rest-request-handler.predefined-query-name`             | `predefined` | Query parameter name for predefined queries             |
+| `rest-request-handler.include-query-name`                | `include`    | Query parameter naming the CollectionIncludes to add    |
 | `rest-request-handler.users-class`                       | none         | FQCN of the user entity for bearer token authentication |
 | `rest-request-handler.comparison-operators.contains`     | `*`          | Operator for contains filter                            |
 | `rest-request-handler.comparison-operators.starts-with`  | `^`          | Operator for starts-with filter                         |
@@ -255,5 +256,7 @@ rest-request-handler:
     is-at-least: ">"
     is-at-most: "<"
 ```
+
+**Values on request** — a GetCollection route can offer values that cost a query, such as a count of related records, without paying for them on every request. Pass a `CollectionIncludes` as the handler's last argument; a request names the ones it wants (`?include=activeSubscriptionCount,outstandingAmount`). `values()` gets the whole page at once, so one query serves every row. Every name asked for is added to every row (null where there is no value); a name the route does not offer is refused with `UnknownInclude` (400), as is any name on a route without includes. The values are computed after the query, so they cannot be sorted or filtered on.
 
 **Ownership filters** — if an entity is annotated with `#[AddOwnershipFilter]`, `SelectorBuilder` automatically applies the ownership filter to every query, ensuring users can only see their own records without any additional handler code.

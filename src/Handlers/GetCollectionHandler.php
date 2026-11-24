@@ -15,10 +15,13 @@ use Medas\EntityManager\Repository;
 use Medas\EntityManager\Selector\{Relations\Relation, Selector};
 use Medas\HttpRequestHandler\RequestFactory;
 use Medas\RestRequestHandler\{
+    ConfigOptions\IncludeQueryName,
     ConfigOptions\SearchQueryName,
     Exceptions\ExtraSelectorHasNoRequiredParameters,
     Exceptions\ReadVoteRefusedSelectedRow,
+    Exceptions\UnknownInclude,
     Filtering\SelectorBuilder,
+    Interfaces\CollectionIncludes,
     Interfaces\EntityNormalizer,
     Responses\CollectionResponse,
     Serializers\QueryDataSerializer
@@ -68,6 +71,9 @@ readonly class GetCollectionHandler
         #[ConfigValue(SearchQueryName::class)]
         private string                     $searchQueryName,
 
+        #[ConfigValue(IncludeQueryName::class)]
+        private string                     $includeQueryName,
+
         // Bound by RestRequestHandlerPackage from the service configuration.
         private bool                       $isDev = false,
     )
@@ -78,16 +84,25 @@ readonly class GetCollectionHandler
      * @param class-string $entityClass
      * @param class-string $readVoteClass
      * @param Selector[]   $extraSelectors
+     * @param CollectionIncludes|null $includes the values a request may ask for by name
+     *                                          (?include=a,b); without, any is refused
      */
     public function handle(
-        string           $entityClass,
-        string           $readVoteClass,
-        EntityNormalizer $normalizer,
-        Selector|null    $querySelector = null,
-        array            $extraSelectors = [],
+        string                  $entityClass,
+        string                  $readVoteClass,
+        EntityNormalizer        $normalizer,
+        Selector|null           $querySelector = null,
+        array                   $extraSelectors = [],
+        CollectionIncludes|null $includes = null,
     ): CollectionResponse
     {
         $filters = $this->requestFactory->get()->uri->query;
+
+        // Not a filter: taken out before the generic parser sees the query, which would
+        // refuse it as an unknown property. Checked before any query runs.
+        $includeNames = $this->includeNames($filters, $includes);
+
+        unset($filters[$this->includeQueryName]);
 
         // Sources are composed, not chosen: gather every selector that
         // applies, the request-argument bindings they need, and the filter
@@ -187,13 +202,41 @@ readonly class GetCollectionHandler
         }
 
         $entities = array_values($entities);
+        $included = $includeNames === [] ? [] : $includes->values($entities, $includeNames);
 
         $entities = array_map(
-            fn($entity) => $normalizer->normalizeAndSerialize($entity),
+            fn($entity)
+                => $this->withIncludes(
+                    $normalizer->normalizeAndSerialize($entity),
+                    $entity,
+                    $includeNames,
+                    $included
+                ),
             $entities
         );
 
         return new CollectionResponse($entities, $totalCount);
+    }
+
+    /** @return list<string> */
+    private function includeNames(array $filters, CollectionIncludes|null $includes): array
+    {
+        $value = $filters[$this->includeQueryName] ?? '';
+
+        $names = array_values(array_filter(
+            array_map('trim', explode(',', (string) $value)),
+            fn($name) => $name !== ''
+        ));
+
+        $offered = $includes?->names() ?? [];
+
+        foreach ($names as $name) {
+            if (!in_array($name, $offered, true)) {
+                throw new UnknownInclude($name, $offered);
+            }
+        }
+
+        return array_values(array_unique($names));
     }
 
     /**
@@ -220,5 +263,22 @@ readonly class GetCollectionHandler
         }
 
         return $new;
+    }
+
+    // Every name asked for is present on every row, null where the includes gave no
+    // value, so a client can tell "asked for and empty" from "not asked for".
+    private function withIncludes(array $data, object $entity, array $names, array $included): array
+    {
+        if ($names === []) {
+            return $data;
+        }
+
+        $values = $included[(string) $entity->id()] ?? [];
+
+        foreach ($names as $name) {
+            $data[$name] = $values[$name] ?? null;
+        }
+
+        return $data;
     }
 }
