@@ -9,7 +9,11 @@ use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
 use Medas\EntityManager\Filters\OwnershipFilterApplier;
 use Medas\EntityManager\Interfaces\HasSoftDeletes;
 use Medas\EntityManager\MetaDataManager;
-use Medas\EntityManager\Selector\{Conditions\WhereIsNull, Operants\Property};
+use Medas\EntityManager\Selector\{
+    Conditions\WhereIsNull,
+    DerivedValues\DerivedValue,
+    Operants\Property
+};
 
 #[Service]
 readonly class SelectorBuilder
@@ -23,7 +27,11 @@ readonly class SelectorBuilder
     {
     }
 
-    public function build(string $entity, array $filters): QuerySelector
+    /**
+     * @param array<string, DerivedValue> $derivedValues names a filter or sort may name
+     *                                                  beside the entity's properties
+     */
+    public function build(string $entity, array $filters, array $derivedValues = []): QuerySelector
     {
         $selector = new QuerySelector($entity);
         $metaData = $this->metaDataManager->get($entity);
@@ -63,7 +71,7 @@ readonly class SelectorBuilder
             return null;
         };
 
-        $elements = $this->filterParser->parse($entity, $filters, $typeFinder);
+        $elements = $this->filterParser->parse($entity, $filters, $typeFinder, $derivedValues);
 
         $selector->definition()->add(...$elements);
 

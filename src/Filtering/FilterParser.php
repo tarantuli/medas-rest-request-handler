@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Filtering;
 
 use Medas\Core\Attributes\{ConfigValue, Service};
-use Medas\EntityManager\{EntityClassFinder, Selector\Element, Selector\Pagination};
+use Medas\EntityManager\EntityClassFinder;
+use Medas\EntityManager\Selector\{DerivedValues\DerivedValue, Element, Pagination};
 use Medas\Json\StringProtector;
 use Medas\RestRequestHandler\{
     ConfigOptions\DefaultPageSize,
@@ -46,10 +47,20 @@ readonly class FilterParser
     {
     }
 
-    /** @return Element[] */
-    public function parse(string $entity, array $filters, \Closure|null $typeFinder = null): array
+    /**
+     * @param array<string, DerivedValue> $derivedValues names a filter or sort may name
+     *                                                  beside the entity's properties
+     *
+     * @return Element[]
+     */
+    public function parse(
+        string        $entity,
+        array         $filters,
+        \Closure|null $typeFinder = null,
+        array         $derivedValues = [],
+    ): array
     {
-        $job = new FilterParser\Job($entity);
+        $job = new FilterParser\Job($entity, $derivedValues);
 
         foreach ($filters as $name => $value) {
             $this->processFilter($job, $name, $value, $typeFinder);
@@ -106,6 +117,16 @@ readonly class FilterParser
     ): void
     {
         $comparisonType = $this->comparisonExtractor->extract($name);
+
+        if (array_key_exists($name, $job->derivedValues)) {
+            $job->elements[] = $this->comparisonParser->parseDerived(
+                $job->derivedValues[$name],
+                $comparisonType,
+                $this->stringProtector->decode($value)
+            );
+
+            return;
+        }
 
         if (str_contains($name, '.')) {
             [$subStore, $name] = explode('.', $name);

@@ -16,6 +16,7 @@ use Medas\EntityManager\Selector\{
     Conditions\WhereIsNot,
     Conditions\WhereIsNotNull,
     Conditions\WhereIsNull,
+    DerivedValues\DerivedValue,
     Element,
     Operants\Property,
     Operants\Value,
@@ -135,5 +136,48 @@ readonly class ComparisonParser
             Property::c($name, $entity),
             Value::c($unserializedValue),
         );
+    }
+
+    /**
+     * A filter on a derived value, such as activeSubscriptionCount.gte=1: compared as the
+     * value's expression, its input read with the value's own type.
+     */
+    public function parseDerived(DerivedValue $derived, string $comparisonType, string $value): Element
+    {
+        if ($this->nullSentinel !== null && $value === $this->nullSentinel) {
+            $conditionClass = match ($comparisonType) {
+                WhereIs::class => WhereIsNull::class,
+                WhereIsNot::class => WhereIsNotNull::class,
+                default => throw new CannotParseQueryValue($derived->name, $value),
+            };
+
+            // As for a property: a null check that can never match is a query mistake
+            if (!$derived->isNullable) {
+                throw new CannotParseQueryValue($derived->name, $value);
+            }
+
+            return new $conditionClass($derived);
+        }
+
+        if (new \ReflectionClass($comparisonType)->implementsInterface(IsArrayComparison::class)) {
+            $values = array_map(
+                fn(string $part) => $this->serializer->unserialize($part, $derived->type),
+                explode(',', $value)
+            );
+
+            return new $comparisonType($derived, Values::c($values));
+        }
+
+        $unserializedValue = $this->serializer->unserialize($value, $derived->type);
+
+        if ($unserializedValue === null && $comparisonType === WhereIs::class) {
+            return new WhereIsNull($derived);
+        }
+
+        if ($unserializedValue === null && $comparisonType === WhereIsNot::class) {
+            return new WhereIsNotNull($derived);
+        }
+
+        return new $comparisonType($derived, Value::c($unserializedValue));
     }
 }

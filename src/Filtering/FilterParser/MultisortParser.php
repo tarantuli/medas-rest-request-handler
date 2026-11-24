@@ -6,7 +6,12 @@ namespace Medas\RestRequestHandler\Filtering\FilterParser;
 
 use Medas\Core\Attributes\Service;
 use Medas\EntityManager\EntityClassFinder;
-use Medas\EntityManager\Selector\{Operants\Property, Sorting\SortBy, Sorting\SortDirection};
+use Medas\EntityManager\Selector\{
+    Operants\Operant,
+    Operants\Property,
+    Sorting\SortBy,
+    Sorting\SortDirection
+};
 use Medas\RestRequestHandler\Exceptions\InvalidSortDirection;
 
 #[Service]
@@ -38,9 +43,14 @@ class MultisortParser
 
     // A property of another entity, "<products.name", sorts by that entity's
     // property, the same way a dotted filter compares it: the entity is marked as
-    // referenced, so ReferencedEntitiesHandler joins it in.
-    private function property(Job $job, string $name): Property
+    // referenced, so ReferencedEntitiesHandler joins it in. A derived value sorts by its
+    // expression.
+    private function property(Job $job, string $name): Operant
     {
+        if (array_key_exists($name, $job->derivedValues)) {
+            return $job->derivedValues[$name];
+        }
+
         if (!str_contains($name, '.')) {
             return Property::c($name);
         }

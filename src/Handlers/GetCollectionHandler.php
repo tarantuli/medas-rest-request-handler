@@ -11,8 +11,18 @@ use Medas\Core\{
     Events\AllowedAccess,
     Interfaces\Serializer
 };
+use Medas\EntityManager\EntityWithDerivedValues;
+use Medas\EntityManager\Exceptions\DerivedValueNameIsAProperty;
+use Medas\EntityManager\MetaDataManager;
 use Medas\EntityManager\Repository;
-use Medas\EntityManager\Selector\{Relations\Relation, Selector};
+use Medas\EntityManager\Selector\{
+    Definition,
+    DerivedValues\DerivedValue,
+    Operants\Property,
+    Relations\Relation,
+    Selector,
+    Sorting\SortBy
+};
 use Medas\HttpRequestHandler\RequestFactory;
 use Medas\RestRequestHandler\{
     ConfigOptions\IncludeQueryName,
@@ -22,9 +32,11 @@ use Medas\RestRequestHandler\{
     Exceptions\UnknownInclude,
     Filtering\SelectorBuilder,
     Interfaces\CollectionIncludes,
+    Interfaces\DerivedIncludes,
     Interfaces\EntityNormalizer,
     Responses\CollectionResponse,
-    Serializers\QueryDataSerializer
+    Serializers\QueryDataSerializer,
+    Serializers\RestSerializer
 };
 
 /**
@@ -60,6 +72,7 @@ use Medas\RestRequestHandler\{
 readonly class GetCollectionHandler
 {
     public function __construct(
+        private MetaDataManager            $metaDataManager,
         private Repository                 $repository,
         private RequestFactory             $requestFactory,
         private SelectorBuilder            $selectorBuilder,
@@ -67,6 +80,10 @@ readonly class GetCollectionHandler
 
         #[PreferredDefault(QueryDataSerializer::class)]
         private Serializer                 $serializer,
+
+        // For the derived values in the rows, as a normaliser serialises the entity's own
+        #[PreferredDefault(RestSerializer::class)]
+        private Serializer                 $responseSerializer,
 
         #[ConfigValue(SearchQueryName::class)]
         private string                     $searchQueryName,
@@ -101,6 +118,7 @@ readonly class GetCollectionHandler
         // Not a filter: taken out before the generic parser sees the query, which would
         // refuse it as an unknown property. Checked before any query runs.
         $includeNames = $this->includeNames($filters, $includes);
+        $derivedValues = $this->derivedValues($entityClass, $includes);
 
         unset($filters[$this->includeQueryName]);
 
@@ -164,7 +182,7 @@ readonly class GetCollectionHandler
         // pagination and client sorting. (A consumed name like 'group' is not
         // a scalar property and would otherwise make the generic parser throw.)
         $residualFilters = array_diff_key($filters, array_flip($consumedNames));
-        $selector = $this->selectorBuilder->build($entityClass, $residualFilters);
+        $selector = $this->selectorBuilder->build($entityClass, $residualFilters, $derivedValues);
 
         // Fold each applicable selector's conditions, parameters and sorts
         // into the single base Definition. Conditions AND together; sorts
@@ -183,11 +201,20 @@ readonly class GetCollectionHandler
             );
         }
 
-        $entities = $this->repository->fetch($selector, $arguments);
-        $totalCount = $this->repository->fetchCount($selector, $arguments) ?? count($entities);
+        // Selected only when asked for: a sort or filter on one writes its expression itself
+        foreach ($includeNames as $name) {
+            if (array_key_exists($name, $derivedValues)) {
+                $selector->definition()->add($derivedValues[$name]);
+            }
+        }
 
-        foreach ($entities as $i => $entity) {
-            $vote = dispatch(new $readVoteClass($entity));
+        $this->addIdTieBreaker($selector->definition(), $entityClass);
+
+        $rows = $this->repository->fetchWithDerivedValues($selector, $arguments);
+        $totalCount = $this->repository->fetchCount($selector, $arguments) ?? count($rows);
+
+        foreach ($rows as $i => $row) {
+            $vote = dispatch(new $readVoteClass($row->entity));
 
             if ($vote->allowedAccess !== AllowedAccess::Allowed) {
                 // The query should not have selected it: it was counted and took a
@@ -197,12 +224,13 @@ readonly class GetCollectionHandler
                     throw new ReadVoteRefusedSelectedRow($entityClass, $readVoteClass);
                 }
 
-                unset($entities[$i]);
+                unset($rows[$i]);
             }
         }
 
-        $entities = array_values($entities);
-        $included = $includeNames === [] ? [] : $includes->values($entities, $includeNames);
+        $rows = array_values($rows);
+        $entities = array_map(fn(EntityWithDerivedValues $row) => $row->entity, $rows);
+        $included = $this->included($rows, $includes, $includeNames, $derivedValues);
 
         $entities = array_map(
             fn($entity)
@@ -240,6 +268,36 @@ readonly class GetCollectionHandler
     }
 
     /**
+     * The derived values the includes offer, by name: names() is the gate, for these as for
+     * the others.
+     *
+     * @return array<string, DerivedValue>
+     */
+    private function derivedValues(string $entityClass, CollectionIncludes|null $includes): array
+    {
+        if (!$includes instanceof DerivedIncludes) {
+            return [];
+        }
+
+        $offered = $includes->names();
+        $metaData = $this->metaDataManager->get($entityClass);
+        $derivedValues = [];
+
+        foreach ($includes->derivedValues() as $derivedValue) {
+            // A filter or sort on the name would otherwise silently mean the derived value
+            if ($metaData->property($derivedValue->name, ignoreUnknownProperties: true) !== null) {
+                throw new DerivedValueNameIsAProperty($entityClass, $derivedValue->name);
+            }
+
+            if (in_array($derivedValue->name, $offered, true)) {
+                $derivedValues[$derivedValue->name] = $derivedValue;
+            }
+        }
+
+        return $derivedValues;
+    }
+
+    /**
      * A selector's joins come along with its conditions, which may well name a
      * joined entity's property (a search on an order's tenant name, say). A join
      * the base already has (from a dotted filter on the same entity) is left out,
@@ -263,6 +321,71 @@ readonly class GetCollectionHandler
         }
 
         return $new;
+    }
+
+    /**
+     * Rows that sort the same have no order of their own, so the database may return
+     * them differently per page and a row can move between pages, or show on two. The
+     * id, last, makes the order total. Without any sort the list keeps the database's
+     * order, as before.
+     */
+    private function addIdTieBreaker(Definition $definition, string $entityClass): void
+    {
+        if ($definition->sorts === []) {
+            return;
+        }
+
+        $idProperty = $this->metaDataManager->get($entityClass)->idProperty->name;
+
+        foreach ($definition->sorts as $sort) {
+            if ($sort->operant instanceof Property
+                    && $sort->operant->name === $idProperty
+                    && in_array($sort->operant->entity, [null, $entityClass], true)) {
+                return;
+            }
+        }
+
+        $definition->add(SortBy::c(Property::c($idProperty)));
+    }
+
+    /**
+     * Per row id, the value of every name asked for: the derived values from the rows
+     * themselves, the others from values().
+     *
+     * @param EntityWithDerivedValues[]   $rows
+     * @param list<string>                $names
+     * @param array<string, DerivedValue> $derivedValues
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function included(
+        array                   $rows,
+        CollectionIncludes|null $includes,
+        array                   $names,
+        array                   $derivedValues
+    ): array
+    {
+        if ($names === []) {
+            return [];
+        }
+
+        $otherNames = array_values(array_diff($names, array_keys($derivedValues)));
+
+        $included = $otherNames === []
+            ? []
+
+            : $includes->values(
+                array_map(fn(EntityWithDerivedValues $row) => $row->entity, $rows),
+                $otherNames
+            );
+
+        foreach ($rows as $row) {
+            foreach ($row->values as $name => $value) {
+                $included[(string) $row->entity->id()][$name] = $this->responseSerializer->serialize($value);
+            }
+        }
+
+        return $included;
     }
 
     // Every name asked for is present on every row, null where the includes gave no
