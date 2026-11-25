@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Medas\ConfigManager\ConfigManagerPackage;
 use Medas\ConfigOptions\ConfigOptionsPackage;
+use Medas\Core\Interfaces\ConfigManager;
 use Medas\Events\EventsPackage;
 use Medas\ObjectInstantiator\ObjectInstantiator;
 use Medas\RamseyUuidBridge\RamseyUuidBridgePackage;
@@ -25,3 +26,8 @@ new ServiceManager(function (): ServiceConfigBuilder {
 
     return $config;
 });
+
+// The entities the filtering tests select: a filter or sort name is checked against
+// real entity classes and stores
+service(ConfigManager::class)
+    ->addDirectory(__DIR__ . '/tests/MockUps/config');

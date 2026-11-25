@@ -1,0 +1,2 @@
+entity-manager:
+  entity-directories: [tests/MockUps/Entities]

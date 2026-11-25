@@ -5,25 +5,22 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Filtering\FilterParser;
 
 use Medas\Core\Attributes\Service;
-use Medas\EntityManager\EntityClassFinder;
-use Medas\EntityManager\Selector\{
-    Operants\Operant,
-    Operants\Property,
-    Sorting\SortBy,
-    Sorting\SortDirection
-};
-use Medas\RestRequestHandler\Exceptions\InvalidSortDirection;
+use Medas\EntityManager\Selector\{Operants\Operant, Sorting\SortBy, Sorting\SortDirection};
+use Medas\RestRequestHandler\Exceptions\{CannotParseQueryValue, InvalidSortDirection};
 
 #[Service]
-class MultisortParser
+readonly class MultisortParser
 {
     public function __construct(
-        private readonly EntityClassFinder $entityClassFinder,
+        private PropertyParser $propertyParser,
     )
     {
     }
 
-    public function parse(Job $job, string $value): void
+    /**
+     * @param string $name the query part's own name, which a refusal names
+     */
+    public function parse(Job $job, string $name, string $value): void
     {
         $parts = explode(',', $value);
 
@@ -34,31 +31,30 @@ class MultisortParser
                 throw new InvalidSortDirection($direction);
             }
 
+            $operant = $this->operant($job, substr($part, 1));
+
+            // Refused as a filter on the same name is, instead of reaching the database
+            // as an unknown column
+            if ($operant === null) {
+                throw new CannotParseQueryValue($name, $part);
+            }
+
             $job->elements[] = SortBy::c(
-                $this->property($job, substr($part, 1)),
+                $operant,
                 $direction === '>' ? SortDirection::DESC : SortDirection::ASC
             );
         }
     }
 
-    // A property of another entity, "<products.name", sorts by that entity's
-    // property, the same way a dotted filter compares it: the entity is marked as
-    // referenced, so ReferencedEntitiesHandler joins it in. A derived value sorts by its
-    // expression.
-    private function property(Job $job, string $name): Operant
+    // A property of another entity, "<products.name", sorts by that entity's property,
+    // checked and joined in the same way as a dotted filter (PropertyParser). A derived
+    // value sorts by its expression.
+    private function operant(Job $job, string $name): Operant|null
     {
         if (array_key_exists($name, $job->derivedValues)) {
             return $job->derivedValues[$name];
         }
 
-        if (!str_contains($name, '.')) {
-            return Property::c($name);
-        }
-
-        [$store, $name] = explode('.', $name);
-        $entity = $this->entityClassFinder->getByStore($store)->className;
-        $job->referencedEntities[$entity] = true;
-
-        return Property::c($name, $entity);
+        return $this->propertyParser->parse($job, $name);
     }
 }

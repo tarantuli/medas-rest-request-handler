@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Exceptions;
 
-use Medas\Core\Exceptions\BaseException;
+use Medas\HttpRequestHandler\Exceptions\BadRequest;
 
-class InvalidSortDirection extends BaseException
+class InvalidSortDirection extends BadRequest
 {
     public function __construct(
         private readonly string $direction,

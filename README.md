@@ -24,8 +24,8 @@ A REST API layer built on `medas-http-request-handler` and `medas-entity-manager
 | Parameter                        | Default operator | Effect                                |
 |----------------------------------|------------------|---------------------------------------|
 | `page=N`                         | —                | Page number (1-based)                 |
-| `per_page=N`                     | —                | Results per page (max 1000)           |
-| `multisort=field:asc,other:desc` | —                | Multi-column sort                     |
+| `perPage=N`                      | —                | Results per page (max 1000)           |
+| `multisort=<field,>other`        | —                | Multi-column sort, `<` ascending, `>` descending; `<related_store.field` sorts on a related entity's property |
 | `predefined=query-name`          | —                | Apply a named `PredefinedQuery`       |
 | `field=value`                    | —                | Equality filter                       |
 | `field*=value`                   | `*`              | Contains filter                       |
@@ -42,15 +42,17 @@ A REST API layer built on `medas-http-request-handler` and `medas-entity-manager
 
 All comparison operators are configurable and can be disabled by setting them to `null`.
 
+A filter or sort names a property of the entity, a property of the entity whose store it names (`related_store.field`), or a derived value the route offers. Any other name is refused with `CannotParseQueryValue` (400) before a query runs, also when no entity has the store; a sort part without `<` or `>` with `InvalidSortDirection` (400).
+
 A boolean filter value is `true` or `false`, as a response serves it; `1` and `0` are accepted as well. Any other value is refused with `QueryValueIsNotABoolean` (400).
 
 ## Configuration options
 
 | Option                                                   | Default      | Description                                             |
 |----------------------------------------------------------|--------------|---------------------------------------------------------|
-| `rest-request-handler.default-page-size`                 | `25`         | Default number of results per page                      |
+| `rest-request-handler.default-page-size`                 | `30`         | Default number of results per page                      |
 | `rest-request-handler.page-query-name`                   | `page`       | Query parameter name for page number                    |
-| `rest-request-handler.per-page-query-name`               | `per_page`   | Query parameter name for page size                      |
+| `rest-request-handler.per-page-query-name`               | `perPage`    | Query parameter name for page size                      |
 | `rest-request-handler.multisort-query-name`              | `multisort`  | Query parameter name for multi-column sort              |
 | `rest-request-handler.predefined-query-name`             | `predefined` | Query parameter name for predefined queries             |
 | `rest-request-handler.include-query-name`                | `include`    | Query parameter naming the CollectionIncludes to add    |
@@ -257,6 +259,6 @@ rest-request-handler:
     is-at-most: "<"
 ```
 
-**Values on request** — a GetCollection route can offer values that cost a query, such as a count of related records, without paying for them on every request. Pass a `CollectionIncludes` as the handler's last argument; a request names the ones it wants (`?include=activeSubscriptionCount,outstandingAmount`). `values()` gets the whole page at once, so one query serves every row. Every name asked for is added to every row (null where there is no value); a name the route does not offer is refused with `UnknownInclude` (400), as is any name on a route without includes. The values are computed after the query, so they cannot be sorted or filtered on.
+**Values on request** — a GetCollection route can offer values that cost a query, such as a count of related records, without paying for them on every request. Pass a `CollectionIncludes` as the handler's last argument; a request names the ones it wants (`?include=activeSubscriptionCount,outstandingAmount`). `values()` gets the whole page at once, so one query serves every row. Every name asked for is added to every row (null where there is no value); a name the route does not offer is refused with `UnknownInclude` (400), as is any name on a route without includes. Values computed after the query cannot be sorted or filtered on; those of a `DerivedIncludes` are worked out in the query itself and can be (`?multisort=>activeSubscriptionCount`).
 
 **Ownership filters** — if an entity is annotated with `#[AddOwnershipFilter]`, `SelectorBuilder` automatically applies the ownership filter to every query, ensuring users can only see their own records without any additional handler code.

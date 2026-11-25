@@ -6,13 +6,14 @@ namespace Medas\RestRequestHandlerTest\Functional\Filtering;
 
 use Medas\EntityManager\Selector\{Conditions\WhereIs, Sorting\SortDirection};
 use Medas\RestRequestHandler\Filtering\SelectorBuilder;
+use Medas\RestRequestHandlerTest\MockUps\Entities\Book;
 use PHPUnit\Framework\TestCase;
 
 class SelectorBuilderTest extends TestCase
 {
     public function testEmptyFilters(): void
     {
-        $selector = service(SelectorBuilder::class)->build('Entity', []);
+        $selector = service(SelectorBuilder::class)->build(Book::class, []);
 
         self::assertEquals([], $selector->definition()->conditions);
         self::assertEquals([], $selector->definition()->parameters);
@@ -22,7 +23,10 @@ class SelectorBuilderTest extends TestCase
 
     public function testMultisortFilters(): void
     {
-        $selector = service(SelectorBuilder::class)->build('Entity', ['multisort' => '<name,>id']);
+        $selector = service(SelectorBuilder::class)->build(
+            Book::class,
+            ['multisort' => '<name,>id']
+        );
 
         self::assertEquals([], $selector->definition()->conditions);
         self::assertEquals([], $selector->definition()->parameters);
@@ -42,18 +46,19 @@ class SelectorBuilderTest extends TestCase
     public function testOffsetLimitFilters(): void
     {
         $selector = service(SelectorBuilder::class)->build(
-            'Entity',
-            ['page' => 1],
+            Book::class,
+            ['page' => 2],
         );
 
-        self::assertEquals(1, $selector->definition()->pagination->page);
-        self::assertEquals(30, $selector->definition()->pagination->perPage);
+        // The definition holds the page as a slice: the default page size, from the second page on
+        self::assertEquals(30, $selector->definition()->slice->count);
+        self::assertEquals(30, $selector->definition()->slice->from);
     }
 
     public function testPropertyFilters(): void
     {
         $selector = service(SelectorBuilder::class)->build(
-            'Entity',
+            Book::class,
             ['name' => 'John'],
         );
 

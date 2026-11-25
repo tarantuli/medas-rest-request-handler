@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Medas\RestRequestHandler\Filtering;
 
 use Medas\Core\Attributes\{ConfigValue, Service};
-use Medas\EntityManager\EntityClassFinder;
 use Medas\EntityManager\Selector\{DerivedValues\DerivedValue, Element, Pagination};
 use Medas\Json\StringProtector;
 use Medas\RestRequestHandler\{
@@ -21,10 +20,10 @@ use Medas\RestRequestHandler\{
 readonly class FilterParser
 {
     public function __construct(
-        private EntityClassFinder                        $entityClassFinder,
         private FilterParser\ComparisonExtractor         $comparisonExtractor,
         private FilterParser\ComparisonParser            $comparisonParser,
         private FilterParser\MultisortParser             $multisortParser,
+        private FilterParser\PropertyParser              $propertyParser,
         private FilterParser\ReferencedEntitiesHandler   $referencedEntitiesHandler,
         private PredefinedQueries\PredefinedQueryHandler $predefinedQueryHandler,
         private StringProtector                          $stringProtector,
@@ -80,7 +79,7 @@ readonly class FilterParser
     ): void
     {
         if ($name === $this->multisortQueryName) {
-            $this->multisortParser->parse($job, $value);
+            $this->multisortParser->parse($job, $name, $value);
         }
         elseif ($name === $this->pageQueryName) {
             if (!is_numeric($value) || (int) $value < 1) {
@@ -128,25 +127,17 @@ readonly class FilterParser
             return;
         }
 
-        if (str_contains($name, '.')) {
-            [$subStore, $name] = explode('.', $name);
-            $metaData = $this->entityClassFinder->getByStore($subStore);
-            $entity = $metaData->className;
-            $job->referencedEntities[$entity] = true;
-        }
-        else {
-            $entity = $job->entity;
-        }
+        $property = $this->propertyParser->parse($job, $name);
 
-        if ($entity !== '' && !property_exists($entity, $name)) {
+        if ($property === null) {
             throw new CannotParseQueryValue($name, $value);
         }
 
-        $type = $typeFinder ? $typeFinder($name, $entity) : null;
+        $type = $typeFinder ? $typeFinder($property->name, $property->entity) : null;
 
         $job->elements[] = $this->comparisonParser->parse(
-            $entity,
-            $name,
+            $property->entity,
+            $property->name,
             $comparisonType,
             $this->stringProtector->decode($value),
             $type
