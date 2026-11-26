@@ -4,7 +4,15 @@ declare(strict_types=1);
 
 namespace Medas\RestRequestHandler\Filtering;
 
-use Medas\Core\{Attributes\Service, Types\Boolean, Types\DateTime, Types\Relation};
+use Medas\Core\{
+    Attributes\Service,
+    Types\Boolean,
+    Types\Date,
+    Types\DateTime,
+    Types\FloatingPoint,
+    Types\Integer,
+    Types\Relation
+};
 use Medas\EntityManager\Exceptions\ClassIsNotAnEntity;
 use Medas\EntityManager\Filters\OwnershipFilterApplier;
 use Medas\EntityManager\Interfaces\HasSoftDeletes;
@@ -61,6 +69,13 @@ readonly class SelectorBuilder
                 // database read in its own time zone - not PHP's, in which the value was
                 // stored. Typed, it is parsed with its offset and stored-form serialized.
                 if ($type instanceof DateTime) {
+                    return $type;
+                }
+
+                // Untyped, a number or a date that is not one reached the database as text,
+                // which compared it as it saw fit: "abc" as 0 for a number (#407). Typed,
+                // it is read as one, or refused.
+                if ($type instanceof Integer || $type instanceof FloatingPoint || $type instanceof Date) {
                     return $type;
                 }
             }

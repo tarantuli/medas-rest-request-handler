@@ -6,6 +6,8 @@ namespace Medas\RestRequestHandler\Serializers;
 
 use Medas\Core\{
     Attributes\Service,
+    Date,
+    Exceptions\InvalidDate,
     Exceptions\UuidProviderIsNotAvailable,
     Interfaces\HasId,
     Interfaces\Serializer,
@@ -13,11 +15,19 @@ use Medas\Core\{
     Interfaces\Uuid,
     Interfaces\UuidProvider,
     Types\Boolean,
+    Types\Date as DateType,
     Types\DateTime,
+    Types\FloatingPoint,
     Types\Integer,
     Types\Uuid as UuidType
 };
-use Medas\RestRequestHandler\Exceptions\{InvalidDateTimeFormat, QueryValueIsNotABoolean};
+use Medas\RestRequestHandler\Exceptions\{
+    InvalidDateTimeFormat,
+    QueryValueIsNotABoolean,
+    QueryValueIsNotADate,
+    QueryValueIsNotAnInteger,
+    QueryValueIsNotANumber
+};
 
 #[Service]
 readonly class QueryDataSerializer implements Serializer
@@ -56,7 +66,15 @@ readonly class QueryDataSerializer implements Serializer
         }
 
         if ($type instanceof Integer) {
-            return (int) $value;
+            return $this->unserializeInteger($value);
+        }
+
+        if ($type instanceof FloatingPoint) {
+            return $this->unserializeNumber($value);
+        }
+
+        if ($type instanceof DateType) {
+            return $this->unserializeDate($value);
         }
 
         if ($type instanceof Boolean) {
@@ -78,6 +96,45 @@ readonly class QueryDataSerializer implements Serializer
         }
 
         return $value;
+    }
+
+    // A plain (int) cast read "abc" as 0 and "12abc" as 12, so a mistyped filter compared
+    // against a number nobody asked for (#407). The type's range is not checked: a filter
+    // outside it, such as a count >= -1, is a valid question with a plain answer. Up to 18
+    // digits, as more would not fit an int.
+    private function unserializeInteger(mixed $value): int
+    {
+        if (!is_string($value) || !preg_match('/^-?\d{1,18}$/', $value)) {
+            throw new QueryValueIsNotAnInteger((string) $value);
+        }
+
+        return (int) $value;
+    }
+
+    private function unserializeNumber(mixed $value): float
+    {
+        if (!is_numeric($value)) {
+            throw new QueryValueIsNotANumber((string) $value);
+        }
+
+        return (float) $value;
+    }
+
+    // Passed on as text, a value that is not a date was compared by the database as it saw
+    // fit (#407). Read as a Date, so the store writes it like any other date; one that does
+    // not exist, such as 30 February, is refused rather than rolled over into March.
+    private function unserializeDate(mixed $value): Date
+    {
+        if (!is_string($value) || !preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $value, $parts)) {
+            throw new QueryValueIsNotADate((string) $value);
+        }
+
+        try {
+            return new Date((int) $parts[1], (int) $parts[2], (int) $parts[3]);
+        }
+        catch (InvalidDate) {
+            throw new QueryValueIsNotADate($value);
+        }
     }
 
     // A query value is a raw string, and a plain (bool) cast reads "false" as true. Both

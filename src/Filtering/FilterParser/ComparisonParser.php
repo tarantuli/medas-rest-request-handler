@@ -12,10 +12,13 @@ use Medas\Core\{
 };
 use Medas\EntityManager\Selector\{
     Conditions\IsArrayComparison,
+    Conditions\WhereContains,
+    Conditions\WhereEndsWith,
     Conditions\WhereIs,
     Conditions\WhereIsNot,
     Conditions\WhereIsNotNull,
     Conditions\WhereIsNull,
+    Conditions\WhereStartsWith,
     DerivedValues\DerivedValue,
     Element,
     Operants\Property,
@@ -121,7 +124,9 @@ readonly class ComparisonParser
         mixed  $type
     ): Element
     {
-        $unserializedValue = $this->serializer->unserialize($value, $type);
+        $unserializedValue = $this->isTextMatch($comparisonType)
+            ? $value
+            : $this->serializer->unserialize($value, $type);
 
         if ($unserializedValue === null) {
             if ($comparisonType === WhereIs::class) {
@@ -168,7 +173,9 @@ readonly class ComparisonParser
             return new $comparisonType($derived, Values::c($values));
         }
 
-        $unserializedValue = $this->serializer->unserialize($value, $derived->type);
+        $unserializedValue = $this->isTextMatch($comparisonType)
+            ? $value
+            : $this->serializer->unserialize($value, $derived->type);
 
         if ($unserializedValue === null && $comparisonType === WhereIs::class) {
             return new WhereIsNull($derived);
@@ -179,5 +186,17 @@ readonly class ComparisonParser
         }
 
         return new $comparisonType($derived, Value::c($unserializedValue));
+    }
+
+    // A contains, starts-with or ends-with match compares the field as text, so its value
+    // stays text whatever the field's type: part of a date or a number is no date or
+    // number of its own, and reading it as one would refuse it (#407).
+    private function isTextMatch(string $comparisonType): bool
+    {
+        return in_array(
+            $comparisonType,
+            [WhereContains::class, WhereStartsWith::class, WhereEndsWith::class],
+            true
+        );
     }
 }
